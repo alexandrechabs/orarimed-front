@@ -277,6 +277,40 @@ const fr: TranslationKey = {
     },
   },
   other: 'Autre',
+  auth: {
+    login: 'Connexion',
+    loginDescription:
+      'Connectez-vous à votre compte pour accéder à votre espace personnel',
+    email: 'Adresse email',
+    emailPlaceholder: 'votre@email.com',
+    password: 'Mot de passe',
+    forgotPassword: 'Mot de passe oublié',
+    loggingIn: 'Connexion en cours...',
+    loginSuccess: 'Connexion réussie',
+    welcomeBack: 'Content de vous revoir !',
+    error: 'Erreur',
+    invalidCredentials: 'Email ou mot de passe incorrect',
+    orContinueWith: 'Ou continuez avec',
+    noAccount: "Vous n'avez pas de compte ?",
+    createAccount: 'Créer un compte',
+    creatingAccount: 'Création du compte...',
+    firstName: 'Prénom',
+    firstNamePlaceholder: 'Votre prénom',
+    lastName: 'Nom',
+    lastNamePlaceholder: 'Votre nom',
+    confirmPassword: 'Confirmer le mot de passe',
+    passwordRequirements:
+      '8 caractères minimum, avec des lettres et des chiffres',
+    passwordsDontMatch: 'Les mots de passe ne correspondent pas',
+    register: 'Inscription',
+    registerDescription:
+      'Créez un compte pour accéder à votre espace personnel',
+    registrationSuccess: 'Inscription réussie',
+    registrationSuccessMessage: 'Votre compte a été créé avec succès !',
+    registrationError: 'Une erreur est survenue lors de la création du compte',
+    haveAccount: 'Vous avez déjà un compte ?',
+    goBack: 'Retour',
+  },
 };
 
 export default fr;

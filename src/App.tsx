@@ -1,14 +1,16 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import SpecialitiesListPage from "./pages/SpecialitiesListPage";
-import SpecialtyPage from "./pages/SpecialtyPage";
-import AktualitetePage from "./pages/AktualitetePage";
-import KontaktPage from "./pages/KontaktPage";
-import NotFound from "./pages/NotFound";
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Index from './pages/Index';
+import SpecialitiesListPage from './pages/SpecialitiesListPage';
+import SpecialtyPage from './pages/SpecialtyPage';
+import AktualitetePage from './pages/AktualitetePage';
+import KontaktPage from './pages/KontaktPage';
+import NotFound from './pages/NotFound';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 
 const queryClient = new QueryClient();
 
@@ -24,7 +26,8 @@ const App = () => (
           <Route path="/specialitete/:slug" element={<SpecialtyPage />} />
           <Route path="/aktualitete" element={<AktualitetePage />} />
           <Route path="/kontakt" element={<KontaktPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

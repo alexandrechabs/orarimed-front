@@ -1,11 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
-import LanguageSelector from "./LanguageSelector";
-import logoIcon from "@/assets/logo-icon.png";
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import LanguageSelector from './LanguageSelector';
+import logoIcon from '@/assets/logo-icon.png';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,10 +13,10 @@ const Navigation = () => {
   const { t } = useLanguage();
 
   const navLinks = [
-    { href: "/", label: t.nav.home },
-    { href: "/specialitete", label: t.nav.specialties },
-    { href: "/aktualitete", label: t.nav.news },
-    { href: "/kontakt", label: t.nav.contact },
+    { href: '/', label: t.nav.home },
+    { href: '/specialitete', label: t.nav.specialties },
+    { href: '/aktualitete', label: t.nav.news },
+    { href: '/kontakt', label: t.nav.contact },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -27,7 +27,11 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoIcon} alt="OrariMed" className="w-10 h-10 rounded-xl" />
+            <img
+              src={logoIcon}
+              alt="OrariMed"
+              className="w-10 h-10 rounded-xl"
+            />
             <span className="font-display font-bold text-xl text-foreground">
               Orari<span className="text-accent">Med</span>
             </span>
@@ -41,8 +45,8 @@ const Navigation = () => {
                 to={link.href}
                 className={`font-medium transition-colors duration-200 ${
                   isActive(link.href)
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {link.label}
@@ -53,11 +57,11 @@ const Navigation = () => {
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <LanguageSelector />
-            <Button variant="ghost" size="sm">
-              {t.nav.login}
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/login">{t.nav.login}</Link>
             </Button>
-            <Button variant="hero" size="sm">
-              {t.nav.register}
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/register">{t.nav.register}</Link>
             </Button>
           </div>
 
@@ -75,7 +79,7 @@ const Navigation = () => {
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
+              animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden overflow-hidden"
             >
@@ -87,8 +91,8 @@ const Navigation = () => {
                     onClick={() => setIsOpen(false)}
                     className={`block py-2 px-4 rounded-lg font-medium transition-colors ${
                       isActive(link.href)
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-secondary"
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-secondary'
                     }`}
                   >
                     {link.label}
@@ -96,12 +100,16 @@ const Navigation = () => {
                 ))}
                 <div className="flex items-center gap-3 pt-4 px-4">
                   <LanguageSelector />
-                  <Button variant="outline" className="flex-1">
-                    {t.nav.login}
-                  </Button>
-                  <Button variant="hero" className="flex-1">
-                    {t.nav.register}
-                  </Button>
+                  <Link key="login" to="/login" className="w-full">
+                    <Button variant="outline" className="w-full">
+                      {t.nav.login}
+                    </Button>
+                  </Link>
+                  <Link key="register" to="/register" className="w-full">
+                    <Button variant="hero" className="w-full">
+                      {t.nav.register}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.div>

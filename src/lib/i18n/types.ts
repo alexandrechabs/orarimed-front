@@ -100,6 +100,37 @@ export type TranslationKey = {
       };
     };
   };
+  auth: {
+    login: string;
+    loginDescription: string;
+    email: string;
+    emailPlaceholder: string;
+    password: string;
+    forgotPassword: string;
+    loggingIn: string;
+    loginSuccess: string;
+    welcomeBack: string;
+    error: string;
+    invalidCredentials: string;
+    orContinueWith: string;
+    noAccount: string;
+    haveAccount: string;
+    createAccount: string;
+    creatingAccount: string;
+    firstName: string;
+    firstNamePlaceholder: string;
+    lastName: string;
+    lastNamePlaceholder: string;
+    confirmPassword: string;
+    passwordRequirements: string;
+    passwordsDontMatch: string;
+    register: string;
+    registerDescription: string;
+    registrationSuccess: string;
+    registrationSuccessMessage: string;
+    registrationError: string;
+    goBack: string;
+  };
   other: string;
 };
 
