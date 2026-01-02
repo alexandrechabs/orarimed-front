@@ -246,6 +246,37 @@ const sq: TranslationKey = {
       'Markuesit tumoralë',
     ],
   },
+  contact: {
+    title: 'Na kontaktoni',
+    subtitle: "Keni pyetje? Jemi këtu për t'ju ndihmuar.",
+    form: {
+      title: 'Dërgo një mesazh',
+      name: 'Emri i plotë',
+      email: 'Email adresa',
+      subject: 'Subjekti',
+      message: 'Mesazhi juaj',
+      messagePlaceholder: "Si mund t'ju ndihmojmë?",
+      submit: 'Dërgo mesazhin',
+      sending: 'Po dërgohet...',
+      success: 'Mesazhi u dërgua me sukses!',
+      error: 'Ndodhi një gabim. Ju lutemi provoni përsëri.',
+    },
+    info: {
+      title: 'Informacione kontakti',
+      address: 'Rr. Deshmoret e Kombit, Tiranë, Shqipëri',
+      address_label: 'Adresa',
+      phone: '+355 4X XXX XXXX',
+      phone_label: 'Telefoni',
+      email: 'info@orarimed.al',
+      email_label: 'Email',
+      hours: {
+        title: 'Orari i hapjes',
+        weekdays: 'E Hënë - E Premte: 08:00 - 20:00',
+        weekend: 'E Shtunë: 09:00 - 15:00',
+        closed: 'E Diel: E Mbyllur',
+      },
+    },
+  },
   other: 'Tjetër',
 };
 

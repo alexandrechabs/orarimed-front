@@ -69,6 +69,37 @@ export type TranslationKey = {
   specialtyNames: Record<string, string>;
   specialtyDescriptions: Record<string, string>;
   consultationReasons: Record<string, string[]>;
+  contact: {
+    title: string;
+    subtitle: string;
+    form: {
+      title: string;
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+      messagePlaceholder: string;
+      submit: string;
+      sending: string;
+      success: string;
+      error: string;
+    };
+    info: {
+      title: string;
+      address: string;
+      address_label: string;
+      phone: string;
+      phone_label: string;
+      email: string;
+      email_label: string;
+      hours: {
+        title: string;
+        weekdays: string;
+        weekend: string;
+        closed: string;
+      };
+    };
+  };
   other: string;
 };
 

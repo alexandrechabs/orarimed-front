@@ -244,6 +244,37 @@ const en: TranslationKey = {
       'Tumor markers',
     ],
   },
+  contact: {
+    title: 'Contact Us',
+    subtitle: "Have questions? We're here to help.",
+    form: {
+      title: 'Send a Message',
+      name: 'Full Name',
+      email: 'Email Address',
+      subject: 'Subject',
+      message: 'Your Message',
+      messagePlaceholder: 'How can we help you?',
+      submit: 'Send Message',
+      sending: 'Sending...',
+      success: 'Message sent successfully!',
+      error: 'An error occurred. Please try again.',
+    },
+    info: {
+      title: 'Contact Information',
+      address: 'Rr. Deshmoret e Kombit, Tirana, Albania',
+      address_label: 'Address',
+      phone: '+355 4X XXX XXXX',
+      phone_label: 'Phone',
+      email: 'info@orarimed.al',
+      email_label: 'Email',
+      hours: {
+        title: 'Opening Hours',
+        weekdays: 'Monday - Friday: 08:00 - 20:00',
+        weekend: 'Saturday: 09:00 - 15:00',
+        closed: 'Sunday: Closed',
+      },
+    },
+  },
   other: 'Other',
 };
 
