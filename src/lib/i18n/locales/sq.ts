@@ -1,0 +1,252 @@
+import { TranslationKey } from '../types';
+
+const sq: TranslationKey = {
+  nav: {
+    home: 'Kryefaqja',
+    specialties: 'Specialitetet',
+    news: 'Aktualitete',
+    contact: 'Kontakt',
+    login: 'Hyr',
+    register: 'Regjistrohu',
+  },
+  hero: {
+    h1: 'Gjej dhe rezervo takimin tënd mjekësor në Shqipëri, online',
+    subtitle:
+      'Rezervo një takim me mjekë, dentistë dhe laboratorë analizash në pak klikime. Mjekë të verifikuar, disponueshmëri në kohë reale.',
+    searchDoctor: 'Kërko një mjek',
+    imProfessional: 'Jam profesionist shëndetësor',
+    badge: '🏥 Platforma e takimeve mjekësore në Shqipëri',
+    verifiedDoctors: 'Mjekë të verifikuar',
+    booking247: 'Rezervim 24/7',
+    freeForPatients: 'Falas për pacientët',
+  },
+  specialties: {
+    title: 'Specialitetet',
+    subtitle: 'Gjeni mjekë të specializuar për çdo nevojë shëndetësore',
+    viewAll: 'Shiko të gjitha specialitetet',
+    findButton: 'Gjej',
+    typicalServices: 'Shërbime tipike',
+    consultationReasons: 'Arsyet kryesore të konsultimit',
+    backToSpecialties: 'Të gjitha specialitetet',
+    notFound: 'Specialiteti nuk u gjet',
+  },
+  whyOrariMed: {
+    title: 'Pse OrariMed?',
+    subtitle:
+      'E thjeshtë, e shpejtë dhe e sigurt — kështu duhet të jetë rezervimi mjekësor',
+    features: {
+      booking: {
+        title: 'Rezervim i shpejtë, 24/7',
+        description:
+          'Rezervo një takim në çdo kohë, edhe gjatë natës ose fundjavës.',
+      },
+      local: {
+        title: 'Fokus lokal',
+        description: 'Mjekë të verifikuar në të gjithë Shqipërinë.',
+      },
+      reminders: {
+        title: 'Kujtesa automatike',
+        description: 'Merr njoftimet për takimet e tua përmes SMS ose email.',
+      },
+      secure: {
+        title: 'Të dhëna të sigurta',
+        description:
+          'Informacionet tuaja ruhen në mënyrë konfidenciale dhe të sigurt.',
+      },
+      cancel: {
+        title: 'Anulim i lehtë',
+        description: 'Anulo ose riplanifiko takimin pa asnjë problem.',
+      },
+    },
+  },
+  security: {
+    title: 'Siguria & Privatësia',
+    description:
+      'OrariMed respekton standardet më të larta të sigurisë së të dhënave shëndetësore. Të gjitha informacionet ruhen dhe përpunohen në mënyrë të sigurt, sipas legjislacionit në fuqi.',
+    features: ['Enkriptim SSL', 'Konform GDPR', 'Të dhëna të sigurta'],
+  },
+  professional: {
+    title: 'Je mjek, dentist apo laborator?',
+    subtitle:
+      'Rrit dukshmërinë tënde dhe menaxho oraret në mënyrë digjitale. Bashkohu me profesionistë që përdorin OrariMed.',
+    cta: 'Regjistrohu si profesionist',
+    badge: 'Për profesionistët shëndetësorë',
+    manageSchedules: 'Menaxho oraret online',
+    growPatients: 'Rrit numrin e pacientëve',
+    freeRegistration: 'Regjistrim falas',
+  },
+  footer: {
+    description:
+      'Platforma e takimeve mjekësore online në Shqipëri. Rezervo një takim me mjekë të verifikuar në pak klikime.',
+    quickLinks: 'Lidhje të shpejta',
+    legal: 'Informacion ligjor',
+    contact: 'Kontakt',
+    rights: 'Të gjitha të drejtat e rezervuara',
+    privacy: 'Politika e privatësisë',
+    terms: 'Kushtet e përdorimit',
+    cookies: 'Cookies',
+    faq: 'Pyetje të shpeshta',
+    forProfessionals: 'Për profesionistët',
+    aboutUs: 'Rreth OrariMed',
+    location: 'Shqipëri',
+  },
+  specialtyNames: {
+    'mjek-pergjithshem': 'Mjek i Përgjithshëm',
+    kardiologji: 'Kardiologji',
+    dermatologji: 'Dermatologji',
+    pediatri: 'Pediatri',
+    gjinekologji: 'Obstetrikë & Gjinekologji',
+    ortopedi: 'Ortopedi',
+    psikiatri: 'Psikiatri & Psikologji',
+    gastroenterologji: 'Gastroenterologji',
+    orl: 'ORL (Vesh-Hundë-Fyt)',
+    urologji: 'Urologji',
+    dentiste: 'Dentistë',
+    laboratore: 'Laboratorë analizash',
+  },
+  specialtyDescriptions: {
+    'mjek-pergjithshem':
+      'Mjeku i përgjithshëm është pika e parë e kontaktit për problemet shëndetësore të përditshme.',
+    kardiologji:
+      'Rezervoni një takim me kardiologë të specializuar për kujdesin ndaj zemrës.',
+    dermatologji:
+      'Për kujdesin e lëkurës, flokëve dhe thonjve, gjeni dermatologë të verifikuar.',
+    pediatri: 'Kujdes shëndetësor për foshnjat, fëmijët dhe adoleshentët.',
+    gjinekologji:
+      'Rezervoni kontrolle rutinë, ndjekje shtatzënie dhe konsulta gjinekologjike.',
+    ortopedi: 'Trajtim për problemet e kockave, kyçeve dhe muskujve.',
+    psikiatri:
+      'Mbështetje profesionale për shëndetin mendor dhe mirëqenien emocionale.',
+    gastroenterologji:
+      'Për probleme të aparatit tretës dhe kontrolle diagnostikuese.',
+    orl: 'Trajtim për dëgjimin, frymëmarrjen dhe infeksionet e rrugëve të sipërme.',
+    urologji: 'Kujdes për shëndetin urinar dhe riprodhues.',
+    dentiste:
+      'Gjeni dentistë për kontrolle, trajtime, urgjenca dentare dhe estetikë orale.',
+    laboratore:
+      'Rezervoni takime për analiza mjekësore në laboratorë të certifikuar.',
+  },
+  consultationReasons: {
+    'mjek-pergjithshem': [
+      'Dhimbje koke',
+      'Gripi dhe ftohja',
+      'Lodhje kronike',
+      'Dhimbje shpine',
+      'Kontroll i përgjithshëm',
+      'Certifikatë mjekësore',
+      'Vaksinim',
+      'Këshillim shëndetësor',
+    ],
+    kardiologji: [
+      'Dhimbje gjoksi',
+      'Frymëmarrje e shkurtër',
+      'Rrahje të shpejta zemre',
+      'Tension i lartë',
+      'Kontroll kardiak vjetor',
+      'Interpretim EKG',
+      'Edema këmbësh',
+    ],
+    dermatologji: [
+      'Akne',
+      'Ekzemë',
+      'Psoriazis',
+      'Nishan i dyshimtë',
+      'Rënie flokësh',
+      'Infeksion fungal',
+      'Alergjia të lëkurës',
+      'Herpes',
+    ],
+    pediatri: [
+      'Vizitë rutinë fëmije',
+      'Vaksinim',
+      'Ethe',
+      'Kollë dhe gripi',
+      'Dhimbje barku',
+      'Kontrolli i rritjes',
+      'Alergjia ushqimore',
+      'Infeksion veshi',
+    ],
+    gjinekologji: [
+      'Kontroll rutinë',
+      'Pap test',
+      'Ndjekje shtatzënie',
+      'Çrregullime menstruale',
+      'Kontracepsion',
+      'Menopauzë',
+      'Infeksione vaginale',
+      'Ekografi pelvike',
+    ],
+    ortopedi: [
+      'Dhimbje gjuri',
+      'Dhimbje shpine',
+      'Këputje ligamentesh',
+      'Frakturë',
+      'Artriti',
+      'Tendinit',
+      'Skoliozë',
+      'Dhimbje supi',
+    ],
+    psikiatri: [
+      'Ankthi',
+      'Depresioni',
+      'Stresi kronik',
+      'Pagjumësi',
+      'Ataqe paniku',
+      'Trauma',
+      'Çrregullime të humorit',
+      'Terapi çifti',
+    ],
+    gastroenterologji: [
+      'Dhimbje stomaku',
+      'Reflux gastrik',
+      'Kapsllëk',
+      'Diarré kronike',
+      'Sindroma e zorrës së irrituar',
+      'Koloskopi',
+      'Gastroskopi',
+      'Hemoroide',
+    ],
+    orl: [
+      'Dhimbje fyti',
+      'Hundë e bllokuar',
+      'Humbje dëgjimi',
+      'Tinitus',
+      'Sinusit',
+      'Tonsillitit',
+      'Vertigo',
+      'Infeksion veshi',
+    ],
+    urologji: [
+      'Infeksion urinar',
+      'Gurë veshkash',
+      'Probleme prostate',
+      'Inkontinencë',
+      'Disfunksion erektil',
+      'Vizitë urologjike',
+      'Analiza urine',
+    ],
+    dentiste: [
+      'Dhimbje dhëmbi',
+      'Kontroll periodik',
+      'Pastrim dhëmbësh',
+      'Mbushje',
+      'Nxjerrje dhëmbi',
+      'Zbardhim dhëmbësh',
+      'Aparate ortodontike',
+      'Implantet dentare',
+    ],
+    laboratore: [
+      'Analiza gjaku',
+      'Profili lipidik',
+      'Glicemia',
+      'Analiza hormonale',
+      'Testi i tiroidës',
+      'Analiza urine',
+      'Teste alergjie',
+      'Markuesit tumoralë',
+    ],
+  },
+  other: 'Tjetër',
+};
+
+export default sq;
