@@ -1,102 +1,39 @@
-name: Deploy to Production
+name: Build & Deploy React App via SSH & Docker
 
 on:
   push:
-    branches: [main] # Déclenche le déploiement sur push sur main
-  workflow_dispatch: # Permet de déclencher manuellement depuis l'interface GitHub
-
-env:
-  IMAGE_NAME: orarimed-front
-  CONTAINER_NAME: orarimed-front
-  PORT: 3007
-  REMOTE_PATH: /chemin/vers/orarimed-front
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v3
 
-      # Construire l'image Docker
-      - name: Build Docker image
+      - name: 🐳 Build Docker image
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:latest .
+          docker build --build-arg VITE_URL=${{ secrets.VITE_URL }} --build-arg VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} -t orarimed-front .
 
-      # Sauvegarder l'image dans un fichier
-      - name: Save Docker image
-        run: docker save -o ${{ env.IMAGE_NAME }}.tar ${{ env.IMAGE_NAME }}:latest
+      - name: 📦 Save image to tarball
+        run: docker save orarimed-front -o orarimed-front.tar
 
-      # Configuration SSH
-      - name: Setup SSH
+      - name: 🗝️ Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      # Copie et déploiement
-      - name: Copy and deploy
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      - name: 📤 Copy Docker image to server
+        run: scp -o StrictHostKeyChecking=no orarimed-front.tar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/orarimed-front.tar
+
+      - name: 🚀 Deploy Docker container on server
         run: |
-          # Créer un dossier temporaire
-          mkdir -p tmp_deploy
-
-          # Copier les fichiers nécessaires
-          cp ${{ env.IMAGE_NAME }}.tar tmp_deploy/
-          cp nginx.conf tmp_deploy/
-
-          # Créer le fichier docker-compose.yml
-          cat > tmp_deploy/docker-compose.yml << 'EOL'
-          version: '3.8'
-
-          services:
-            ${{ env.IMAGE_NAME }}:
-              image: ${{ env.IMAGE_NAME }}:latest
-              container_name: ${{ env.CONTAINER_NAME }}
-              restart: always
-              ports:
-                - "${{ env.PORT }}:3007"
-              networks:
-                - orarimed-network
-
-          networks:
-            orarimed-network:
-              driver: bridge
-          EOL
-
-          # Créer le script de déploiement
-          cat > tmp_deploy/deploy.sh << 'EOL'
-          #!/bin/bash
-          set -e
-
-          echo "Arrêt et suppression de l'ancien conteneur..."
-          docker-compose down || true
-
-          echo "Chargement de la nouvelle image..."
-          docker load -i ${{ env.IMAGE_NAME }}.tar
-
-          echo "Démarrage des services..."
-          docker-compose up -d
-
-          echo "Nettoyage..."
-          docker system prune -f
-
-          echo "Déploiement terminé avec succès!"
-          EOL
-
-          # Rendre le script exécutable
-          chmod +x tmp_deploy/deploy.sh
-
-          # Créer le répertoire distant s'il n'existe pas
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ env.REMOTE_PATH }}"
-
-          # Copier les fichiers sur le serveur
-          echo "Copie des fichiers sur le serveur..."
-          scp -o StrictHostKeyChecking=no -r tmp_deploy/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}/
-
-          # Exécuter le script de déploiement
-          echo "Exécution du script de déploiement..."
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ env.REMOTE_PATH }} && chmod +x deploy.sh && ./deploy.sh"
-
-          echo "Déploiement terminé avec succès !"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            docker load -i /tmp/orarimed-front.tar &&
+            docker stop orarimed-front || true &&
+            docker rm orarimed-front || true &&
+            docker run -d --name orarimed-front -p 8080:80 orarimed-front &&
+            rm /tmp/orarimed-front.tar
+          "
