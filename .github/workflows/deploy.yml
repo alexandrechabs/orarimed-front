@@ -34,6 +34,6 @@ jobs:
             docker load -i /tmp/orarimed-front.tar &&
             docker stop orarimed-front || true &&
             docker rm orarimed-front || true &&
-            docker run -d --name orarimed-front -p 8080:80 orarimed-front &&
+            docker run -d --name orarimed-front -p 3007:3007 orarimed-front &&
             rm /tmp/orarimed-front.tar
           "
