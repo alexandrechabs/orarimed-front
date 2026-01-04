@@ -78,7 +78,7 @@ const RegisterPage = () => {
       });
 
       // Redirection vers la page de connexion après inscription réussie
-      navigate('/login');
+      navigate('/dashboard');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Une erreur est survenue';

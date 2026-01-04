@@ -50,7 +50,7 @@ const LoginPage = () => {
       });
 
       // Redirect to home or intended page after successful login
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       toast({
         title: t.auth.error,
