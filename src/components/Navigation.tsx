@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 import logoIcon from '@/assets/logo-icon.png';
-import { isAuthenticated } from '@/services/authService';
+import { authService } from '@/services/authService';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +58,7 @@ const Navigation = () => {
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <LanguageSelector />
-            {isAuthenticated ? (
+            {authService.isAuthenticated() ? (
               <Button variant="hero" size="sm" asChild>
                 <Link to="/dashboard">{t.nav.account}</Link>
               </Button>

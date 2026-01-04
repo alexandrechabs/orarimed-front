@@ -197,7 +197,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                     </p>
                     <p className="text-xs text-gray-500">{currentUser.email}</p>
                   </div>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">Déconnexion</span>
                   </Button>
