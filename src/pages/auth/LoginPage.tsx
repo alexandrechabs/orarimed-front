@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import { authService } from '@/services/authService';
 
 const LoginPage = () => {
   const { t } = useLanguage();
@@ -38,7 +39,10 @@ const LoginPage = () => {
 
     try {
       // TODO: Implement actual login logic here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await authService.login({
+        email: formData.email,
+        password: formData.password,
+      });
 
       toast({
         title: t.auth.loginSuccess,

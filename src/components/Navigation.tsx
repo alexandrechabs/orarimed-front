@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 import logoIcon from '@/assets/logo-icon.png';
+import { isAuthenticated } from '@/services/authService';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,12 +58,20 @@ const Navigation = () => {
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <LanguageSelector />
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/login">{t.nav.login}</Link>
-            </Button>
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/register">{t.nav.register}</Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/dashboard">{t.nav.account}</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/login">{t.nav.login}</Link>
+                </Button>
+                <Button variant="hero" size="sm" asChild>
+                  <Link to="/register">{t.nav.register}</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

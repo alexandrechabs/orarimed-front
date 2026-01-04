@@ -6,6 +6,7 @@ export type TranslationKey = {
     contact: string;
     login: string;
     register: string;
+    account: string;
   };
   hero: {
     h1: string;

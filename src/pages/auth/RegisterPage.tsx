@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import { authService } from '@/services/authService';
 
 const RegisterPage = () => {
   const { t } = useLanguage();
@@ -48,23 +49,42 @@ const RegisterPage = () => {
       return;
     }
 
+    // Validation de la longueur minimale du mot de passe
+    if (formData.password.length < 8) {
+      toast({
+        title: t.auth.error,
+        description: 'Le mot de passe doit contenir au moins 8 caractères',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // TODO: Implémenter la logique d'inscription ici
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Appel au service d'authentification
+      await authService.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
 
       toast({
-        title: t.auth.registrationSuccess,
-        description: t.auth.registrationSuccessMessage,
+        title: t.auth.registrationSuccess || 'Inscription réussie',
+        description:
+          t.auth.registrationSuccessMessage ||
+          'Votre compte a été créé avec succès',
       });
 
       // Redirection vers la page de connexion après inscription réussie
       navigate('/login');
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Une erreur est survenue';
       toast({
-        title: t.auth.error,
-        description: t.auth.registrationError,
+        title: t.auth.error || 'Erreur',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

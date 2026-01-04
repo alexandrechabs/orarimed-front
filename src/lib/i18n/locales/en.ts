@@ -8,6 +8,7 @@ const en: TranslationKey = {
     contact: 'Contact',
     login: 'Login',
     register: 'Register',
+    account: 'My account',
   },
   hero: {
     h1: 'Find and book your medical appointment in Albania, online',

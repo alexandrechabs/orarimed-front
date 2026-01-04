@@ -8,6 +8,7 @@ const sq: TranslationKey = {
     contact: 'Kontakt',
     login: 'Hyr',
     register: 'Regjistrohu',
+    account: 'Llogaria ime',
   },
   hero: {
     h1: 'Gjej dhe rezervo takimin tënd mjekësor në Shqipëri, online',
