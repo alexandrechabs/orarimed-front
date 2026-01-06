@@ -32,11 +32,21 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/services/auth/useAuth';
 import React from 'react';
+import PhoneInput from 'react-phone-number-input';
+import type { CountryCode } from 'libphonenumber-js';
+import 'react-phone-number-input/style.css';
 
 const formSchema = z.object({
   genderId: z.enum(['1', '2', '3'], {
     required_error: 'Veuillez sélectionner votre genre',
   }),
+  phoneNumber: z
+    .string({
+      required_error: 'Le numéro de téléphone est requis',
+    })
+    .min(8, {
+      message: 'Le numéro de téléphone est invalide',
+    }),
   birthDate: z.date({
     required_error: 'Veuillez entrer votre date de naissance',
   }),
@@ -62,10 +72,14 @@ export function OnboardingClientPage() {
   const { updateUser } = useAuth();
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
+  // Liste des pays disponibles avec leurs codes ISO
+  const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       genderId: undefined,
+      phoneNumber: '',
       address: '',
       city: '',
       zipCode: '',
@@ -273,6 +287,31 @@ export function OnboardingClientPage() {
                         <SelectItem value="other">Autre</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Numéro de téléphone avec sélecteur de pays */}
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field: { onChange, value } }) => (
+                  <FormItem>
+                    <FormLabel>Numéro de téléphone</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <PhoneInput
+                          international
+                          defaultCountry="AL"
+                          countries={allowedCountries}
+                          value={value}
+                          onChange={onChange}
+                          placeholder="Entrez votre numéro de téléphone"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
