@@ -20,19 +20,20 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [token, setToken] = useState<String>(() => {
+    const saved = localStorage.getItem('auth_token');
+    return (saved as String) || '';
+  });
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true); // État de chargement
 
   useEffect(() => {
     // Vérifiez le stockage local au chargement
-    const loadUser = () => {
+    const loadUser = async () => {
       try {
-        const storedUser = localStorage.getItem('user_data');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
+        await getMyUser();
       } catch (error) {
-        console.error('Failed to load user from localStorage', error);
+        console.error('Failed to load user', error);
       } finally {
         setIsLoading(false);
       }
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await authService.login({ email, password });
 
     setUser(data.user);
-    localStorage.setItem('user_data', JSON.stringify(data.user));
+    setToken(data.token.token);
     localStorage.setItem('auth_token', data.token.token);
   }
 
@@ -63,14 +64,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     setUser(data.user);
-    localStorage.setItem('user_data', JSON.stringify(data.user));
+    setToken(data.token.token);
     localStorage.setItem('auth_token', data.token.token);
+  }
+
+  async function getMyUser() {
+    const data = await authService.getMyUser();
+    setUser(data);
   }
 
   async function updateUser(params: any) {
     const data = await authService.updateUser(user.id, params);
     setUser(data);
-    localStorage.setItem('user_data', JSON.stringify(data));
   }
 
   function logout() {

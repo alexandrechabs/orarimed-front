@@ -31,6 +31,25 @@ export const authService = {
     return res.json() as Promise<AuthResponse>;
   },
 
+  async getMyUser() {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const res = await fetch(`${API_URL}/user/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error('Get user failed');
+    return res.json() as Promise<User>;
+  },
+
   async updateUser(userId: string, params: any) {
     const token = localStorage.getItem('auth_token');
 

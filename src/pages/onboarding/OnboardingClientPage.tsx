@@ -31,6 +31,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/services/auth/useAuth';
+import React from 'react';
 
 const formSchema = z.object({
   genderId: z.enum(['1', '2', '3'], {
@@ -59,6 +60,7 @@ export function OnboardingClientPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { updateUser } = useAuth();
+  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -148,7 +150,10 @@ export function OnboardingClientPage() {
                 render={({ field }) => (
                   <FormItem className="flex flex-col mt-2">
                     <FormLabel>Date de naissance</FormLabel>
-                    <Popover>
+                    <Popover
+                      open={isCalendarOpen}
+                      onOpenChange={setIsCalendarOpen}
+                    >
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -173,7 +178,12 @@ export function OnboardingClientPage() {
                         <Calendar
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            if (date) {
+                              setIsCalendarOpen(false);
+                            }
+                          }}
                           captionLayout="dropdown"
                           classNames={{
                             caption: 'flex justify-center gap-2',
