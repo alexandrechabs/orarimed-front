@@ -4,6 +4,9 @@ FROM node:20-alpine AS build
 # Définir le répertoire de travail
 WORKDIR /app
 
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Copier les fichiers de dépendances
 COPY package.json package-lock.json* ./
 
