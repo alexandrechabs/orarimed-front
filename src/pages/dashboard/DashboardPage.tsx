@@ -3,41 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { authService, User } from '@/services/authService';
 import { LogOut, User as UserIcon, Calendar, Clock } from 'lucide-react';
+import { User } from '@/types/user';
+import { useAuth } from '@/services/auth/useAuth';
 
 const DashboardPage = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    if (!currentUser) {
+    if (!user) {
       navigate('/login');
       return;
     }
-    setUser(currentUser);
-    setIsLoading(false);
   }, [navigate]);
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/');
-    toast({
-      title: 'Déconnexion réussie',
-      description: 'Vous avez été déconnecté avec succès.',
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">

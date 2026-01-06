@@ -6,12 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 import logoIcon from '@/assets/logo-icon.png';
-import { authService } from '@/services/authService';
+import { useAuth } from '@/services/auth/useAuth';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
+  const { user } = useAuth();
 
   const navLinks = [
     { href: '/', label: t.nav.home },
@@ -58,7 +59,7 @@ const Navigation = () => {
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <LanguageSelector />
-            {authService.isAuthenticated() ? (
+            {user ? (
               <Button variant="hero" size="sm" asChild>
                 <Link to="/dashboard">{t.nav.account}</Link>
               </Button>

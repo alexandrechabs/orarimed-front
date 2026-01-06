@@ -13,9 +13,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { authService } from '@/services/authService';
+import { useAuth } from '@/services/auth/useAuth';
 
 const RegisterPage = () => {
+  const { register } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -63,12 +64,12 @@ const RegisterPage = () => {
 
     try {
       // Appel au service d'authentification
-      await authService.register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-      });
+      await register(
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.password
+      );
 
       toast({
         title: t.auth.registrationSuccess || 'Inscription réussie',
@@ -78,7 +79,7 @@ const RegisterPage = () => {
       });
 
       // Redirection vers la page de connexion après inscription réussie
-      navigate('/dashboard');
+      navigate('/onboardingClient');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Une erreur est survenue';

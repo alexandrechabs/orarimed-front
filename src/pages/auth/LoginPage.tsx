@@ -13,9 +13,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { authService } from '@/services/authService';
+import { useAuth } from '@/services/auth/useAuth';
 
 const LoginPage = () => {
+  const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -39,10 +40,7 @@ const LoginPage = () => {
 
     try {
       // TODO: Implement actual login logic here
-      await authService.login({
-        email: formData.email,
-        password: formData.password,
-      });
+      await login(formData.email, formData.password);
 
       toast({
         title: t.auth.loginSuccess,

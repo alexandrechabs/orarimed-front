@@ -1,6 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { authService } from '@/services/authService';
 import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
@@ -16,6 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import logoIcon from '@/assets/logo-icon.png';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/services/auth/useAuth';
 
 type NavItem = {
   name: string;
@@ -40,38 +40,29 @@ interface AuthenticatedLayoutProps {
 const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   children,
 }) => {
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
   const [activePath, setActivePath] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!authService.isAuthenticated()) {
+    if (!user) {
       navigate('/login');
       return;
     }
-    setCurrentUser(authService.getCurrentUser());
     setActivePath(location.pathname);
   }, [navigate, location]);
 
   const handleLogout = () => {
-    authService.logout();
+    logout();
     navigate('/');
     toast({
       title: 'Déconnexion réussie',
       description: 'Vous avez été déconnecté avec succès.',
     });
   };
-
-  if (!currentUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -193,9 +184,9 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-700">
-                      {currentUser.firstname} {currentUser.lastname}
+                      {user.firstname} {user.lastname}
                     </p>
-                    <p className="text-xs text-gray-500">{currentUser.email}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
                   <Button variant="ghost" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
