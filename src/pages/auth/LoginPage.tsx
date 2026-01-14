@@ -61,7 +61,7 @@ const LoginPage = () => {
   };
 
   const handleGoBack = () => {
-    navigate(-1); // Retour à la page précédente
+    navigate('/'); // Retour à la page précédente
   };
 
   return (

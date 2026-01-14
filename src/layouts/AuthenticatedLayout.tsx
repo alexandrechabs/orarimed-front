@@ -21,16 +21,52 @@ type NavItem = {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  role?: number[];
 };
 
 const navigation: NavItem[] = [
-  { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Calendrier', href: '/calendrier', icon: CalendarIcon },
-  { name: 'Rendez-vous', href: '/appointments', icon: Stethoscope },
-  { name: 'Médecins', href: '/doctors', icon: Stethoscope },
-  { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'Profil', href: '/profile', icon: UserIcon },
-  { name: 'Paramètres', href: '/settings', icon: Settings },
+  {
+    name: 'Tableau de bord',
+    href: '/dashboard',
+    icon: LayoutDashboard,
+    role: [1, 2],
+  },
+  {
+    name: 'Calendrier',
+    href: '/calendrier',
+    icon: CalendarIcon,
+    role: [2],
+  },
+  {
+    name: 'Rendez-vous',
+    href: '/appointments',
+    icon: Stethoscope,
+    role: [1, 2],
+  },
+  {
+    name: 'Médecins',
+    href: '/doctors',
+    icon: Stethoscope,
+    role: [1, 2],
+  },
+  {
+    name: 'Documents',
+    href: '/documents',
+    icon: FileText,
+    role: [1, 2],
+  },
+  {
+    name: 'Profil',
+    href: '/profile',
+    icon: UserIcon,
+    role: [1, 2],
+  },
+  {
+    name: 'Paramètres',
+    href: '/settings',
+    icon: Settings,
+    role: [1, 2],
+  },
 ];
 
 interface AuthenticatedLayoutProps {
@@ -64,6 +100,10 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
     });
   };
 
+  const filteredNavigation = navigation.filter((item) => {
+    return item.role.includes(user.roleId);
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar */}
@@ -91,7 +131,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
             </button>
           </div>
           <nav className="mt-5 flex-1 px-2 space-y-1">
-            {navigation.map((item) => (
+            {filteredNavigation.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
@@ -132,7 +172,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
         </div>
         <div className="mt-5 flex h-0 flex-1 flex-col overflow-y-auto">
           <nav className="flex-1 space-y-1 px-2">
-            {navigation.map((item) => (
+            {filteredNavigation.map((item) => (
               <a
                 key={item.name}
                 href={item.href}

@@ -23,6 +23,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import CalendarPage from './pages/calendar/CalendarPage';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout';
 import OnboardingClientPage from './pages/onboarding/OnboardingClientPage';
+import SettingsPage from './pages/settings/SettingsPage';
 import { useAuth } from './services/auth/useAuth';
 
 const queryClient = new QueryClient();
@@ -81,6 +82,34 @@ const ProtectedRouteOnboarding = ({
   return <>{children}</>;
 };
 
+interface ProtectedRouteByRoleProps {
+  children: JSX.Element;
+  allowedRoles: number[];
+}
+
+const ProtectedRouteByRole = ({
+  children,
+  allowedRoles,
+}: ProtectedRouteByRoleProps) => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  if (!user) {
+    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Vérifier si l'utilisateur a l'ID autorisé
+  if (!allowedRoles.includes(user.roleId)) {
+    // Rediriger vers une page non autorisée ou le tableau de bord
+    return <Navigate to="/dashboard" replace />;
+    // Ou retourner null pour ne rien afficher
+    // return null;
+  }
+
+  return children;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -113,8 +142,30 @@ const App = () => (
                 </AuthenticatedLayout>
               }
             >
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/calendrier" element={<CalendarPage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[1, 2]}>
+                    <DashboardPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/calendrier"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[2]}>
+                    <CalendarPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[1, 2]}>
+                    <SettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
             </Route>
           </Route>
           {/* 404 */}

@@ -1,3 +1,4 @@
+import { OpeningHour } from '@/types/openingHour';
 import { Token } from '@/types/token';
 import { User } from '@/types/user';
 
@@ -68,5 +69,45 @@ export const authService = {
 
     if (!res.ok) throw new Error('Update failed');
     return res.json() as Promise<User>;
+  },
+
+  async getOpeningHours(userId: string): Promise<OpeningHour[]> {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/opening-hours`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.json();
+  },
+
+  async saveOpeningHours(
+    userId: string,
+    openingHours: Omit<OpeningHour, 'id'>[]
+  ): Promise<OpeningHour[]> {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/opening-hours/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ openingHours }),
+    });
+
+    return response.json();
   },
 };

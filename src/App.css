@@ -61,6 +61,17 @@
 .fc .fc-daygrid-day.fc-day-today, .fc .fc-timegrid-col.fc-day-today {
     background-color: hsl(var(--accent)/0.1) !important;
 }
+.fc-v-event {
+    background-color: hsl(var(--primary)/0.5);
+}
+
+/* css pour mobile */
+@media (max-width: 768px) {
+    .fc-header-toolbar {
+        display: block !important;
+        text-align: center;
+    }
+}
 
 /* react-day-picker caption dropdown fix */
 .rdp-caption {

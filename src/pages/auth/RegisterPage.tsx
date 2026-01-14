@@ -94,7 +94,7 @@ const RegisterPage = () => {
   };
 
   const handleGoBack = () => {
-    navigate(-1);
+    navigate('/');
   };
 
   return (
