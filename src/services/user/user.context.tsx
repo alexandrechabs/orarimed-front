@@ -39,7 +39,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   async function getPatient(id: string): Promise<Patient | null> {
     const data = await userService.getPatient(id);
-    return;
+    return data;
   }
 
   const getEvents = useCallback(
