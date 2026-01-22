@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Search, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
-import heroImage from "@/assets/hero-doctor.jpg";
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Search, UserPlus } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import heroImage from '@/assets/hero-doctor.jpg';
 
 const HeroSection = () => {
   const { t } = useLanguage();
@@ -57,13 +57,18 @@ const HeroSection = () => {
             className="flex flex-col sm:flex-row gap-4"
           >
             <Button size="xl" variant="accent" className="group" asChild>
-              <Link to="/specialitete">
+              <Link to="/specialities">
                 <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 {t.hero.searchDoctor}
               </Link>
             </Button>
-            <Button size="xl" variant="heroOutline" className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
-              <Link to="/kontakt">
+            <Button
+              size="xl"
+              variant="heroOutline"
+              className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              asChild
+            >
+              <Link to="/professionals">
                 <UserPlus className="w-5 h-5" />
                 {t.hero.imProfessional}
               </Link>

@@ -16,9 +16,9 @@ const Navigation = () => {
 
   const navLinks = [
     { href: '/', label: t.nav.home },
-    { href: '/specialitete', label: t.nav.specialties },
-    { href: '/aktualitete', label: t.nav.news },
-    { href: '/kontakt', label: t.nav.contact },
+    { href: '/specialities', label: t.nav.specialities },
+    { href: '/actualities', label: t.nav.news },
+    { href: '/contact', label: t.nav.contact },
   ];
 
   const isActive = (path: string) => location.pathname === path;

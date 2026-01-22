@@ -65,6 +65,42 @@
     background-color: hsl(var(--primary)/0.5);
 }
 
+/* Réduire l'espacement global */
+.fc-timegrid-slots > tbody > tr {
+  height: 18px !important;
+}
+
+/* Ajuster les cellules */
+.fc-timegrid-slot {
+  height: 18px !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Ajuster les labels d'heure */
+.fc-timegrid-slot-label {
+  height: 16px !important;
+  line-height: 16px !important;
+  font-size: 13px !important;
+  padding: 0 2px !important;
+  margin: 0 !important;
+  margin-top: 3px !important;
+  transform: translateY(-4px); /* Ajustez cette valeur selon vos besoins */
+}
+
+/* Réduire l'espacement entre les lignes */
+.fc-timegrid-slots td {
+  border-bottom-width: 0 !important;
+}
+
+/* Pour les événements */
+.fc-timegrid-event {
+  margin: 0 !important;
+  padding: 0 2px !important;
+  font-size: 11px !important;
+}
+
 /* css pour mobile */
 @media (max-width: 768px) {
     .fc-header-toolbar {

@@ -1,7 +1,7 @@
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
-import SpecialtiesSection from '@/components/SpecialtiesSection';
+import SpecialitiesSection from '@/components/SpecialitiesSection';
 import WhyOrariMedSection from '@/components/WhyOrariMedSection';
 import SecuritySection from '@/components/SecuritySection';
 import ProfessionalCTASection from '@/components/ProfessionalCTASection';
@@ -17,7 +17,7 @@ const Index = () => {
       <Navigation />
       <main>
         <HeroSection />
-        <SpecialtiesSection />
+        <SpecialitiesSection />
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -26,10 +26,10 @@ const Index = () => {
           className="text-center mt-10"
         >
           <Link
-            to="/specialitete"
+            to="/specialities"
             className="inline-flex items-center gap-2 text-primary font-medium hover:gap-3 transition-all duration-300"
           >
-            {t.specialties.viewAll}
+            {t.specialities.viewAll}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>

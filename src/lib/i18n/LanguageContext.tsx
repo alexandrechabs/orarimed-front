@@ -4,13 +4,15 @@ import { fr, enUS, sq } from 'date-fns/locale';
 
 type LanguageContextType = {
   language: Language;
+  currentLanguage: Language;
   setLanguage: (lang: Language) => void;
   t: (typeof translations)['sq'];
   languages: typeof languages;
+  changeLanguage: (lang: Language) => void;
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -29,7 +31,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   const t = translations[language];
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, languages }}>
+    <LanguageContext.Provider
+      value={{
+        language,
+        setLanguage,
+        t: translations[language],
+        languages,
+        changeLanguage: setLanguage,
+        currentLanguage: language,
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );
@@ -43,7 +54,7 @@ export const useLanguage = () => {
   return context;
 };
 
-export const getDateLocale = () => {
+export const useDateLocale = () => {
   const { language } = useLanguage();
   switch (language) {
     case 'fr':

@@ -67,6 +67,12 @@ const navigation: NavItem[] = [
     icon: Settings,
     role: [1, 2],
   },
+  {
+    name: 'Paramètres Admin',
+    href: '/admin-settings',
+    icon: Settings,
+    role: [2],
+  },
 ];
 
 interface AuthenticatedLayoutProps {
@@ -110,13 +116,13 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       <div
         className={cn(
           'lg:hidden fixed inset-0 z-40 bg-black/50 transition-opacity',
-          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
         )}
       >
         <div
           className={cn(
             'fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           )}
         >
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
@@ -144,7 +150,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                   activePath === item.href
                     ? 'bg-accent/20 text-primary-600'
                     : 'text-gray-700 hover:bg-accent/10 hover:text-gray-900',
-                  'group flex items-center px-4 py-3 text-sm font-medium rounded-md'
+                  'group flex items-center px-4 py-3 text-sm font-medium rounded-md',
                 )}
               >
                 <item.icon
@@ -152,7 +158,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                     activePath === item.href
                       ? 'text-primary-500'
                       : 'text-gray-400 group-hover:text-gray-500',
-                    'mr-3 flex-shrink-0 h-5 w-5'
+                    'mr-3 flex-shrink-0 h-5 w-5',
                   )}
                   aria-hidden="true"
                 />
@@ -164,7 +170,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       </div>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-gray-200 lg:bg-white lg:pb-4 lg:pt-5">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-52 lg:flex-col lg:border-r lg:border-gray-200 lg:bg-white lg:pb-4 lg:pt-5">
         <div className="flex flex-shrink-0 items-center px-6">
           <span className="font-display font-bold text-xl text-foreground">
             Orari<span className="text-accent">Med</span>
@@ -184,7 +190,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                   activePath === item.href
                     ? 'bg-accent/20 text-primary-600'
                     : 'text-gray-700 hover:bg-accent/10 hover:text-gray-900',
-                  'group flex items-center px-4 py-3 text-sm font-medium rounded-md'
+                  'group flex items-center px-4 py-3 text-sm font-medium rounded-md',
                 )}
               >
                 <item.icon
@@ -192,7 +198,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                     activePath === item.href
                       ? 'text-primary-500'
                       : 'text-gray-400 group-hover:text-gray-500',
-                    'mr-3 h-5 w-5 flex-shrink-0'
+                    'mr-3 h-5 w-5 flex-shrink-0',
                   )}
                   aria-hidden="true"
                 />
@@ -204,7 +210,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64 flex flex-col flex-1">
+      <div className="lg:pl-52 flex flex-col flex-1">
         <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
           <button
             type="button"
@@ -240,9 +246,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
 
         <main className="flex-1">
           <div className="py-6">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              {children || <Outlet />}
-            </div>
+            <div className="mx-auto">{children || <Outlet />}</div>
           </div>
         </main>
       </div>

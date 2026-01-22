@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-import { getDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -66,7 +66,7 @@ const formSchema = z.object({
 
 export function OnboardingClientPage() {
   const { t, languages, language } = useLanguage();
-  const dateLocale = getDateLocale(); // ✅ PAS de hook ici
+  const dateLocale = useDateLocale();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { updateUser } = useAuth();
@@ -174,7 +174,7 @@ export function OnboardingClientPage() {
                             variant="outline"
                             className={cn(
                               'pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
+                              !field.value && 'text-muted-foreground',
                             )}
                           >
                             {field.value ? (

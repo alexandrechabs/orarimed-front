@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,12 +11,12 @@ import {
 } from '@/components/ui/select';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/services/auth/useAuth';
+import { useFormContext, useFieldArray } from 'react-hook-form';
 import { OpeningHour } from '@/types/openingHour';
 
 type PeriodType = 'morning' | 'afternoon';
 
-const DAYS_OF_WEEK = [
+export const DAYS_OF_WEEK = [
   { value: 1, label: 'Lundi' },
   { value: 2, label: 'Mardi' },
   { value: 3, label: 'Mercredi' },
@@ -24,17 +24,28 @@ const DAYS_OF_WEEK = [
   { value: 5, label: 'Vendredi' },
   { value: 6, label: 'Samedi' },
   { value: 0, label: 'Dimanche' },
-];
+] as const;
 
-const PERIODS = [
+export const PERIODS = [
   { value: 'morning', label: 'Matin' },
   { value: 'afternoon', label: 'Après-midi' },
-];
+] as const;
 
-export default function OpeningHoursForm() {
-  const { getOpeningHours, saveOpeningHours } = useAuth();
-  const [openingHours, setOpeningHours] = useState<OpeningHour[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface OpeningHoursFormProps {
+  name?: string;
+}
+
+export default function OpeningHoursForm({
+  name = 'openingHours',
+}: OpeningHoursFormProps) {
+  const { control, watch } = useFormContext();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name,
+  });
+
+  const openingHours = watch(name) || [];
+
   const [newHour, setNewHour] = useState<Omit<OpeningHour, 'id'>>({
     dayOfWeek: 1,
     period: 'morning',
@@ -43,91 +54,60 @@ export default function OpeningHoursForm() {
     userId: '',
   });
 
-  // Charger les horaires existants
-  useEffect(() => {
-    // TODO: Implémenter l'appel API pour charger les horaires existants
-    const fetchOpeningHours = async () => {
-      try {
-        const data = await getOpeningHours();
-        setOpeningHours(data);
-      } catch (error) {
-        console.error('Erreur lors du chargement des horaires:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchOpeningHours();
-  }, []);
-
-  const isTimeSlotTaken = (day: number, period: PeriodType) => {
+  const isTimeSlotTaken = (
+    day: number,
+    period: PeriodType,
+    index: number = -1,
+  ) => {
     return openingHours.some(
-      (hour) => hour.dayOfWeek === day && hour.period === period
+      (hour: OpeningHour, i: number) =>
+        i !== index && hour.dayOfWeek === day && hour.period === period,
     );
   };
 
   const handleAddHour = () => {
-    // Vérifier si le créneau existe déjà
-    if (isTimeSlotTaken(newHour.dayOfWeek, newHour.period)) {
-      const day =
-        DAYS_OF_WEEK.find((d) => d.value === newHour.dayOfWeek)?.label ||
-        'ce jour';
-      const period = newHour.period === 'morning' ? 'matin' : 'après-midi';
-
-      // Afficher une alerte si le créneau existe déjà
-      alert(`Un créneau pour le ${day} ${period} existe déjà.`);
-      return;
-    }
-
     // Vérifier que l'heure de fin est après l'heure de début
     if (newHour.closeTime <= newHour.openTime) {
       alert("L'heure de fermeture doit être après l'heure d'ouverture");
       return;
     }
 
-    setOpeningHours([...openingHours, { ...newHour }]);
+    // Vérifier si le créneau existe déjà
+    if (isTimeSlotTaken(newHour.dayOfWeek, newHour.period)) {
+      const day =
+        DAYS_OF_WEEK.find((d) => d.value === newHour.dayOfWeek)?.label ||
+        'ce jour';
+      const period = newHour.period === 'morning' ? 'matin' : 'après-midi';
+      alert(`Un créneau pour le ${day} ${period} existe déjà.`);
+      return;
+    }
+
+    // Ajouter le nouvel horaire
+    append({
+      ...newHour,
+      id: Date.now().toString(), // ID temporaire
+    });
 
     // Réinitialiser le formulaire
+    // Réinitialiser avec le même jour mais en alternant la période
     setNewHour({
-      dayOfWeek: newHour.dayOfWeek, // Garder le même jour
-      period: newHour.period === 'morning' ? 'afternoon' : 'morning', // Basculer la période
+      dayOfWeek: newHour.dayOfWeek,
+      period: newHour.period === 'morning' ? 'afternoon' : 'morning',
       openTime: '09:00',
       closeTime: '12:00',
+      userId: '',
     });
   };
 
-  const handleDeleteHour = (id: number) => {
-    setOpeningHours(openingHours.filter((hour) => hour.id !== id));
-    // TODO: Implémenter la suppression côté serveur
-  };
+  // La suppression est gérée par le bouton de suppression via remove(index)
 
-  const handleSave = async () => {
-    try {
-      console.log(openingHours);
+  // Le chargement est géré par le parent
 
-      await saveOpeningHours(openingHours);
-      // TODO: Implémenter l'enregistrement côté serveur
-      // await fetch('/api/opening-hours', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(openingHours)
-      // });
-      alert('Horaires enregistrés avec succès');
-    } catch (error) {
-      console.error("Erreur lors de l'enregistrement des horaires:", error);
-      alert("Une erreur est survenue lors de l'enregistrement");
-    }
-  };
-
-  if (isLoading) {
-    return <div>Chargement des horaires...</div>;
-  }
-
-  // Fonction pour vérifier les chevauchements d'horaires
-  const checkForTimeOverlaps = (hours: OpeningHour[]) => {
+  // Vérifier les chevauchements d'horaires
+  const hasTimeOverlaps = (() => {
     // Grouper par jour
     const byDay: Record<number, OpeningHour[]> = {};
-    hours.forEach((hour) => {
+    openingHours.forEach((hour: OpeningHour) => {
       if (!byDay[hour.dayOfWeek]) {
         byDay[hour.dayOfWeek] = [];
       }
@@ -137,24 +117,18 @@ export default function OpeningHoursForm() {
     // Vérifier les chevauchements pour chaque jour
     for (const day in byDay) {
       const dayHours = byDay[day].sort((a, b) =>
-        a.openTime.localeCompare(b.openTime)
+        a.openTime.localeCompare(b.openTime),
       );
 
       for (let i = 1; i < dayHours.length; i++) {
-        const prev = dayHours[i - 1];
-        const current = dayHours[i];
-
-        if (current.openTime < prev.closeTime) {
+        if (dayHours[i].openTime < dayHours[i - 1].closeTime) {
           return true; // Chevauchement détecté
         }
       }
     }
 
     return false;
-  };
-
-  // Vérifier s'il y a des chevauchements
-  const hasTimeOverlaps = checkForTimeOverlaps(openingHours);
+  })();
 
   return (
     <div className="space-y-6">
@@ -168,17 +142,17 @@ export default function OpeningHoursForm() {
         </Alert>
       )}
       <div className="border rounded-lg p-4 space-y-4">
-        <h3 className="font-medium">Ajouter des horaires</h3>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <h3 className="text-lg font-medium">Ajouter des horaires</h3>
+        <div className="flex flex-wrap items-end gap-4 p-4 bg-gray-50 rounded-lg">
           <div className="space-y-2">
             <Label>Jour</Label>
             <Select
               value={newHour.dayOfWeek.toString()}
               onValueChange={(value) =>
-                setNewHour({ ...newHour, dayOfWeek: parseInt(value) })
+                setNewHour({ ...newHour, dayOfWeek: parseInt(value, 10) })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sélectionner un jour" />
               </SelectTrigger>
               <SelectContent>
@@ -192,15 +166,15 @@ export default function OpeningHoursForm() {
           </div>
 
           <div className="space-y-2">
-            <Label>Période</Label>
+            <Label>Créneau</Label>
             <Select
               value={newHour.period}
               onValueChange={(value: PeriodType) =>
                 setNewHour({ ...newHour, period: value })
               }
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner une période" />
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sélectionner un créneau" />
               </SelectTrigger>
               <SelectContent>
                 {PERIODS.map((period) => (
@@ -220,6 +194,7 @@ export default function OpeningHoursForm() {
               onChange={(e) =>
                 setNewHour({ ...newHour, openTime: e.target.value })
               }
+              className="w-[120px]"
             />
           </div>
 
@@ -231,71 +206,56 @@ export default function OpeningHoursForm() {
               onChange={(e) =>
                 setNewHour({ ...newHour, closeTime: e.target.value })
               }
+              className="w-[120px]"
             />
           </div>
 
-          <div className="flex items-end">
-            <Button type="button" onClick={handleAddHour} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter
-            </Button>
-          </div>
+          <Button type="button" onClick={handleAddHour} className="mb-1">
+            <Plus className="mr-2 h-4 w-4" /> Ajouter
+          </Button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium">Horaires configurés</h3>
-          <Button onClick={handleSave} disabled={openingHours.length === 0}>
-            Enregistrer
-          </Button>
-        </div>
-
+      <div className="mt-6 space-y-4">
+        <h3 className="text-lg font-medium">Horaires configurés</h3>
         {openingHours.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Aucun horaire configuré. Commencez par en ajouter un ci-dessus.
-          </div>
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Aucun horaire n'a encore été configuré. Ajoutez vos horaires de
+              consultation ci-dessus.
+            </AlertDescription>
+          </Alert>
         ) : (
-          <div className="rounded-md border">
-            <div className="w-full overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-muted/50">
-                  <tr>
-                    <th className="text-left p-3">Jour</th>
-                    <th className="text-left p-3">Période</th>
-                    <th className="text-left p-3">Heure d'ouverture</th>
-                    <th className="text-left p-3">Heure de fermeture</th>
-                    <th className="p-3"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {openingHours.map((hour) => {
-                    const day = DAYS_OF_WEEK.find(
-                      (d) => d.value === hour.dayOfWeek
-                    );
-                    const period = PERIODS.find((p) => p.value === hour.period);
-
-                    return (
-                      <tr key={`${hour.dayOfWeek}-${hour.period}`}>
-                        <td className="p-3">{day?.label}</td>
-                        <td className="p-3">{period?.label}</td>
-                        <td className="p-3">{hour.openTime}</td>
-                        <td className="p-3">{hour.closeTime}</td>
-                        <td className="p-3 text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => hour.id && handleDeleteHour(hour.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+          <div className="space-y-2">
+            {openingHours.map((hour: OpeningHour, index: number) => (
+              <div
+                key={hour.id || index}
+                className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+              >
+                <div>
+                  <p className="font-medium">
+                    {
+                      DAYS_OF_WEEK.find((d) => d.value === hour.dayOfWeek)
+                        ?.label
+                    }
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {hour.period === 'morning' ? 'Matin' : 'Après-midi'}:{' '}
+                    {hour.openTime} - {hour.closeTime}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => remove(index)}
+                  className="text-red-500 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
           </div>
         )}
       </div>

@@ -1,41 +1,45 @@
-import { motion } from "framer-motion";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import { Calendar, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import { Calendar, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const articles = [
   {
     id: 1,
-    category: "Shëndeti në Shqipëri",
-    title: "Kujdesi parandalues – pse është i rëndësishëm?",
-    excerpt: "Kontrollet e rregullta mjekësore ndihmojnë në zbulimin e hershëm të sëmundjeve dhe përmirësojnë cilësinë e jetës.",
-    date: "15 Dhjetor 2024",
-    slug: "kujdesi-parandalues"
+    category: 'Shëndeti në Shqipëri',
+    title: 'Kujdesi parandalues – pse është i rëndësishëm?',
+    excerpt:
+      'Kontrollet e rregullta mjekësore ndihmojnë në zbulimin e hershëm të sëmundjeve dhe përmirësojnë cilësinë e jetës.',
+    date: '15 Dhjetor 2024',
+    slug: 'kujdesi-parandalues',
   },
   {
     id: 2,
-    category: "Të rejat nga OrariMed",
-    title: "OrariMed lançohet në Tiranë",
-    excerpt: "OrariMed nis zyrtarisht shërbimin e tij në Tiranë, duke lidhur pacientët me profesionistë shëndetësorë në mënyrë digjitale.",
-    date: "10 Dhjetor 2024",
-    slug: "orarimed-lancohet"
+    category: 'Të rejat nga OrariMed',
+    title: 'OrariMed lançohet në Tiranë',
+    excerpt:
+      'OrariMed nis zyrtarisht shërbimin e tij në Tiranë, duke lidhur pacientët me profesionistë shëndetësorë në mënyrë digjitale.',
+    date: '10 Dhjetor 2024',
+    slug: 'orarimed-lancohet',
   },
   {
     id: 3,
-    category: "Shëndeti në Shqipëri",
-    title: "Rëndësia e vaksinimit në moshë të re",
-    excerpt: "Vaksinimi mbron fëmijët nga sëmundje të rrezikshme dhe ndihmon në krijimin e imunitetit kolektiv.",
-    date: "5 Dhjetor 2024",
-    slug: "rendessia-vaksinimit"
+    category: 'Shëndeti në Shqipëri',
+    title: 'Rëndësia e vaksinimit në moshë të re',
+    excerpt:
+      'Vaksinimi mbron fëmijët nga sëmundje të rrezikshme dhe ndihmon në krijimin e imunitetit kolektiv.',
+    date: '5 Dhjetor 2024',
+    slug: 'rendessia-vaksinimit',
   },
   {
     id: 4,
-    category: "Të rejat nga OrariMed",
-    title: "Funksionalitete të reja në platformë",
-    excerpt: "Zbuloni funksionalitetet e reja që do të lehtësojnë rezervimin e takimeve tuaja mjekësore.",
-    date: "1 Dhjetor 2024",
-    slug: "funksionalitete-reja"
+    category: 'Të rejat nga OrariMed',
+    title: 'Funksionalitete të reja në platformë',
+    excerpt:
+      'Zbuloni funksionalitetet e reja që do të lehtësojnë rezervimin e takimeve tuaja mjekësore.',
+    date: '1 Dhjetor 2024',
+    slug: 'funksionalitete-reja',
   },
 ];
 
@@ -55,7 +59,8 @@ const AktualitetePage = () => {
                 Aktualitete shëndetësore
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Informacione të përditësuara mbi shëndetin në Shqipëri dhe risitë në OrariMed.
+                Informacione të përditësuara mbi shëndetin në Shqipëri dhe
+                risitë në OrariMed.
               </p>
             </motion.div>
 
@@ -97,8 +102,8 @@ const AktualitetePage = () => {
                         <Calendar className="w-3 h-3" />
                         {article.date}
                       </span>
-                      <Link 
-                        to={`/aktualitete/${article.slug}`}
+                      <Link
+                        to={`/actualities/${article.slug}`}
                         className="flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all"
                       >
                         Lexo më shumë
@@ -118,7 +123,8 @@ const AktualitetePage = () => {
               className="mt-16 max-w-3xl mx-auto text-center"
             >
               <p className="text-muted-foreground text-sm italic">
-                Artikujt janë informues dhe nuk zëvendësojnë këshillën mjekësore profesionale.
+                Artikujt janë informues dhe nuk zëvendësojnë këshillën mjekësore
+                profesionale.
               </p>
             </motion.div>
           </div>

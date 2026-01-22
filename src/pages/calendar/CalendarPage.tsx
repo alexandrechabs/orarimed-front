@@ -9,17 +9,24 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/services/auth/useAuth';
-import { EventInput } from '@fullcalendar/core/index.js';
-import CreateAppointmentModal from '@/components/calendar/CreateAppointmentModal';
+import { EventChangeArg, EventInput } from '@fullcalendar/core/index.js';
+import CreateAppointmentModal, {
+  CalendarEvent,
+} from '@/components/calendar/CreateAppointmentModal';
 import { useUser } from '@/services/user/useUser';
+import { time } from 'console';
+import { useToast } from '@/hooks/use-toast';
 
 const CalendarPage = () => {
-  const { openingHour, getOpeningHours } = useAuth();
+  const { openingHour, getOpeningHours, user } = useAuth();
   const { events, createEvent, getEvents, updateEvent } = useUser();
   const { t, language } = useLanguage();
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [editingEvent, setEditingEvent] = useState<EventInput | null>(null);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  const [slotMinTime, setSlotMinTime] = useState('08:00:00');
+  const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
 
   const [oldEvents, setEvents] = useState<EventInput[]>([
     // Exemple d'événement unique
@@ -62,7 +69,28 @@ const CalendarPage = () => {
   ]);
 
   useEffect(() => {
-    getOpeningHours();
+    getOpeningHours().then((hours) => {
+      // récupère le min de hours.openTime et le max de hours.closeTime
+      const minTime = hours.reduce((min, hour) => {
+        return hour.openTime < min ? hour.openTime : min;
+      }, hours[0].openTime);
+      const maxTime = hours.reduce((max, hour) => {
+        return hour.closeTime > max ? hour.closeTime : max;
+      }, hours[0].closeTime);
+      // enlève 1 heure au min et ajouter 1 heure au max
+
+      const formatTimeForCalendar = (timeStr: string, diff: number) => {
+        let [hours, minutes] = timeStr.split(':').map(Number);
+        hours = hours + diff;
+
+        return `${hours.toString().padStart(2, '0')}:${minutes
+          .toString()
+          .padStart(2, '0')}:00`;
+      };
+
+      setSlotMinTime(formatTimeForCalendar(minTime, -1));
+      setSlotMaxTime(formatTimeForCalendar(maxTime, 1));
+    });
   }, []);
 
   const localeMap: Record<string, string> = {
@@ -77,45 +105,68 @@ const CalendarPage = () => {
         start: arg.start.toISOString(),
         end: arg.end.toISOString(),
       };
-      console.log(dateRange);
       getEvents(dateRange);
     },
     [getEvents]
   );
 
-  const handleEventCreated = useCallback((newEvent: EventInput) => {
-    createEvent(newEvent);
+  const handleEventCreated = useCallback(async (newEvent: EventInput) => {
+    try {
+      await createEvent(newEvent);
+      toast({
+        title: 'Le rendez-vous a été créé avec succès',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création du rendez-vous:', error);
+      toast({
+        title: 'Erreur lors de la création du rendez-vous',
+        description: '',
+        variant: 'destructive',
+      });
+    }
   }, []);
 
-  const handleEventUpdated = useCallback((updatedEvent: EventInput) => {
-    updateEvent(updatedEvent);
+  const handleEventUpdated = useCallback(async (updatedEvent: EventInput) => {
+    try {
+      await updateEvent(updatedEvent);
+      toast({
+        title: 'Le rendez-vous a été modifié avec succès',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Erreur lors du déplacement du rendez-vous:', error);
+      toast({
+        title: 'Erreur lors de la modification du rendez-vous',
+        description: '',
+        variant: 'destructive',
+      });
+    }
   }, []);
 
   const handleEventClick = (info: any) => {
     const event = info.event;
-    const extendedProps = event.extendedProps || {};
 
-    const eventData: EventInput = {
+    const eventData: CalendarEvent = {
       id: event.id,
       title: event.title,
       description: event.extendedProps?.description || '',
       allDay: event.allDay || false,
-      backgroundColor: event.backgroundColor,
-      borderColor: event.borderColor,
-      // Extraire les propriétés de récurrence
-      daysOfWeek:
-        event.extendedProps?.daysOfWeek ||
-        event.extendedProps?.recurringDays ||
-        event.daysOfWeek,
+      // Propriétés de base
+      start: event.start,
+      end: event.end,
+      color: event.extendedProps?.color,
+      // Propriétés de récurrence
+      daysOfWeek: event.extendedProps?.daysOfWeek || event.daysOfWeek,
       startRecur: event.extendedProps?.startRecur || event.startRecur,
       endRecur: event.extendedProps?.endRecur || event.endRecur,
       startTime: event.extendedProps?.startTime || event.startTime,
       endTime: event.extendedProps?.endTime || event.endTime,
-      // Pour la compatibilité avec les événements non récurrents
-      start: event.start,
-      end: event.end,
-      patientId: event.extendedProps?.patientId,
-      doctorId: event.extendedProps?.doctorId,
+      // Propriétés personnalisées
+      patient: event.extendedProps?.patient,
+      practitionerId: event.extendedProps?.practitionerId || user?.id, // Utiliser l'ID de l'utilisateur connecté
+      // Propriétés étendues
+      eventKind: event.extendedProps?.eventKind || 'appointment',
     };
 
     setEditingEvent(eventData);
@@ -126,6 +177,35 @@ const CalendarPage = () => {
     setSelectedDate(arg.date);
     setEditingEvent(null);
     setIsModalOpen(true);
+  };
+
+  const handleEventDrop = async (changeInfo: EventChangeArg) => {
+    const { event } = changeInfo;
+
+    let newEvent = events.find((e) => e.id === event.id);
+
+    if (newEvent.endTime) {
+      // endTime = 'hh:mm'
+      newEvent.endTime = new Date(event.end).toTimeString().slice(0, 5);
+      newEvent.startTime = new Date(event.start).toTimeString().slice(0, 5);
+    } else {
+      newEvent.start = event.start;
+      newEvent.end = event.end;
+    }
+    try {
+      await updateEvent(newEvent);
+      toast({
+        title: 'Le rendez-vous a été déplacé avec succès',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Erreur lors du déplacement du rendez-vous:', error);
+      toast({
+        title: 'Erreur lors du déplacement du rendez-vous',
+        description: '',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Fonction pour formater l'heure
@@ -139,17 +219,13 @@ const CalendarPage = () => {
   // Fonction pour personnaliser le rendu des événements
   const renderEventContent = (eventInfo: any) => {
     const event = eventInfo.event;
-    const isRecurring =
-      event.extendedProps.daysOfWeek || event.extendedProps.startRecur;
 
     return (
-      <div className="p-1">
-        <div className="font-medium truncate">{event.title}</div>
-        {!isRecurring && (
-          <div className="text-xs opacity-75">
-            {formatTime(event.start)} - {formatTime(event.end)}
-          </div>
-        )}
+      <div className="">
+        <div className="font-normal truncate">
+          {formatTime(event.start)} - {event.extendedProps?.patient?.firstname}{' '}
+          {event.extendedProps?.patient?.lastname}
+        </div>
       </div>
     );
   };
@@ -167,26 +243,7 @@ const CalendarPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="pt-4 pb-16">
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 flex items-center justify-between"
-          >
-            <h1 className="text-2xl font-bold tracking-tight">Calendrier</h1>
-            <Button
-              variant="hero"
-              onClick={() => {
-                setSelectedDate(new Date());
-                setEditingEvent(null);
-                setIsModalOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter un rendez-vous
-            </Button>
-          </motion.div>
+        <div className="mx-auto px-4 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,7 +309,7 @@ const CalendarPage = () => {
               selectMirror={true}
               dayMaxEvents={true}
               weekends={true}
-              allDaySlot={true}
+              allDaySlot={false}
               height="auto"
               handleWindowResize={true}
               nowIndicator={true}
@@ -281,9 +338,19 @@ const CalendarPage = () => {
                 }
               }}
               businessHours={getOpenHours()}
-              slotMinTime={'04:00:00'}
-              slotMaxTime={'21:00:00'}
+              firstDay={1}
+              slotMinTime={slotMinTime}
+              slotMaxTime={slotMaxTime}
+              slotDuration="00:15:00"
+              slotLabelFormat={{
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                omitZeroMinute: true,
+              }}
+              slotLabelInterval="01:00"
               eventClick={handleEventClick}
+              eventDrop={handleEventDrop}
               eventContent={renderEventContent}
               eventDataTransform={(event) => {
                 // S'assurer que les propriétés personnalisées sont bien transmises
@@ -317,7 +384,7 @@ const CalendarPage = () => {
           setIsModalOpen(open);
         }}
         initialDate={selectedDate || new Date()}
-        eventToEdit={editingEvent}
+        eventToEdit={editingEvent || undefined}
         onEventCreated={handleEventCreated}
         onEventUpdated={handleEventUpdated}
       />

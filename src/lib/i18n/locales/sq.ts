@@ -3,7 +3,7 @@ import { TranslationKey } from '../types';
 const sq: TranslationKey = {
   nav: {
     home: 'Kryefaqja',
-    specialties: 'Specialitetet',
+    specialities: 'Specialitetet',
     news: 'Aktualitete',
     contact: 'Kontakt',
     login: 'Hyr',
@@ -21,14 +21,14 @@ const sq: TranslationKey = {
     booking247: 'Rezervim 24/7',
     freeForPatients: 'Falas për pacientët',
   },
-  specialties: {
+  specialities: {
     title: 'Specialitetet',
     subtitle: 'Gjeni mjekë të specializuar për çdo nevojë shëndetësore',
     viewAll: 'Shiko të gjitha specialitetet',
     findButton: 'Gjej',
     typicalServices: 'Shërbime tipike',
     consultationReasons: 'Arsyet kryesore të konsultimit',
-    backToSpecialties: 'Të gjitha specialitetet',
+    backToSpecialities: 'Të gjitha specialitetet',
     notFound: 'Specialiteti nuk u gjet',
   },
   whyOrariMed: {
@@ -91,7 +91,7 @@ const sq: TranslationKey = {
     aboutUs: 'Rreth OrariMed',
     location: 'Shqipëri',
   },
-  specialtyNames: {
+  specialityNames: {
     'mjek-pergjithshem': 'Mjek i Përgjithshëm',
     kardiologji: 'Kardiologji',
     dermatologji: 'Dermatologji',
@@ -105,7 +105,7 @@ const sq: TranslationKey = {
     dentiste: 'Dentistë',
     laboratore: 'Laboratorë analizash',
   },
-  specialtyDescriptions: {
+  specialityDescriptions: {
     'mjek-pergjithshem':
       'Mjeku i përgjithshëm është pika e parë e kontaktit për problemet shëndetësore të përditshme.',
     kardiologji:
@@ -278,6 +278,115 @@ const sq: TranslationKey = {
       },
     },
   },
+  professionalsPage: {
+    badge: 'Për profesionistët shëndetësorë',
+    hero: {
+      title: 'Bashkohu me OrariMed si profesionist shëndetësor',
+      subtitle:
+        'Menaxho oraret, rrit dukshmërinë dhe prit më shumë pacientë. Platforma jonë është projektuar për të thjeshtësuar punën tënde të përditshme.',
+      cta: 'Krijo llogarinë tënde',
+    },
+    benefits: {
+      title: 'Përfitimet për profesionistët',
+      subtitle:
+        'Zbulo pse qindra profesionistë shëndetësorë kanë zgjedhur OrariMed',
+      scheduling: {
+        title: 'Menaxhim i lehtë i orareve',
+        description:
+          'Krijo, modifiko dhe menaxho oraret e takimeve online me lehtësi.',
+      },
+      visibility: {
+        title: 'Dukshmëri e rritur',
+        description: 'Bëhu i dukshëm për pacientë të rinj në platformën tonë.',
+      },
+      reminders: {
+        title: 'Kujtesa automatike',
+        description: 'Pacientët marrin njoftime automatike për takimet.',
+      },
+      mobile: {
+        title: 'Akses nga celulari',
+        description: 'Menaxho praktikën tënde nga çdo pajisje.',
+      },
+      analytics: {
+        title: 'Statistika dhe raporte',
+        description: 'Ndiq performancën me raporte të detajuara.',
+      },
+      security: {
+        title: 'Siguri maksimale',
+        description: 'Të dhënat ruhen me enkriptim SSL dhe janë konforme GDPR.',
+      },
+    },
+    howItWorks: {
+      title: 'Si funksionon?',
+      subtitle: 'Në katër hapa të thjeshtë',
+    },
+    steps: {
+      register: {
+        title: 'Regjistrohu',
+        description: 'Krijo llogarinë tënde falas në pak minuta.',
+      },
+      profile: {
+        title: 'Kompleto profilin',
+        description:
+          'Shto specialitetin, adresën dhe informacionet profesionale.',
+      },
+      schedule: {
+        title: 'Vendos oraret',
+        description: 'Përcakto ditët dhe orët kur pranon pacientë.',
+      },
+      receive: {
+        title: 'Prit rezervime',
+        description: 'Pacientët rezervojnë direkt nga platforma.',
+      },
+    },
+    pricing: {
+      title: 'Tarifat tona',
+      subtitle: 'Fillimi është falas dhe pa detyrim',
+      recommended: 'Rekomanduar',
+      plan: {
+        name: 'Plan Profesional',
+        price: 'Falas',
+        period: 'për të filluar',
+        features: [
+          'Profil profesional i plotë',
+          'Kalendar online 24/7',
+          'Kujtesa automatike për pacientët',
+          'Statistika bazë',
+          'Suport prioritar',
+          'Pa komision për rezervimet',
+        ],
+      },
+      cta: 'Fillo falas tani',
+    },
+    faq: {
+      title: 'Pyetje të shpeshta',
+      cost: {
+        question: 'Sa kushton regjistrimi?',
+        answer:
+          'Regjistrimi është plotësisht falas. Mund të fillosh menjëherë pa asnjë kosto.',
+      },
+      time: {
+        question: 'Sa kohë duhet për të krijuar llogarinë?',
+        answer:
+          'Procesi i regjistrimit zgjat rreth 5 minuta. Pasi të verifikohesh, mund të pranosh rezervime menjëherë.',
+      },
+      cancel: {
+        question: 'A mund të anuloj në çdo kohë?',
+        answer: 'Po, mund të anulosh llogarinë në çdo kohë pa asnjë penalitet.',
+      },
+      support: {
+        question: 'A ka suport të dedikuar?',
+        answer:
+          'Po, ekipi ynë është i disponueshëm për të të ndihmuar me çdo pyetje ose problem.',
+      },
+    },
+    finalCta: {
+      title: 'Gati për të filluar?',
+      subtitle:
+        'Bashkohu me profesionistët që po transformojnë mënyrën e menaxhimit të takimeve mjekësore.',
+      cta: 'Krijo llogarinë',
+    },
+  },
   other: 'Tjetër',
   auth: {
     login: 'Hyrje',
@@ -311,6 +420,13 @@ const sq: TranslationKey = {
     registrationError: 'Ndodhi një gabim gjatë krijimit të llogarisë',
     haveAccount: 'Keni tashmë një llogari?',
     goBack: 'Kthehu',
+  },
+  onboarding: {
+    step: 'Etapë',
+    of: 'i',
+    personalInfo: 'Informacione profesionale',
+    availability: 'Disponibilitet',
+    // Add other translations as needed
   },
 };
 

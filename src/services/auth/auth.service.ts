@@ -1,4 +1,5 @@
 import { OpeningHour } from '@/types/openingHour';
+import { Speciality } from '@/types/specialty';
 import { Token } from '@/types/token';
 import { User } from '@/types/user';
 
@@ -91,7 +92,7 @@ export const authService = {
 
   async saveOpeningHours(
     userId: string,
-    openingHours: Omit<OpeningHour, 'id'>[]
+    openingHours: Omit<OpeningHour, 'id'>[],
   ): Promise<OpeningHour[]> {
     const token = localStorage.getItem('auth_token');
 
@@ -106,6 +107,36 @@ export const authService = {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ openingHours }),
+    });
+
+    return response.json();
+  },
+
+  async getSpecialities() {
+    const response = await fetch(`${API_URL}/specialities`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.json();
+  },
+
+  async saveSpecialities(specialities: Speciality[]) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_URL}/specialities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ specialities }),
     });
 
     return response.json();

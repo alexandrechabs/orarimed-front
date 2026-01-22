@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { Link } from 'react-router-dom';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -14,7 +14,9 @@ const Footer = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-xl">O</span>
+                <span className="text-accent-foreground font-display font-bold text-xl">
+                  O
+                </span>
               </div>
               <span className="font-display font-bold text-xl">
                 Orari<span className="text-accent">Med</span>
@@ -27,13 +29,15 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display font-semibold text-lg mb-4">{t.footer.quickLinks}</h4>
+            <h4 className="font-display font-semibold text-lg mb-4">
+              {t.footer.quickLinks}
+            </h4>
             <ul className="space-y-3">
               {[
-                { href: "/specialitete", label: t.nav.specialties },
-                { href: "/aktualitete", label: t.nav.news },
-                { href: "/profesionist", label: t.footer.forProfessionals },
-                { href: "/rreth-nesh", label: t.footer.aboutUs },
+                { href: '/specialities', label: t.nav.specialities },
+                { href: '/actualities', label: t.nav.news },
+                { href: '/profesionist', label: t.footer.forProfessionals },
+                { href: '/rreth-nesh', label: t.footer.aboutUs },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -49,13 +53,15 @@ const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h4 className="font-display font-semibold text-lg mb-4">{t.footer.legal}</h4>
+            <h4 className="font-display font-semibold text-lg mb-4">
+              {t.footer.legal}
+            </h4>
             <ul className="space-y-3">
               {[
-                { href: "/privatesia", label: t.footer.privacy },
-                { href: "/kushtet", label: t.footer.terms },
-                { href: "/cookies", label: t.footer.cookies },
-                { href: "/faq", label: t.footer.faq },
+                { href: '/privatesia', label: t.footer.privacy },
+                { href: '/kushtet', label: t.footer.terms },
+                { href: '/cookies', label: t.footer.cookies },
+                { href: '/faq', label: t.footer.faq },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -71,11 +77,13 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-display font-semibold text-lg mb-4">{t.footer.contact}</h4>
+            <h4 className="font-display font-semibold text-lg mb-4">
+              {t.footer.contact}
+            </h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-sm text-primary-foreground/70">
                 <Mail className="w-4 h-4 text-accent" />
-                kontakt@orarimed.al
+                contact@orarimed.al
               </li>
               <li className="flex items-center gap-3 text-sm text-primary-foreground/70">
                 <Phone className="w-4 h-4 text-accent" />

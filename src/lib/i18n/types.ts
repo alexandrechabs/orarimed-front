@@ -1,7 +1,7 @@
 export type TranslationKey = {
   nav: {
     home: string;
-    specialties: string;
+    specialities: string;
     news: string;
     contact: string;
     login: string;
@@ -18,14 +18,14 @@ export type TranslationKey = {
     booking247: string;
     freeForPatients: string;
   };
-  specialties: {
+  specialities: {
     title: string;
     subtitle: string;
     viewAll: string;
     findButton: string;
     typicalServices: string;
     consultationReasons: string;
-    backToSpecialties: string;
+    backToSpecialities: string;
     notFound: string;
   };
   whyOrariMed: {
@@ -53,6 +53,59 @@ export type TranslationKey = {
     growPatients: string;
     freeRegistration: string;
   };
+
+  professionalsPage: {
+    badge: string;
+    hero: {
+      title: string;
+      subtitle: string;
+      cta: string;
+    };
+    benefits: {
+      title: string;
+      subtitle: string;
+      scheduling: { title: string; description: string };
+      visibility: { title: string; description: string };
+      reminders: { title: string; description: string };
+      mobile: { title: string; description: string };
+      analytics: { title: string; description: string };
+      security: { title: string; description: string };
+    };
+    howItWorks: {
+      title: string;
+      subtitle: string;
+    };
+    steps: {
+      register: { title: string; description: string };
+      profile: { title: string; description: string };
+      schedule: { title: string; description: string };
+      receive: { title: string; description: string };
+    };
+    pricing: {
+      title: string;
+      subtitle: string;
+      recommended: string;
+      plan: {
+        name: string;
+        price: string;
+        period: string;
+        features: string[];
+      };
+      cta: string;
+    };
+    faq: {
+      title: string;
+      cost: { question: string; answer: string };
+      time: { question: string; answer: string };
+      cancel: { question: string; answer: string };
+      support: { question: string; answer: string };
+    };
+    finalCta: {
+      title: string;
+      subtitle: string;
+      cta: string;
+    };
+  };
   footer: {
     description: string;
     quickLinks: string;
@@ -67,8 +120,8 @@ export type TranslationKey = {
     aboutUs: string;
     location: string;
   };
-  specialtyNames: Record<string, string>;
-  specialtyDescriptions: Record<string, string>;
+  specialityNames: Record<string, string>;
+  specialityDescriptions: Record<string, string>;
   consultationReasons: Record<string, string[]>;
   contact: {
     title: string;
@@ -132,7 +185,83 @@ export type TranslationKey = {
     registrationError: string;
     goBack: string;
   };
+  onboarding: {
+    step: string;
+    of: string;
+    personalInfo: string;
+    availability: string;
+    // Ajoutez d'autres traductions selon vos besoins
+  };
   other: string;
+
+  adminSettings: {
+    title: string;
+    description: string;
+    general: string;
+    users: string;
+    specialities: string;
+    system: string;
+    generalSettings: string;
+    applicationSettings: string;
+    applicationSettingsDescription: string;
+    userManagement: string;
+    manageUsers: string;
+    manageUsersDescription: string;
+    specialitiesManagement: string;
+    manageSpecialities: string;
+    manageSpecialitiesDescription: string;
+    systemSettings: string;
+    systemConfiguration: string;
+    systemConfigurationDescription: string;
+  };
+
+  // Common translations used across the app
+  common: {
+    success: string;
+    error: string;
+    save: string;
+    delete: string;
+    cancel: string;
+    confirm: string;
+    loading: string;
+    generate: string;
+    saveChanges: string;
+  };
+
+  specialitiesManager: {
+    title: string;
+    addSpeciality: string;
+    addSubSpeciality: string;
+    name: string;
+    namePlaceholder: string;
+    slug: string;
+    slugPlaceholder: string;
+    status: string;
+    active: string;
+    inactive: string;
+    actions: string;
+    saveChanges: string;
+    saving: string;
+    deleteConfirmation: string;
+    noSpecialities: string;
+    noSubSpecialities: string;
+    subSpecialities: string;
+    untitledSpeciality: string;
+    slugHelper: string;
+    generateSlug: string;
+    cannotDeleteLast: string;
+    success: {
+      saved: string;
+      created: string;
+      updated: string;
+      deleted: string;
+    };
+    error: {
+      save: string;
+      delete: string;
+      load: string;
+    };
+  };
 };
 
 export type LanguageCode = 'sq' | 'en' | 'fr' | 'de' | 'it' | 'el';

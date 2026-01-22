@@ -17,7 +17,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
-const specialties = [
+const specialities = [
   {
     icon: Stethoscope,
     slug: 'mjek-pergjithshem',
@@ -44,7 +44,7 @@ const specialties = [
   },
 ];
 
-const SpecialtiesSection = () => {
+const SpecialitiesSection = () => {
   const { t } = useLanguage();
 
   return (
@@ -58,33 +58,33 @@ const SpecialtiesSection = () => {
           className="text-center mb-12"
         >
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            {t.specialties.title}
+            {t.specialities.title}
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            {t.specialties.subtitle}
+            {t.specialities.subtitle}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-          {specialties.map((specialty, index) => (
+          {specialities.map((speciality, index) => (
             <motion.div
-              key={specialty.slug}
+              key={speciality.slug}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
             >
               <Link
-                to={`/specialitete/${specialty.slug}`}
+                to={`/specialities/${speciality.slug}`}
                 className="group block bg-card rounded-xl p-5 lg:p-6 card-shadow hover:card-shadow-hover transition-all duration-300 hover:-translate-y-1 border border-border/50"
               >
                 <div
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${specialty.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${speciality.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <specialty.icon className="w-6 h-6 text-white" />
+                  <speciality.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-display font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {t.specialtyNames[specialty.slug] || specialty.slug}
+                  {t.specialityNames[speciality.slug] || speciality.slug}
                 </h3>
               </Link>
             </motion.div>
@@ -95,4 +95,4 @@ const SpecialtiesSection = () => {
   );
 };
 
-export default SpecialtiesSection;
+export default SpecialitiesSection;

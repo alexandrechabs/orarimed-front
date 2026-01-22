@@ -13,18 +13,23 @@ import {
 } from 'react-router-dom';
 import Index from './pages/Index';
 import SpecialitiesListPage from './pages/SpecialitiesListPage';
-import SpecialtyPage from './pages/SpecialtyPage';
+import SpecialityPage from './pages/SpecialtyPage';
+
 import AktualitetePage from './pages/AktualitetePage';
 import KontaktPage from './pages/KontaktPage';
 import NotFound from './pages/NotFound';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import CalendarPage from './pages/calendar/CalendarPage';
 import AuthenticatedLayout from './layouts/AuthenticatedLayout';
 import OnboardingClientPage from './pages/onboarding/OnboardingClientPage';
 import SettingsPage from './pages/settings/SettingsPage';
 import { useAuth } from './services/auth/useAuth';
+import ProfessionalPage from './pages/ProfessionalPage';
+import { ProfessionalRegisterPage } from './pages/auth/ProfessionalRegisterPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboardingPage';
+import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 
 const queryClient = new QueryClient();
 
@@ -47,9 +52,18 @@ const ProtectedRoute = () => {
   if (
     user &&
     !user.birthDate &&
+    user.roleId === 1 &&
     !location.pathname.startsWith('/onboardingClient')
   ) {
     return <Navigate to="/onboardingClient" replace />;
+  }
+  if (
+    user &&
+    !user.birthDate &&
+    user.roleId === 2 &&
+    !location.pathname.startsWith('/onboardingDoctor')
+  ) {
+    return <Navigate to="/onboardingDoctor" replace />;
   }
   return <Outlet />;
 };
@@ -119,17 +133,30 @@ const App = () => (
         <Routes>
           {/* Routes publiques */}
           <Route path="/" element={<Index />} />
-          <Route path="/specialitete" element={<SpecialitiesListPage />} />
-          <Route path="/specialitete/:slug" element={<SpecialtyPage />} />
-          <Route path="/aktualitete" element={<AktualitetePage />} />
-          <Route path="/kontakt" element={<KontaktPage />} />
+          <Route path="/specialities" element={<SpecialitiesListPage />} />
+          <Route path="/specialities/:slug" element={<SpecialityPage />} />
+          <Route path="/actualities" element={<AktualitetePage />} />
+          <Route path="/contact" element={<KontaktPage />} />
+          <Route path="/professionals" element={<ProfessionalPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/register-professional"
+            element={<ProfessionalRegisterPage />}
+          />
           <Route
             path="/onboardingClient"
             element={
               <ProtectedRouteOnboarding>
                 <OnboardingClientPage />
+              </ProtectedRouteOnboarding>
+            }
+          />
+          <Route
+            path="/onboardingDoctor"
+            element={
+              <ProtectedRouteOnboarding>
+                <ProfessionalOnboardingPage />
               </ProtectedRouteOnboarding>
             }
           />
@@ -163,6 +190,14 @@ const App = () => (
                 element={
                   <ProtectedRouteByRole allowedRoles={[1, 2]}>
                     <SettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-settings"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[1, 2]}>
+                    <AdminSettingsPage />
                   </ProtectedRouteByRole>
                 }
               />

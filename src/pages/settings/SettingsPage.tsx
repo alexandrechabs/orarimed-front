@@ -1,27 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';
 import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
 import OpeningHoursForm from '@/components/opening-hours/OpeningHoursForm';
+import { OpeningHour } from '@/types/openingHour';
 
 type Theme = 'light' | 'dark' | 'system';
 
 export default function SettingsPage() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, openingHour, getOpeningHours, saveOpeningHours } =
+    useAuth();
   const { t, language, setLanguage } = useLanguage();
   const [theme, setTheme] = useState<Theme>('system');
   const [formData, setFormData] = useState({
@@ -34,10 +30,24 @@ export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+  const methods = useForm({
+    defaultValues: {
+      openingHours: openingHour || [],
+    },
+  });
+  const { handleSubmit, setValue, watch } = methods;
+
+  useEffect(() => {
+    getOpeningHours();
+  }, []);
+
+  const onSubmit = (formData: { openingHours: OpeningHour[] }) => {
+    saveOpeningHours(formData.openingHours);
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement> | string,
-    name?: string
+    name?: string,
   ) => {
     // Si c'est un événement (champ normal)
     if (typeof e === 'object' && e.target) {
@@ -65,7 +75,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="mx-auto py-8 space-y-6">
+    <div className="mx-auto py-8 space-y-6 max-w-5xl">
       <div className="flex items-center">
         <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
       </div>
@@ -203,18 +213,28 @@ export default function SettingsPage() {
 
         {user.roleId === 2 && (
           <TabsContent value="opening-hours">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion des horaires d'ouverture</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Configurez ici vos horaires d'ouverture pour chaque jour de la
-                  semaine.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <OpeningHoursForm />
-              </CardContent>
-            </Card>
+            <FormProvider {...methods}>
+              <form
+                id="onboarding-form-1"
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold">Horaires d'ouverture</h2>
+                  <p className="text-sm text-gray-600">
+                    Définissez vos horaires de consultation. Vous pourrez les
+                    modifier ultérieurement.
+                  </p>
+
+                  <div className="mt-6">
+                    <OpeningHoursForm name="openingHours" />
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <Button type="submit">Enregistrer</Button>
+                </div>
+              </form>
+            </FormProvider>
           </TabsContent>
         )}
       </Tabs>

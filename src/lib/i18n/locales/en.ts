@@ -3,7 +3,7 @@ import { TranslationKey } from '../types';
 const en: TranslationKey = {
   nav: {
     home: 'Home',
-    specialties: 'Specialties',
+    specialities: 'Specialities',
     news: 'News',
     contact: 'Contact',
     login: 'Login',
@@ -21,15 +21,15 @@ const en: TranslationKey = {
     booking247: '24/7 booking',
     freeForPatients: 'Free for patients',
   },
-  specialties: {
-    title: 'Specialties',
+  specialities: {
+    title: 'Specialities',
     subtitle: 'Find specialized doctors for every health need',
-    viewAll: 'View all specialties',
+    viewAll: 'View all specialities',
     findButton: 'Find',
     typicalServices: 'Typical services',
     consultationReasons: 'Main consultation reasons',
-    backToSpecialties: 'All specialties',
-    notFound: 'Specialty not found',
+    backToSpecialities: 'All specialities',
+    notFound: 'Speciality not found',
   },
   whyOrariMed: {
     title: 'Why OrariMed?',
@@ -90,7 +90,7 @@ const en: TranslationKey = {
     aboutUs: 'About OrariMed',
     location: 'Albania',
   },
-  specialtyNames: {
+  specialityNames: {
     'mjek-pergjithshem': 'General Practitioner',
     kardiologji: 'Cardiology',
     dermatologji: 'Dermatology',
@@ -104,7 +104,7 @@ const en: TranslationKey = {
     dentiste: 'Dentist',
     laboratore: 'Laboratory',
   },
-  specialtyDescriptions: {
+  specialityDescriptions: {
     'mjek-pergjithshem':
       'The general practitioner is the first point of contact for everyday health problems.',
     kardiologji:
@@ -276,7 +276,131 @@ const en: TranslationKey = {
       },
     },
   },
+  professionalsPage: {
+    badge: 'For healthcare professionals',
+    hero: {
+      title: 'Join OrariMed as a healthcare professional',
+      subtitle:
+        'Manage your schedules, increase visibility and welcome more patients. Our platform is designed to simplify your daily work.',
+      cta: 'Create your account',
+    },
+    benefits: {
+      title: 'Benefits for professionals',
+      subtitle:
+        'Discover why hundreds of healthcare professionals have chosen OrariMed',
+      scheduling: {
+        title: 'Easy schedule management',
+        description:
+          'Create, modify and manage appointment schedules online with ease.',
+      },
+      visibility: {
+        title: 'Increased visibility',
+        description: 'Become visible to new patients on our platform.',
+      },
+      reminders: {
+        title: 'Automatic reminders',
+        description:
+          'Patients receive automatic notifications for their appointments.',
+      },
+      mobile: {
+        title: 'Mobile access',
+        description: 'Manage your practice from any device.',
+      },
+      analytics: {
+        title: 'Statistics and reports',
+        description: 'Track performance with detailed reports.',
+      },
+      security: {
+        title: 'Maximum security',
+        description: 'Data is stored with SSL encryption and GDPR compliant.',
+      },
+    },
+    howItWorks: {
+      title: 'How does it work?',
+      subtitle: 'In four simple steps',
+    },
+    steps: {
+      register: {
+        title: 'Register',
+        description: 'Create your free account in a few minutes.',
+      },
+      profile: {
+        title: 'Complete your profile',
+        description:
+          'Add your speciality, address and professional information.',
+      },
+      schedule: {
+        title: 'Set your schedule',
+        description: 'Define the days and times you receive patients.',
+      },
+      receive: {
+        title: 'Receive bookings',
+        description: 'Patients book directly from the platform.',
+      },
+    },
+    pricing: {
+      title: 'Our rates',
+      subtitle: 'Starting is free and without obligation',
+      recommended: 'Recommended',
+      plan: {
+        name: 'Professional Plan',
+        price: 'Free',
+        period: 'to start',
+        features: [
+          'Complete professional profile',
+          '24/7 online calendar',
+          'Automatic reminders for patients',
+          'Basic statistics',
+          'Priority support',
+          'No commission on bookings',
+        ],
+      },
+      cta: 'Start free now',
+    },
+    faq: {
+      title: 'Frequently asked questions',
+      cost: {
+        question: 'How much does registration cost?',
+        answer:
+          'Registration is completely free. You can start immediately at no cost.',
+      },
+      time: {
+        question: 'How long does it take to create an account?',
+        answer:
+          'The registration process takes about 5 minutes. Once verified, you can accept bookings immediately.',
+      },
+      cancel: {
+        question: 'Can I cancel at any time?',
+        answer: 'Yes, you can cancel your account at any time without penalty.',
+      },
+      support: {
+        question: 'Is there dedicated support?',
+        answer:
+          'Yes, our team is available to help you with any questions or issues.',
+      },
+    },
+    finalCta: {
+      title: 'Ready to get started?',
+      subtitle:
+        'Join the professionals who are transforming the way they manage medical appointments.',
+      cta: 'Create your account',
+    },
+  },
   other: 'Other',
+
+  // Common translations used across the app
+  common: {
+    success: 'Success',
+    error: 'Error',
+    save: 'Save',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    loading: 'Loading...',
+    generate: 'Generate',
+    saveChanges: 'Save changes',
+  },
+
   auth: {
     login: 'Login',
     loginDescription: 'Sign in to your account to access your personal space',
@@ -307,6 +431,65 @@ const en: TranslationKey = {
     registrationError: 'An error occurred while creating your account',
     haveAccount: 'Already have an account?',
     goBack: 'Back',
+  },
+  adminSettings: {
+    title: 'Administration',
+    description: 'Manage application settings and configurations',
+    general: 'General',
+    users: 'Users',
+    specialities: 'Specialities',
+    system: 'System',
+    generalSettings: 'General Settings',
+    applicationSettings: 'Application Settings',
+    applicationSettingsDescription: 'Configure general application settings',
+    userManagement: 'User Management',
+    manageUsers: 'Manage Users',
+    manageUsersDescription: 'View and manage user accounts and permissions',
+    specialitiesManagement: 'Specialities Management',
+    manageSpecialities: 'Manage Specialities',
+    manageSpecialitiesDescription:
+      'Manage medical specialities and sub-specialities',
+    systemSettings: 'System Settings',
+    systemConfiguration: 'System Configuration',
+    systemConfigurationDescription: 'Configure system settings and maintenance',
+  },
+  specialitiesManager: {
+    title: 'Specialities Management',
+    addSpeciality: 'Add Speciality',
+    addSubSpeciality: 'Add',
+    name: 'Name',
+    namePlaceholder: 'Ex: Cardiology',
+    slug: 'Slug',
+    slugPlaceholder: 'Ex: cardiology',
+    status: 'Status',
+    active: 'Active',
+    inactive: 'Inactive',
+    actions: 'Actions',
+    saveChanges: 'Save Changes',
+    saving: 'Saving...',
+    deleteConfirmation: 'Are you sure you want to delete this speciality?',
+    noSpecialities: 'No specialities yet',
+    noSubSpecialities: 'No sub-specialities yet',
+    slugHelper:
+      'URL-friendly version of the name. Lowercase, hyphens instead of spaces.',
+    success: {
+      saved: 'Changes saved successfully',
+      created: 'Speciality created successfully',
+      updated: 'Speciality updated successfully',
+      deleted: 'Speciality deleted successfully',
+    },
+    error: {
+      save: 'Error saving changes',
+      delete: 'Error deleting speciality',
+      load: 'Error loading specialities',
+    },
+  },
+  onboarding: {
+    step: 'Step',
+    of: 'of',
+    personalInfo: 'Professional information',
+    availability: 'Availability',
+    // Add other translations as needed
   },
 };
 

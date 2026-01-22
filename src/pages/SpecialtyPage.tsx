@@ -90,10 +90,10 @@ const SpecialtyPage = () => {
         <main className="pt-32 pb-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="font-display text-3xl font-bold mb-4">
-              {t.specialties.notFound}
+              {t.specialities.notFound}
             </h1>
             <Link to="/specialitete" className="text-primary hover:underline">
-              {t.specialties.backToSpecialties}
+              {t.specialities.backToSpecialities}
             </Link>
           </div>
         </main>
@@ -103,8 +103,8 @@ const SpecialtyPage = () => {
   }
 
   const IconComponent = specialty.icon;
-  const name = t.specialtyNames[slug] || slug;
-  const description = t.specialtyDescriptions[slug] || '';
+  const name = t.specialityNames[slug] || slug;
+  const description = t.specialityDescriptions[slug] || '';
   const reasons = t.consultationReasons[slug] || [];
 
   return (
@@ -115,11 +115,11 @@ const SpecialtyPage = () => {
         <section className="py-16 lg:py-24 bg-gradient-to-br from-secondary/50 to-background">
           <div className="container mx-auto px-4 lg:px-8">
             <Link
-              to="/specialitete"
+              to="/specialities"
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              {t.specialties.backToSpecialties}
+              {t.specialities.backToSpecialities}
             </Link>
 
             <motion.div
@@ -141,7 +141,7 @@ const SpecialtyPage = () => {
                 </p>
                 <Button size="lg" variant="hero">
                   <Search className="w-5 h-5" />
-                  {t.specialties.findButton} {name.toLowerCase()}
+                  {t.specialities.findButton} {name.toLowerCase()}
                 </Button>
               </div>
             </motion.div>
@@ -153,7 +153,7 @@ const SpecialtyPage = () => {
           <section className="py-16 lg:py-20">
             <div className="container mx-auto px-4 lg:px-8">
               <h2 className="font-display text-2xl font-bold text-foreground mb-8">
-                {t.specialties.consultationReasons}
+                {t.specialities.consultationReasons}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...reasons, t.other].map((reason, index) => (
