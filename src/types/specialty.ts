@@ -17,4 +17,6 @@ export interface Speciality {
   slug: string;
   translations: Translation[];
   subSpecialities: SubSpeciality[];
+  icon?: string;
+  color?: string;
 }

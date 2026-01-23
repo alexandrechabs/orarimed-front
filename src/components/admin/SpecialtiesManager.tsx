@@ -5,6 +5,51 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Trash2, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Speciality, SubSpeciality, Locale } from '@/types/specialty';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import * as LucideIcons from 'lucide-react';
+
+const LUCIDE_ICONS = [
+  'Stethoscope',
+  'Heart',
+  'Activity',
+  'Baby',
+  'Bone',
+  'Brain',
+  'Ear',
+  'Eye',
+  'FlaskConical',
+  'HeartPulse',
+  'Hospital',
+  'Pill',
+  'Scissors',
+  'Syringe',
+  'Teeth',
+  'Thermometer',
+  'Utensils',
+  'User',
+  'Users',
+] as const;
+
+const COLOR_PALETTE = [
+  'from-blue-500 to-blue-600',
+  'from-red-500 to-red-600',
+  'from-pink-500 to-pink-600',
+  'from-yellow-500 to-yellow-600',
+  'from-purple-500 to-purple-600',
+  'from-orange-500 to-orange-600',
+  'from-indigo-500 to-indigo-600',
+  'from-green-500 to-green-600',
+  'from-cyan-500 to-cyan-600',
+  'from-teal-500 to-teal-600',
+  'from-sky-500 to-sky-600',
+  'from-emerald-500 to-emerald-600',
+] as const;
 
 const LOCALES: { code: Locale; label: string }[] = [
   { code: 'en', label: 'EN' },
@@ -48,6 +93,8 @@ export default function SpecialitiesManager({
           name: '',
         })),
         subSpecialities: [],
+        icon: 'Stethoscope', // Icône par défaut
+        color: '#339991', // Couleur par défaut (bleu)
       },
     ]);
     setExpanded(specialities.length);
@@ -170,6 +217,65 @@ export default function SpecialitiesManager({
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   {expanded === index ? <ChevronUp /> : <ChevronDown />}
+                  <div className="space-y-2">
+                    <Select
+                      value={spec.icon || 'Stethoscope'}
+                      onValueChange={(value) => {
+                        const copy = [...specialities];
+                        copy[index].icon = value;
+                        setSpecialities(copy);
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez une icône" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LUCIDE_ICONS.map((iconName) => {
+                          const Icon = spec.icon
+                            ? (LucideIcons as any)[spec.icon]
+                            : LucideIcons[iconName as keyof typeof LucideIcons];
+                          return (
+                            <SelectItem key={iconName} value={iconName}>
+                              <div className="flex items-center gap-2">
+                                {Icon && <Icon className="h-4 w-4" />}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Select
+                      value={spec.color || COLOR_PALETTE[0]}
+                      onValueChange={(value) => {
+                        const copy = [...specialities];
+                        copy[index].color = value;
+                        setSpecialities(copy);
+                      }}
+                    >
+                      <SelectTrigger className="w-[70px]">
+                        <div
+                          className={`${spec.color || COLOR_PALETTE[0]} bg-gradient-to-br h-5 w-5 rounded-full`}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <div className="grid grid-cols-6 gap-2 p-2 w-[240px]">
+                          {COLOR_PALETTE.map((color) => (
+                            <SelectItem
+                              key={color}
+                              value={color}
+                              className="flex items-center justify-center p-2"
+                            >
+                              <div
+                                className={`h-6 w-6 rounded-full border border-gray-200 bg-gradient-to-br ${color} `}
+                              />
+                            </SelectItem>
+                          ))}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <span className="font-medium">
                     {currentTranslation?.name || 'Nouvelle spécialité'}
                   </span>
