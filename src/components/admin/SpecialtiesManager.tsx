@@ -94,7 +94,8 @@ export default function SpecialitiesManager({
         })),
         subSpecialities: [],
         icon: 'Stethoscope', // Icône par défaut
-        color: '#339991', // Couleur par défaut (bleu)
+        color: 'from-blue-500 to-blue-600', // Couleur par défaut (bleu)
+        position: prev.length,
       },
     ]);
     setExpanded(specialities.length);
@@ -119,6 +120,27 @@ export default function SpecialitiesManager({
     }
 
     setSpecialities(copy);
+  };
+
+  const moveItem = <T,>(arr: T[], from: number, to: number) => {
+    const copy = [...arr];
+    const [item] = copy.splice(from, 1);
+    copy.splice(to, 0, item);
+    return copy;
+  };
+
+  const moveSpeciality = (index: number, direction: 'up' | 'down') => {
+    setSpecialities((prev) => {
+      const target = direction === 'up' ? index - 1 : index + 1;
+      if (target < 0 || target >= prev.length) return prev;
+
+      const reordered = moveItem(prev, index, target);
+
+      return reordered.map((s, i) => ({
+        ...s,
+        position: i, // 👈 sync position
+      }));
+    });
   };
 
   /* -----------------------------
@@ -184,7 +206,7 @@ export default function SpecialitiesManager({
         <h2 className="text-xl font-semibold">Gestion des spécialités</h2>
         <Button onClick={addSpeciality}>
           <Plus className="mr-2 h-4 w-4" />
-          Ajouter une spécialité
+          Ajouter
         </Button>
       </div>
 
@@ -211,13 +233,62 @@ export default function SpecialitiesManager({
         return (
           <Card key={index}>
             <CardHeader
-              className="cursor-pointer"
+              className="cursor-pointer p-2"
               onClick={() => setExpanded(expanded === index ? null : index)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
+                  <div className="grid">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-4"
+                      disabled={index === 0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveSpeciality(index, 'up');
+                      }}
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      disabled={index === specialities.length - 1}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveSpeciality(index, 'down');
+                      }}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <span className="font-medium text-sm md:text-base ">
+                    {currentTranslation?.name || 'Nouvelle spécialité'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
                   {expanded === index ? <ChevronUp /> : <ChevronDown />}
-                  <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeSpeciality(index);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+
+            {expanded === index && (
+              <CardContent className="space-y-4">
+                <div className="flex">
+                  <div className="space-y-2 mr-8 md:mr-16">
+                    <Label>Icône</Label>
                     <Select
                       value={spec.icon || 'Stethoscope'}
                       onValueChange={(value) => {
@@ -226,26 +297,27 @@ export default function SpecialitiesManager({
                         setSpecialities(copy);
                       }}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-[70px]">
                         <SelectValue placeholder="Sélectionnez une icône" />
                       </SelectTrigger>
                       <SelectContent>
-                        {LUCIDE_ICONS.map((iconName) => {
-                          const Icon = spec.icon
-                            ? (LucideIcons as any)[spec.icon]
-                            : LucideIcons[iconName as keyof typeof LucideIcons];
-                          return (
-                            <SelectItem key={iconName} value={iconName}>
-                              <div className="flex items-center gap-2">
-                                {Icon && <Icon className="h-4 w-4" />}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
+                        <div className="grid grid-cols-4 gap-2 p-2 w-[240px]">
+                          {LUCIDE_ICONS.map((iconName) => {
+                            const Icon = LucideIcons[iconName];
+                            return (
+                              <SelectItem key={iconName} value={iconName}>
+                                <div className="flex items-center relative">
+                                  {Icon && <Icon className="h-4 w-4" />}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </div>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
+                    <Label>Couleur</Label>
                     <Select
                       value={spec.color || COLOR_PALETTE[0]}
                       onValueChange={(value) => {
@@ -276,25 +348,7 @@ export default function SpecialitiesManager({
                       </SelectContent>
                     </Select>
                   </div>
-                  <span className="font-medium">
-                    {currentTranslation?.name || 'Nouvelle spécialité'}
-                  </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeSpeciality(index);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </div>
-            </CardHeader>
-
-            {expanded === index && (
-              <CardContent className="space-y-4">
                 {/* NAME */}
                 <div>
                   <Label>Nom ({activeLocale.toUpperCase()})</Label>

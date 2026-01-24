@@ -19,4 +19,5 @@ export interface Speciality {
   subSpecialities: SubSpeciality[];
   icon?: string;
   color?: string;
+  position: number;
 }
