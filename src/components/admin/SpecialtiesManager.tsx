@@ -242,7 +242,7 @@ export default function SpecialitiesManager({
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-4"
+                      className="h-4 hover:!bg-transparent hover:!text-foreground"
                       disabled={index === 0}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -255,6 +255,7 @@ export default function SpecialitiesManager({
                     <Button
                       size="icon"
                       variant="ghost"
+                      className="h-4 hover:!bg-transparent hover:!text-foreground"
                       disabled={index === specialities.length - 1}
                       onClick={(e) => {
                         e.stopPropagation();

@@ -10,11 +10,14 @@ export default defineConfig(({ mode }) => ({
     port: 3007,
   },
   plugins: [react(), mode === 'development' && componentTagger()].filter(
-    Boolean
+    Boolean,
   ),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    sourcemap: true,
   },
 }));
