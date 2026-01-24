@@ -388,6 +388,17 @@ const sq: TranslationKey = {
     },
   },
   other: 'Tjetër',
+  common: {
+    success: 'Sukses',
+    error: 'Gabim',
+    save: 'Ruaj',
+    delete: 'Fshij',
+    cancel: 'Anulo',
+    confirm: 'Konfirmo',
+    loading: 'Duke u ngarkuar...',
+    generate: 'Gjenero',
+    saveChanges: 'Ruaj ndryshimet',
+  },
   auth: {
     login: 'Hyrje',
     loginDescription:
@@ -427,6 +438,66 @@ const sq: TranslationKey = {
     personalInfo: 'Informacione profesionale',
     availability: 'Disponibilitet',
     // Add other translations as needed
+  },
+  adminSettings: {
+    title: 'Administrimi',
+    description: 'Menaxho cilësimet e aplikacionit dhe konfigurimet',
+    general: 'Të përgjithshme',
+    users: 'Përdoruesit',
+    specialities: 'Specialitetet',
+    system: 'Sistemi',
+    generalSettings: 'Cilësimet e përgjithshme',
+    applicationSettings: 'Cilësimet e aplikacionit',
+    applicationSettingsDescription:
+      'Konfiguro cilësimet e përgjithshme të aplikacionit',
+    userManagement: 'Menaxhimi i përdoruesve',
+    manageUsers: 'Menaxho përdoruesit',
+    manageUsersDescription:
+      'Shiko dhe menaxho llogaritë e përdoruesve dhe lejet',
+    specialitiesManagement: 'Menaxhimi i specialiteteve',
+    manageSpecialities: 'Menaxho specialitete',
+    manageSpecialitiesDescription:
+      'Menaxho specialitetet dhe nëspecialitete mjekësore',
+    systemSettings: 'Cilësimet e sistemit',
+    systemConfiguration: 'Konfigurimi i sistemit',
+    systemConfigurationDescription:
+      'Konfiguro cilësimet e përgjithshme të sistemit',
+  },
+  specialitiesManager: {
+    title: 'Menaxhimi i specialiteteve',
+    addSpeciality: 'Shto specialitet',
+    addSubSpeciality: 'Shto',
+    name: 'Emri',
+    namePlaceholder: 'Shembull: Kardiologji',
+    slug: 'Slug',
+    slugPlaceholder: 'Shembull: kardiologji',
+    status: 'Statusi',
+    active: 'Aktiv',
+    inactive: 'Joaktiv',
+    actions: 'Veprime',
+    saveChanges: 'Ruaj ndryshimet',
+    saving: 'Duke ruajtur...',
+    deleteConfirmation:
+      'A jeni të sigurt që dëshironi të fshini këtë specialitet?',
+    noSpecialities: 'Nuk ka specialitete për momentin',
+    noSubSpecialities: 'Nuk ka nëspecialitete për momentin',
+    subSpecialities: 'Nëspecialitete',
+    untitledSpeciality: 'Specialitet i ri',
+    slugHelper:
+      'Versioni URL i emrit. Me shkronja të vogla, vija në vend të hapësirave.',
+    generateSlug: 'Gjenero slug',
+    cannotDeleteLast: 'Nuk mund të fshihet specialiteti i fundit',
+    success: {
+      saved: 'Ndryshimet u ruajtën me sukses',
+      created: 'Specialiteti u krijua me sukses',
+      updated: 'Specialiteti u përditësua me sukses',
+      deleted: 'Specialiteti u fshi me sukses',
+    },
+    error: {
+      save: 'Gabim gjatë ruajtjes së ndryshimeve',
+      delete: 'Gabim gjatë fshirjes së specialitetit',
+      load: 'Gabim gjatë ngarkimit të specialiteteve',
+    },
   },
 };
 

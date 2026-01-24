@@ -470,6 +470,10 @@ const en: TranslationKey = {
     deleteConfirmation: 'Are you sure you want to delete this speciality?',
     noSpecialities: 'No specialities yet',
     noSubSpecialities: 'No sub-specialities yet',
+    subSpecialities: 'Sub-specialities',
+    untitledSpeciality: 'New speciality',
+    generateSlug: 'Generate slug',
+    cannotDeleteLast: 'Cannot delete the last speciality',
     slugHelper:
       'URL-friendly version of the name. Lowercase, hyphens instead of spaces.',
     success: {
