@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Configuration
-const API_URL = process.env.API_URL || 'http://localhost:3334'; // Remplacez par l'URL de votre API
+const API_URL = process.env.VITE_API_URL || 'http://localhost:3334'; // Remplacez par l'URL de votre API
 const OUTPUT_DIR = resolve(__dirname, '../public/data');
 const OUTPUT_FILE = resolve(OUTPUT_DIR, 'specialities.ts');
 
