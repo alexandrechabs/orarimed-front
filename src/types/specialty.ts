@@ -1,4 +1,4 @@
-export type Locale = 'fr' | 'en' | 'al';
+export type Locale = 'fr' | 'en' | 'sq';
 
 export interface Translation {
   id?: number;

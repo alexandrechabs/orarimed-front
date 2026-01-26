@@ -2,10 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';
-import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { useMutation } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { Speciality } from '@/types/specialty';
 import SpecialitiesManager from '@/components/admin/SpecialtiesManager';
@@ -23,7 +20,6 @@ export default function AdminSettingsPage() {
   const specialitiesT = t.specialitiesManager;
 
   const handleSaveSpecialities = (specialities: Speciality[]) => {
-    console.log(specialities);
     // Validation des données avant envoi
     const hasEmptyNames = specialities.some(
       (spec) =>
@@ -32,8 +28,6 @@ export default function AdminSettingsPage() {
           (sub) => !sub.translations.some((t) => t.name.trim()),
         ),
     );
-
-    console.log(hasEmptyNames);
 
     if (hasEmptyNames) {
       toast({
@@ -46,8 +40,6 @@ export default function AdminSettingsPage() {
     }
 
     // save
-    console.log(specialities);
-
     saveSpecialities(specialities);
   };
 
@@ -123,13 +115,13 @@ export default function AdminSettingsPage() {
 
         <TabsContent value="specialities" className="space-y-4">
           <Card>
-            <CardHeader>
+            <CardHeader style={{ padding: 14 }}>
               <CardTitle>{adminT.manageSpecialities}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {adminT.manageSpecialitiesDescription}
               </p>
             </CardHeader>
-            <CardContent>
+            <CardContent style={{ padding: 14 }}>
               <SpecialitiesManager
                 onSave={handleSaveSpecialities}
                 // Vous pouvez passer des données initiales ici si nécessaire

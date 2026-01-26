@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "generate:specialities": "npx tsx scripts/fetch-specialities.ts",
+    "prebuild": "npm run generate:specialities",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",

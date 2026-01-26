@@ -12,9 +12,13 @@ ENV VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}
 
 # Copier les fichiers de dépendances
 COPY package.json package-lock.json* ./
+COPY scripts/ ./scripts/
 
 # Installer les dépendances
 RUN npm ci --silent
+
+# Générer les spécialités
+RUN API_URL=https://orarimed.chabs.fr/api npm run generate:specialities
 
 # Copier le reste des fichiers
 COPY . .

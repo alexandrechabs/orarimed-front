@@ -1,51 +1,13 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import {
-  Stethoscope,
-  Heart,
-  Sparkles,
-  Baby,
-  Users,
-  Bone,
-  Brain,
-  Utensils,
-  Ear,
-  Activity,
-  Smile,
-  FlaskConical,
-  ArrowRight,
-} from 'lucide-react';
 
-const specialities = [
-  {
-    icon: Stethoscope,
-    slug: 'mjek-pergjithshem',
-    color: 'from-blue-500 to-blue-600',
-  },
-  { icon: Heart, slug: 'kardiologji', color: 'from-red-500 to-red-600' },
-  { icon: Sparkles, slug: 'dermatologji', color: 'from-pink-500 to-pink-600' },
-  { icon: Baby, slug: 'pediatri', color: 'from-yellow-500 to-yellow-600' },
-  { icon: Users, slug: 'gjinekologji', color: 'from-purple-500 to-purple-600' },
-  { icon: Bone, slug: 'ortopedi', color: 'from-orange-500 to-orange-600' },
-  { icon: Brain, slug: 'psikiatri', color: 'from-indigo-500 to-indigo-600' },
-  {
-    icon: Utensils,
-    slug: 'gastroenterologji',
-    color: 'from-green-500 to-green-600',
-  },
-  { icon: Ear, slug: 'orl', color: 'from-cyan-500 to-cyan-600' },
-  { icon: Activity, slug: 'urologji', color: 'from-teal-500 to-teal-600' },
-  { icon: Smile, slug: 'dentiste', color: 'from-sky-500 to-sky-600' },
-  {
-    icon: FlaskConical,
-    slug: 'laboratore',
-    color: 'from-emerald-500 to-emerald-600',
-  },
-];
+import * as LucideIcons from 'lucide-react';
+import { useAuth } from '@/services/auth/useAuth';
 
 const SpecialitiesSection = () => {
-  const { t } = useLanguage();
+  const { specialities } = useAuth();
+  const { t, language } = useLanguage();
 
   return (
     <section className="py-5 lg:py-5 bg-background">
@@ -81,10 +43,18 @@ const SpecialitiesSection = () => {
                 <div
                   className={`w-12 h-12 rounded-xl bg-gradient-to-br ${speciality.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <speciality.icon className="w-6 h-6 text-white" />
+                  {(() => {
+                    const Icon = LucideIcons[speciality.icon];
+                    return (
+                      <div className="flex items-center relative">
+                        {Icon && <Icon className="h-4 w-4 text-white" />}
+                      </div>
+                    );
+                  })()}
                 </div>
                 <h3 className="font-display font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {t.specialityNames[speciality.slug] || speciality.slug}
+                  {speciality.translations.find((t) => t.locale === language)
+                    ?.name || speciality.slug}
                 </h3>
               </Link>
             </motion.div>

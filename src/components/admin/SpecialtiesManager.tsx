@@ -29,7 +29,8 @@ const LUCIDE_ICONS = [
   'Pill',
   'Scissors',
   'Syringe',
-  'Teeth',
+  'Smile',
+  'SmilePlus',
   'Thermometer',
   'Utensils',
   'User',
@@ -54,7 +55,7 @@ const COLOR_PALETTE = [
 const LOCALES: { code: Locale; label: string }[] = [
   { code: 'en', label: 'EN' },
   { code: 'fr', label: 'FR' },
-  { code: 'al', label: 'AL' },
+  { code: 'sq', label: 'SQ' },
 ];
 
 interface Props {
@@ -203,7 +204,7 @@ export default function SpecialitiesManager({
     <div className="space-y-6">
       {/* HEADER */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Gestion des spécialités</h2>
+        <h2 className="text-xl font-semibold"></h2>
         <Button onClick={addSpeciality}>
           <Plus className="mr-2 h-4 w-4" />
           Ajouter
@@ -265,9 +266,23 @@ export default function SpecialitiesManager({
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </div>
-                  <span className="font-medium text-sm md:text-base ">
-                    {currentTranslation?.name || 'Nouvelle spécialité'}
-                  </span>
+                  <div className="flex items-center gap-2 items-baseline">
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${spec.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {(() => {
+                        const Icon = LucideIcons[spec.icon];
+                        return (
+                          <div className="flex items-center relative">
+                            {Icon && <Icon className="h-4 w-4 text-white" />}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                    <span className="font-medium text-sm md:text-base">
+                      {currentTranslation?.name || 'Nouvelle spécialité'}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {expanded === index ? <ChevronUp /> : <ChevronDown />}

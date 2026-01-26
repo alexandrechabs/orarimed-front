@@ -4,84 +4,20 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import {
-  Stethoscope,
-  Heart,
-  Sparkles,
-  Baby,
-  Users,
-  Bone,
-  Brain,
-  Utensils,
-  Ear,
-  Activity,
-  Smile,
-  FlaskConical,
-  ArrowLeft,
-  Search,
-} from 'lucide-react';
-
-const specialtiesData: Record<
-  string,
-  {
-    icon: React.ElementType;
-    color: string;
-  }
-> = {
-  'mjek-pergjithshem': {
-    icon: Stethoscope,
-    color: 'from-blue-500 to-blue-600',
-  },
-  kardiologji: {
-    icon: Heart,
-    color: 'from-red-500 to-red-600',
-  },
-  dermatologji: {
-    icon: Sparkles,
-    color: 'from-pink-500 to-pink-600',
-  },
-  pediatri: {
-    icon: Baby,
-    color: 'from-yellow-500 to-yellow-600',
-  },
-  gjinekologji: {
-    icon: Users,
-    color: 'from-purple-500 to-purple-600',
-  },
-  ortopedi: {
-    icon: Bone,
-    color: 'from-orange-500 to-orange-600',
-  },
-  psikiatri: {
-    icon: Brain,
-    color: 'from-indigo-500 to-indigo-600',
-  },
-  gastroenterologji: {
-    icon: Utensils,
-    color: 'from-green-500 to-green-600',
-  },
-  orl: {
-    icon: Ear,
-    color: 'from-cyan-500 to-cyan-600',
-  },
-  urologji: {
-    icon: Activity,
-    color: 'from-teal-500 to-teal-600',
-  },
-  dentiste: {
-    icon: Smile,
-    color: 'from-sky-500 to-sky-600',
-  },
-  laboratore: {
-    icon: FlaskConical,
-    color: 'from-emerald-500 to-emerald-600',
-  },
-};
+import { ArrowLeft, Search } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+import { useAuth } from '@/services/auth/useAuth';
+import { useSpecialities } from '@/hooks/useSpecialities';
 
 const SpecialtyPage = () => {
+  const { specialities, isLoading, error } = useSpecialities();
   const { slug } = useParams<{ slug: string }>();
-  const { t } = useLanguage();
-  const specialty = slug ? specialtiesData[slug] : null;
+  const { t, language } = useLanguage();
+  const specialty = slug ? specialities.find((s) => s.slug === slug) : null;
+
+  if (isLoading) {
+    return;
+  }
 
   if (!specialty || !slug) {
     return (
@@ -102,10 +38,11 @@ const SpecialtyPage = () => {
     );
   }
 
-  const IconComponent = specialty.icon;
-  const name = t.specialityNames[slug] || slug;
-  const description = t.specialityDescriptions[slug] || '';
-  const reasons = t.consultationReasons[slug] || [];
+  const IconComponent = LucideIcons[specialty.icon];
+  const name =
+    specialty.translations.find((t) => t.locale === language)?.name ||
+    specialty.slug;
+  const description = '';
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,23 +86,25 @@ const SpecialtyPage = () => {
         </section>
 
         {/* Consultation Reasons */}
-        {reasons.length > 0 && (
+        {specialty.subSpecialities.length > 0 && (
           <section className="py-16 lg:py-20">
             <div className="container mx-auto px-4 lg:px-8">
               <h2 className="font-display text-2xl font-bold text-foreground mb-8">
                 {t.specialities.consultationReasons}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[...reasons, t.other].map((reason, index) => (
+                {[...specialty.subSpecialities].map((subspeciality, index) => (
                   <motion.div
-                    key={reason}
+                    key={subspeciality.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className="p-5 bg-card rounded-xl border border-border/50 card-shadow hover:card-shadow-hover transition-all cursor-pointer hover:-translate-y-1"
                   >
                     <span className="text-foreground font-medium">
-                      {reason}
+                      {subspeciality.translations.find(
+                        (t) => t.locale === language,
+                      )?.name || subspeciality.slug}
                     </span>
                   </motion.div>
                 ))}
