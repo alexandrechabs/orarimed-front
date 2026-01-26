@@ -15,6 +15,8 @@ async function fetchSpecialities() {
   try {
     console.log("📡 Récupération des spécialités depuis l'API...");
 
+    console.log(`${API_URL}/specialities`);
+
     const response = await fetch(`${API_URL}/specialities`); // Ajustez l'endpoint selon votre API
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
