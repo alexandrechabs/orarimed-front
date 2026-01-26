@@ -16,7 +16,7 @@ const SpecialtyPage = () => {
   const specialty = slug ? specialities.find((s) => s.slug === slug) : null;
 
   if (isLoading) {
-    return;
+    return <div></div>;
   }
 
   if (!specialty || !slug) {
