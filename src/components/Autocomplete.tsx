@@ -10,6 +10,7 @@ interface AddressAutocompleteProps {
   onPlaceSelected?: (place: google.maps.places.PlaceResult) => void;
   placeholder?: string;
   error?: string;
+  className?: string;
 }
 
 export function AddressAutocomplete({
@@ -18,6 +19,7 @@ export function AddressAutocomplete({
   onPlaceSelected,
   placeholder = 'Saisissez une adresse',
   error,
+  className,
 }: AddressAutocompleteProps) {
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
@@ -64,7 +66,7 @@ export function AddressAutocomplete({
               onChange={(e) => onChange(e.target.value)}
               placeholder={placeholder}
               disabled={isLoading}
-              className="pr-10"
+              className={className}
             />
           </Autocomplete>
         )}

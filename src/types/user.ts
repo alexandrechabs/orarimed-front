@@ -12,5 +12,8 @@ export type User = {
   zipCode: string | null;
   country: string | null;
   centerId: number | null;
-  token?: string; // Jeton d'authentification optionnel
+  specialityId: number | null;
+  subSpecialitiesUsers: [
+    { id: number; userId: number; subSpecialityId: number },
+  ];
 };

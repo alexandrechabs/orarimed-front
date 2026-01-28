@@ -141,4 +141,26 @@ export const authService = {
 
     return response.json();
   },
+
+  async saveSubSpecialities(subSpecialities: number[], userId: string) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(
+      `${API_URL}/user/${userId}/sub-specialities/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ subSpecialities }),
+      },
+    );
+
+    return response.json();
+  },
 };

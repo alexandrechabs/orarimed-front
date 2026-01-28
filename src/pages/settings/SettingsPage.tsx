@@ -12,12 +12,25 @@ import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
 import OpeningHoursForm from '@/components/opening-hours/OpeningHoursForm';
 import { OpeningHour } from '@/types/openingHour';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type Theme = 'light' | 'dark' | 'system';
 
 export default function SettingsPage() {
-  const { user, updateUser, openingHour, getOpeningHours, saveOpeningHours } =
-    useAuth();
+  const {
+    user,
+    specialities,
+    updateUser,
+    openingHour,
+    getOpeningHours,
+    saveOpeningHours,
+  } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const [theme, setTheme] = useState<Theme>('system');
   const [formData, setFormData] = useState({
@@ -25,6 +38,9 @@ export default function SettingsPage() {
     lastname: user.lastname || '',
     email: user.email || '',
     phoneNumber: user.phoneNumber || '',
+    specialityId: user.specialityId?.toString() || '',
+    subSpecialityIds:
+      user.subSpecialitiesUsers?.map((s) => s.subSpecialityId) || [],
   });
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -38,6 +54,8 @@ export default function SettingsPage() {
   const { handleSubmit, setValue, watch } = methods;
 
   useEffect(() => {
+    console.log(user);
+
     getOpeningHours();
   }, []);
 
@@ -141,6 +159,76 @@ export default function SettingsPage() {
                     placeholder="Entrez votre numéro de téléphone"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="speciality">Spécialité médicale</Label>
+                  <Select
+                    onValueChange={(value) => {
+                      handleInputChange(value, 'specialityId');
+                      handleInputChange('', 'subSpecialityIds');
+                    }}
+                    defaultValue={formData.specialityId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez une spécialité" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {specialities.map((speciality) => (
+                        <SelectItem
+                          key={speciality.id}
+                          value={speciality.id.toString()}
+                        >
+                          {
+                            speciality.translations.find(
+                              (t) => t.locale === language,
+                            )?.name
+                          }
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Sous-catégories (optionnel)</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {specialities
+                      .find((s) => s.id === Number(formData.specialityId))
+                      ?.subSpecialities.map((sub) => (
+                        <div
+                          key={sub.id}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            id={`sub-${sub.id}`}
+                            value={sub.id}
+                            checked={
+                              formData.subSpecialityIds?.includes(sub.id) ||
+                              false
+                            }
+                            onChange={(e) => {
+                              const currentIds =
+                                formData.subSpecialityIds || [];
+                              const newIds = e.target.checked
+                                ? [...currentIds, sub.id]
+                                : currentIds.filter((id) => id !== sub.id);
+                              formData.subSpecialityIds = newIds;
+                            }}
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <label
+                            htmlFor={`sub-${sub.id}`}
+                            className="text-sm font-medium text-gray-700"
+                          >
+                            {sub.translations?.find(
+                              (t) => t.locale === language,
+                            )?.name || sub.name}
+                          </label>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
               <div className="flex justify-center">

@@ -3,6 +3,8 @@ import { userService } from './user.service';
 import { Patient } from '../../types/patient';
 import { EventInput } from '@fullcalendar/core/index.js';
 import { DateRange } from '../../types/date';
+import { User } from '@/types/user';
+import { DoctorProfile } from '@/types/doctor';
 
 type UserContextType = {
   events: EventInput[];
@@ -10,9 +12,12 @@ type UserContextType = {
   searchPatient: (
     firstName: string,
     lastName: string,
-    birthDate: string
+    birthDate: string,
   ) => Promise<Patient | null>;
   getPatient: (id: string) => Promise<Patient | null>;
+  getDoctor: (doctorIdentifier: string) => Promise<DoctorProfile | null>;
+  searchDoctors: (query: string, locale: string) => Promise<any[]>;
+  searchDoctorAutocomplete: (query: string, locale: string) => Promise<any>;
   getEvents: (dateRange?: DateRange) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
   updateEvent: (event: EventInput) => Promise<EventInput>;
@@ -27,12 +32,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   async function searchPatient(
     firstName: string,
     lastName: string,
-    birthDate: string
+    birthDate: string,
   ): Promise<Patient | null> {
     const data = await userService.searchPatient(
       firstName,
       lastName,
-      birthDate
+      birthDate,
     );
     return data;
   }
@@ -55,7 +60,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           setEvents((prev) => {
             const existingIds = new Set(prev.map((e) => e.id));
             const newEvents = data.filter(
-              (event) => !existingIds.has(event.id)
+              (event) => !existingIds.has(event.id),
             );
             return [...prev, ...newEvents];
           });
@@ -68,7 +73,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   async function createEvent(event: EventInput): Promise<EventInput> {
@@ -93,6 +98,26 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return;
   }
 
+  async function getDoctor(
+    doctorIdentifier: string,
+  ): Promise<DoctorProfile | null> {
+    const data = await userService.getDoctor(doctorIdentifier);
+    return data;
+  }
+
+  async function searchDoctors(query: string, locale: string): Promise<any[]> {
+    const data = await userService.searchDoctors(query, locale);
+    return data;
+  }
+
+  async function searchDoctorAutocomplete(
+    query: string,
+    locale: string,
+  ): Promise<any[]> {
+    const data = await userService.searchDoctorAutocomplete(query, locale);
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -103,6 +128,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         getEvents,
         createEvent,
         updateEvent,
+        getDoctor,
+        searchDoctors,
+        searchDoctorAutocomplete,
       }}
     >
       {children}

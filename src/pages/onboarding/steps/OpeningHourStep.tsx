@@ -5,7 +5,7 @@ import { OpeningHour } from '@/types/openingHour';
 import OpeningHoursForm from '@/components/opening-hours/OpeningHoursForm';
 import { useAuth } from '@/services/auth/useAuth';
 
-interface SecondStepProps {
+interface OpeningHourStepProps {
   onNext: (data: any) => void;
   onBack: () => void;
   data: {
@@ -14,7 +14,11 @@ interface SecondStepProps {
   };
 }
 
-export function SecondStep({ onNext, onBack, data }: SecondStepProps) {
+export function OpeningHourStep({
+  onNext,
+  onBack,
+  data,
+}: OpeningHourStepProps) {
   const { user } = useAuth();
 
   const methods = useForm({

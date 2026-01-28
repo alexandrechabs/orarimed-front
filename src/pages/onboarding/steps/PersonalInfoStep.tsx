@@ -27,14 +27,15 @@ import {
 } from '@/components/ui/popover';
 import { AddressAutocomplete } from '@/components/Autocomplete';
 import { cn } from '@/lib/utils';
-import { useDateLocale } from '@/lib/i18n/LanguageContext';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
+import { useAuth } from '@/services/auth/useAuth';
 
 // Types
 interface FormData {
-  phone: string;
+  phoneNumber: string;
   rppsNumber: string;
-  speciality: string;
-  address: string;
+  specialityId: number;
+  subSpecialityIds: number[];
   city: string;
   country: string;
   coordinate: string;
@@ -42,23 +43,6 @@ interface FormData {
   birthDate: string;
   [key: string]: any; // For dynamic access
 }
-
-const MEDICAL_SPECIALTIES = [
-  'Médecine générale',
-  'Cardiologie',
-  'Dermatologie',
-  'Gynécologie',
-  'Pédiatrie',
-  'Radiologie',
-  'Chirurgie',
-  'Ophtalmologie',
-  'ORL',
-  'Neurologie',
-  'Pneumologie',
-  'Rhumatologie',
-  'Urologie',
-  'Autre',
-];
 
 interface PersonalInfoStepProps {
   onNext: (data: { personal: FormData }) => void;
@@ -71,9 +55,10 @@ export function PersonalInfoStep({
   onBack,
   data,
 }: PersonalInfoStepProps) {
+  const { specialities } = useAuth();
+  const { language } = useLanguage();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const dateLocale = useDateLocale();
-  const navigate = useNavigate();
 
   const {
     register,
@@ -88,9 +73,10 @@ export function PersonalInfoStep({
   useEffect(() => {
     if (data) {
       const fieldsToSet = {
-        phone: data.phone || '',
+        phoneNumber: data.phoneNumber || '',
         rppsNumber: data.rppsNumber || '',
-        speciality: data.speciality || '',
+        specialityId: data.specialityId || '',
+        subSpecialityIds: data.subSpecialityIds || [],
         address: data.address || '',
         city: data.city || '',
         country: data.country || '',
@@ -129,9 +115,9 @@ export function PersonalInfoStep({
       className="space-y-6"
     >
       <div className="space-y-2">
-        <Label htmlFor="phone">Téléphone professionnel</Label>
+        <Label htmlFor="phoneNumber">Téléphone professionnel</Label>
         <Controller
-          name="phone"
+          name="phoneNumber"
           control={control}
           rules={{ required: 'Ce champ est requis' }}
           render={({ field: { onChange, value } }) => (
@@ -146,9 +132,9 @@ export function PersonalInfoStep({
             />
           )}
         />
-        {errors.phone && (
+        {errors.phoneNumber && (
           <p className="text-sm text-red-500">
-            {errors.phone.message?.toString()}
+            {errors.phoneNumber.message?.toString()}
           </p>
         )}
       </div>
@@ -268,31 +254,70 @@ export function PersonalInfoStep({
       <div className="space-y-2">
         <Label htmlFor="speciality">Spécialité médicale</Label>
         <Select
-          onValueChange={(value) => setValue('speciality', value)}
-          defaultValue={watch('speciality')}
+          onValueChange={(value) => {
+            setValue('specialityId', Number(value));
+            setValue('subSpecialityIds', []);
+          }}
+          defaultValue={watch('specialityId')}
         >
           <SelectTrigger>
             <SelectValue placeholder="Sélectionnez une spécialité" />
           </SelectTrigger>
           <SelectContent>
-            {MEDICAL_SPECIALTIES.map((speciality) => (
-              <SelectItem key={speciality} value={speciality}>
-                {speciality}
+            {specialities.map((speciality) => (
+              <SelectItem key={speciality.id} value={speciality.id.toString()}>
+                {
+                  speciality.translations.find((t) => t.locale === language)
+                    ?.name
+                }
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <input
           type="hidden"
-          {...register('speciality', {
+          {...register('specialityId', {
             required: 'Veuillez sélectionner une spécialité',
           })}
         />
-        {errors.speciality && (
+        {errors.specialityId && (
           <p className="text-sm text-red-500">
             {errors.speciality.message?.toString()}
           </p>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Sous-catégories (optionnel)</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {specialities
+            .find((s) => s.id === Number(watch('specialityId')))
+            ?.subSpecialities.map((sub) => (
+              <div key={sub.id} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={`sub-${sub.id}`}
+                  value={sub.id}
+                  checked={watch('subSpecialityIds')?.includes(sub.id) || false}
+                  onChange={(e) => {
+                    const currentIds = watch('subSpecialityIds') || [];
+                    const newIds = e.target.checked
+                      ? [...currentIds, sub.id]
+                      : currentIds.filter((id) => id !== sub.id);
+                    setValue('subSpecialityIds', newIds);
+                  }}
+                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label
+                  htmlFor={`sub-${sub.id}`}
+                  className="text-sm font-medium text-gray-700"
+                >
+                  {sub.translations?.find((t) => t.locale === language)?.name ||
+                    sub.name}
+                </label>
+              </div>
+            ))}
+        </div>
       </div>
 
       <div className="space-y-2">

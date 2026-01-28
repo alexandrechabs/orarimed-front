@@ -111,4 +111,53 @@ export const userService = {
     if (!res.ok) throw new Error('Get user failed');
     return res.json() as Promise<any>;
   },
+
+  async getDoctor(doctorIdentifier: string) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const res = await fetch(`${API_URL}/doctor/${doctorIdentifier}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error('Get user failed');
+    return res.json() as Promise<any>;
+  },
+
+  async searchDoctors(query: string, locale: string) {
+    const res = await fetch(
+      `${API_URL}/doctor/search?q=${query}&locale=${locale}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!res.ok) throw new Error('Get user failed');
+    return res.json() as Promise<any>;
+  },
+
+  async searchDoctorAutocomplete(query: string, locale: string) {
+    const res = await fetch(
+      `${API_URL}/doctor/search/autocomplete?q=${query}&locale=${locale}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!res.ok) throw new Error('Get user failed');
+    return res.json() as Promise<any>;
+  },
 };

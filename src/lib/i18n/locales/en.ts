@@ -14,12 +14,14 @@ const en: TranslationKey = {
     h1: 'Find and book your medical appointment in Albania, online',
     subtitle:
       'Book an appointment with doctors, dentists and laboratories in just a few clicks. Verified doctors, real-time availability.',
-    searchDoctor: 'Find a doctor',
+    searchDoctor: 'Find',
     imProfessional: "I'm a healthcare professional",
     badge: '🏥 Medical appointment platform in Albania',
     verifiedDoctors: 'Verified doctors',
     booking247: '24/7 booking',
     freeForPatients: 'Free for patients',
+    doctorPlaceholder: 'Name, speciality',
+    cityPlaceholder: 'City',
   },
   specialities: {
     title: 'Specialities',
@@ -452,6 +454,15 @@ const en: TranslationKey = {
     systemSettings: 'System Settings',
     systemConfiguration: 'System Configuration',
     systemConfigurationDescription: 'Configure system settings and maintenance',
+  },
+  daysOfWeek: {
+    1: 'Monday',
+    2: 'Tuesday',
+    3: 'Wednesday',
+    4: 'Thursday',
+    5: 'Friday',
+    6: 'Saturday',
+    0: 'Sunday',
   },
   specialitiesManager: {
     title: 'Specialities Management',

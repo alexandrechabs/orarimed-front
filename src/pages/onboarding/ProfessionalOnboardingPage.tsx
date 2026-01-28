@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/services/auth/useAuth';
 import { OnboardingLayout } from './OnboardingLayout';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { SecondStep } from './steps/SecondStep';
+import { OpeningHourStep } from './steps/OpeningHourStep';
 import { PersonalInfoStep } from './steps/PersonalInfoStep';
 import { OnboardingStep } from './OnboardingLayout';
+import { useEffect } from 'react';
 
 export function ProfessionalOnboardingPage() {
-  const { updateUser, saveOpeningHours } = useAuth();
+  const { updateUser, saveOpeningHours, saveSubSpecialities } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  useEffect(() => {}, []);
 
   const steps: OnboardingStep[] = [
     {
@@ -21,7 +24,7 @@ export function ProfessionalOnboardingPage() {
     {
       id: 'availability',
       title: t.onboarding.availability,
-      component: (props) => <SecondStep {...props} />,
+      component: (props) => <OpeningHourStep {...props} />,
     },
     // Add more steps as needed
   ];
@@ -29,11 +32,15 @@ export function ProfessionalOnboardingPage() {
   const handleComplete = async (data: any) => {
     console.log(data);
 
+    let subSpecialities = data.personal.subSpecialityIds;
+    delete data.personal.subSpecialityIds;
+
+    console.log(subSpecialities);
+    console.log(data.personal);
+
     try {
-      await updateUser({
-        ...data.personal,
-        onboardingCompleted: true,
-      });
+      await updateUser(data.personal);
+      await saveSubSpecialities(subSpecialities);
       await saveOpeningHours(data.openingHours);
     } catch (error) {
       console.error('Error updating user:', error);

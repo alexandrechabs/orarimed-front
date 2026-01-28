@@ -17,6 +17,8 @@ export type TranslationKey = {
     verifiedDoctors: string;
     booking247: string;
     freeForPatients: string;
+    doctorPlaceholder: string;
+    cityPlaceholder: string;
   };
   specialities: {
     title: string;
@@ -228,6 +230,15 @@ export type TranslationKey = {
     saveChanges: string;
   };
 
+  daysOfWeek: {
+    1: string;
+    2: string;
+    3: string;
+    4: string;
+    5: string;
+    6: string;
+    0: string;
+  };
   specialitiesManager: {
     title: string;
     addSpeciality: string;

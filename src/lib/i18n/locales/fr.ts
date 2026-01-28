@@ -14,12 +14,14 @@ const fr: TranslationKey = {
     h1: 'Trouvez et réservez votre rendez-vous médical en Albanie, en ligne',
     subtitle:
       'Prenez rendez-vous avec des médecins, dentistes et laboratoires en quelques clics. Médecins vérifiés, disponibilité en temps réel.',
-    searchDoctor: 'Chercher un médecin',
+    searchDoctor: 'Chercher',
     imProfessional: 'Je suis professionnel de santé',
     badge: '🏥 Plateforme de rendez-vous médicaux en Albanie',
     verifiedDoctors: 'Médecins vérifiés',
     booking247: 'Réservation 24h/24',
     freeForPatients: 'Gratuit pour les patients',
+    doctorPlaceholder: 'Nom, spécialité',
+    cityPlaceholder: 'Ville',
   },
   specialities: {
     title: 'Spécialités',
@@ -428,6 +430,15 @@ const fr: TranslationKey = {
     systemConfiguration: 'Configuration système',
     systemConfigurationDescription:
       'Configurez les paramètres système et la maintenance',
+  },
+  daysOfWeek: {
+    1: 'Lundi',
+    2: 'Mardi',
+    3: 'Mercredi',
+    4: 'Jeudi',
+    5: 'Vendredi',
+    6: 'Samedi',
+    0: 'Dimanche',
   },
   specialitiesManager: {
     title: 'Gestion des spécialités',

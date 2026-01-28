@@ -14,12 +14,14 @@ const sq: TranslationKey = {
     h1: 'Gjej dhe rezervo takimin tënd mjekësor në Shqipëri, online',
     subtitle:
       'Rezervo një takim me mjekë, dentistë dhe laboratorë analizash në pak klikime. Mjekë të verifikuar, disponueshmëri në kohë reale.',
-    searchDoctor: 'Kërko një mjek',
+    searchDoctor: 'Kërko',
     imProfessional: 'Jam profesionist shëndetësor',
     badge: '🏥 Platforma e takimeve mjekësore në Shqipëri',
     verifiedDoctors: 'Mjekë të verifikuar',
     booking247: 'Rezervim 24/7',
     freeForPatients: 'Falas për pacientët',
+    doctorPlaceholder: 'Emër, specialitet',
+    cityPlaceholder: 'Qytet',
   },
   specialities: {
     title: 'Specialitetet',
@@ -462,6 +464,15 @@ const sq: TranslationKey = {
     systemConfiguration: 'Konfigurimi i sistemit',
     systemConfigurationDescription:
       'Konfiguro cilësimet e përgjithshme të sistemit',
+  },
+  daysOfWeek: {
+    1: 'E hënë',
+    2: 'E mërkurë',
+    3: 'E enjte',
+    4: 'E premte',
+    5: 'E përjome',
+    6: 'E shtune',
+    0: 'E dijte',
   },
   specialitiesManager: {
     title: 'Menaxhimi i specialiteteve',

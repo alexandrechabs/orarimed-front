@@ -30,6 +30,7 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboardingPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import DoctorPage from './pages/DoctorPage';
 
 const queryClient = new QueryClient();
 
@@ -203,6 +204,7 @@ const App = () => (
               />
             </Route>
           </Route>
+          <Route path="/:city/:user" element={<DoctorPage />} />
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>

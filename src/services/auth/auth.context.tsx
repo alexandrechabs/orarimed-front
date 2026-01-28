@@ -24,6 +24,7 @@ type AuthContextType = {
   saveOpeningHours: (openingHours: OpeningHour[]) => Promise<OpeningHour[]>;
   getSpecialities: () => Promise<any>;
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
+  saveSubSpecialities: (subSpecialities: number[]) => void;
   logout: () => void;
 };
 
@@ -41,6 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Vérifiez le stockage local au chargement
+
+    getSpecialities();
     const loadUser = async () => {
       try {
         await getMyUser();
@@ -124,6 +127,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  function saveSubSpecialities(params: number[]) {
+    const data = authService.saveSubSpecialities(params, user.id);
+    return;
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -138,6 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         saveOpeningHours,
         getSpecialities,
         saveSpecialities,
+        saveSubSpecialities,
         isLoading,
         isAuthenticated: !!user,
       }}
