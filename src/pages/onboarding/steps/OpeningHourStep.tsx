@@ -54,7 +54,7 @@ export function OpeningHourStep({
   return (
     <FormProvider {...methods}>
       <form
-        id="onboarding-form-1"
+        id="onboarding-form-2"
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-6"
       >

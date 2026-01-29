@@ -33,6 +33,7 @@ const LUCIDE_ICONS = [
   'SmilePlus',
   'Thermometer',
   'Utensils',
+  'Droplet',
   'User',
   'Users',
 ] as const;

@@ -41,6 +41,9 @@ export default function AdminSettingsPage() {
 
     // save
     saveSpecialities(specialities);
+
+    // reload page
+    window.location.reload();
   };
 
   if (!user) {

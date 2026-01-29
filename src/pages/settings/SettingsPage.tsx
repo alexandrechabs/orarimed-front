@@ -31,8 +31,7 @@ export default function SettingsPage() {
     getOpeningHours,
     saveOpeningHours,
   } = useAuth();
-  const { t, language, setLanguage } = useLanguage();
-  const [theme, setTheme] = useState<Theme>('system');
+  const { language } = useLanguage();
   const [formData, setFormData] = useState({
     firstname: user.firstname || '',
     lastname: user.lastname || '',

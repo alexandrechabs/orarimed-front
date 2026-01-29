@@ -5,6 +5,8 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useUser } from '@/services/user/useUser';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface DoctorAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
@@ -94,7 +96,9 @@ export const DoctorAutocomplete = ({
             ' ' +
             doctor.city,
           doctorIdentifier: doctor.doctorIdentifier,
-          imageUrl: doctor.photoUrl || '/user.png',
+          imageUrl: doctor.avatar
+            ? `${API_URL}/user/${doctor.id}/avatar/sm`
+            : '/user.png',
         });
       });
       setSuggestions(suggestions || []);

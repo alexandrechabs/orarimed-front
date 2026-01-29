@@ -9,6 +9,7 @@ export type DoctorProfile = {
   address: string;
   phoneNumber: string;
   bio: string;
+  avatar?: string;
   speciality?: {
     id: number;
     slug: string;

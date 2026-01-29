@@ -11,6 +11,8 @@ import { useUser } from '@/services/user/useUser';
 import { Map } from '@/components/Map';
 import { DoctorProfile } from '@/types/doctor';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export function DoctorPage() {
   const { getDoctor } = useUser();
   const { city, user: username } = useParams<{ city: string; user: string }>();
@@ -107,18 +109,17 @@ export function DoctorPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <Navigation />
       <div className="container mx-auto px-4">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
-          &larr; Retour
-        </Button>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-20">
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <Card>
               <CardHeader className="items-center text-center">
-                <Avatar className="h-32 w-32 mb-4">
-                  {doctor.photoUrl ? (
-                    <AvatarImage src={doctor.photoUrl} alt={fullName} />
+                <Avatar className="h-52 w-52 mb-4">
+                  {doctor.avatar ? (
+                    <AvatarImage
+                      src={`${API_URL}/user/${doctor.id}/avatar/lg`}
+                      alt={fullName}
+                    />
                   ) : (
                     <AvatarFallback>
                       {fullName

@@ -503,6 +503,7 @@ const en: TranslationKey = {
     step: 'Step',
     of: 'of',
     personalInfo: 'Professional information',
+    photo: 'Profile photo',
     availability: 'Availability',
     // Add other translations as needed
   },

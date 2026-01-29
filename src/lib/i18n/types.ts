@@ -191,6 +191,7 @@ export type TranslationKey = {
     step: string;
     of: string;
     personalInfo: string;
+    photo: string;
     availability: string;
     // Ajoutez d'autres traductions selon vos besoins
   };

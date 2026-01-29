@@ -512,6 +512,7 @@ const fr: TranslationKey = {
     step: 'Étape',
     of: 'sur',
     personalInfo: 'Informations professionnelles',
+    photo: 'Photo de profil',
     availability: 'Disponibilités',
     // Ajoutez d'autres traductions selon vos besoins
   },

@@ -438,6 +438,7 @@ const sq: TranslationKey = {
     step: 'Etapë',
     of: 'i',
     personalInfo: 'Informacione profesionale',
+    photo: 'Foto i profili',
     availability: 'Disponibilitet',
     // Add other translations as needed
   },
