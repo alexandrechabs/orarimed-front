@@ -30,6 +30,7 @@ export default function SettingsPage() {
     openingHour,
     getOpeningHours,
     saveOpeningHours,
+    saveSubSpecialities,
   } = useAuth();
   const { language } = useLanguage();
   const [formData, setFormData] = useState({
@@ -84,7 +85,10 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = async () => {
+    console.log(formData);
+
     // update user info
+    await saveSubSpecialities(formData.subSpecialityIds);
     await updateUser(formData);
 
     // TODO: Implémenter la sauvegarde des paramètres
@@ -208,12 +212,28 @@ export default function SettingsPage() {
                               false
                             }
                             onChange={(e) => {
-                              const currentIds =
-                                formData.subSpecialityIds || [];
-                              const newIds = e.target.checked
-                                ? [...currentIds, sub.id]
-                                : currentIds.filter((id) => id !== sub.id);
-                              formData.subSpecialityIds = newIds;
+                              if (e.target.checked) {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  subSpecialityIds: [
+                                    ...(prev.subSpecialityIds || []),
+                                    sub.id,
+                                  ],
+                                }));
+                              } else {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  subSpecialityIds: (
+                                    prev.subSpecialityIds || []
+                                  ).filter((id) => id !== sub.id),
+                                }));
+                              }
+
+                              formData.subSpecialityIds = e.target.checked
+                                ? [...(formData.subSpecialityIds || []), sub.id]
+                                : (formData.subSpecialityIds || []).filter(
+                                    (id) => id !== sub.id,
+                                  );
                             }}
                             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                           />
