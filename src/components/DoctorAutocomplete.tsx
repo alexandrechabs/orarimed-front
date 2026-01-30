@@ -65,7 +65,6 @@ export const DoctorAutocomplete = ({
     try {
       // search
       const response = await searchDoctorAutocomplete(query, language);
-      console.log(response);
 
       let suggestions = [];
       response.specialities.forEach((speciality) => {
@@ -97,7 +96,7 @@ export const DoctorAutocomplete = ({
             doctor.city,
           doctorIdentifier: doctor.doctorIdentifier,
           imageUrl: doctor.avatar
-            ? `${API_URL}/user/${doctor.id}/avatar/sm`
+            ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
             : '/user.png',
         });
       });

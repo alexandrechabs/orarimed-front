@@ -8,13 +8,23 @@ import { Input } from './ui/input';
 import { AddressAutocomplete } from './Autocomplete';
 import { DoctorAutocomplete } from './DoctorAutocomplete';
 import { useState } from 'react';
+import { SearchDoctor } from './search';
 
 const HeroSection = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedCity, setSelectedCity] = useState({
+    address: '',
+    lat: 0,
+    lng: 0,
+  });
   const [selectedDoctor, setSelectedDoctor] = useState('');
-  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+
+  const search = () => {
+    navigate(
+      `/search?q=${encodeURIComponent(selectedDoctor)}&city=${encodeURIComponent(selectedCity.address)}&lat=${selectedCity.lat}&lng=${selectedCity.lng}`,
+    );
+  };
 
   return (
     <section className="relative min-h-[90vh] flex items-center pt-20">
@@ -64,60 +74,13 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="w-full bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 relative z-0"
           >
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                // Utiliser selectedDoctor au lieu de formData pour avoir la valeur à jour
-                const doctor = selectedDoctor;
-                const city = formData.get('city') as string;
-                navigate(
-                  `/search?q=${encodeURIComponent(doctor)}&city=${encodeURIComponent(city)}`,
-                );
-              }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-5">
-                <div className="relative col-span-2">
-                  <DoctorAutocomplete
-                    value={selectedDoctor}
-                    onChange={setSelectedDoctor}
-                    onDoctorSelect={(doctor) => {
-                      setSelectedDoctor(doctor.name);
-                      setSelectedDoctorId(doctor.id);
-                    }}
-                    placeholder={t.hero.doctorPlaceholder || 'Nom, spécialité'}
-                    className="rounded-none rounded-l-md focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </div>
-                <div className="relative col-span-2">
-                  <AddressAutocomplete
-                    value={selectedCity}
-                    onChange={(value) => setSelectedCity(value)}
-                    placeholder={t.hero.cityPlaceholder || 'Ville'}
-                    className="pl-10 h-12 text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    onPlaceSelected={(place) => {
-                      console.log(place);
-                      console.log(place.geometry?.location.lat());
-                      console.log(place.geometry?.location.lng());
-
-                      setSelectedCity(place.formatted_address);
-                    }}
-                  />
-                </div>
-                <div className="relative col-span-1">
-                  <Button
-                    type="submit"
-                    size="xl"
-                    variant="accent"
-                    className="w-full md:w-auto md:px-4 h-12 text-base rounded-none rounded-r-md focus-visible:ring-0 focus-visible:ring-offset-0"
-                  >
-                    <Search className="w-5 h-5 mr-2" />
-                    {t.hero.searchDoctor}
-                  </Button>
-                </div>
-              </div>
-            </form>
+            <SearchDoctor
+              selectedCity={selectedCity}
+              setSelectedCity={setSelectedCity}
+              selectedDoctor={selectedDoctor}
+              setSelectedDoctor={setSelectedDoctor}
+              search={search}
+            />
           </motion.div>
 
           <motion.div

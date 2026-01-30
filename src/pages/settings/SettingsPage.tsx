@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,12 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';
 import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
 import OpeningHoursForm from '@/components/opening-hours/OpeningHoursForm';
 import { OpeningHour } from '@/types/openingHour';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { Camera } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -19,8 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-type Theme = 'light' | 'dark' | 'system';
 
 export default function SettingsPage() {
   const {
@@ -31,6 +38,8 @@ export default function SettingsPage() {
     getOpeningHours,
     saveOpeningHours,
     saveSubSpecialities,
+    savePhotoUser,
+    getMyUser,
   } = useAuth();
   const { language } = useLanguage();
   const [formData, setFormData] = useState({
@@ -45,7 +54,14 @@ export default function SettingsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [tempImage, setTempImage] = useState<string | null>(
+    user?.avatar || null,
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+  const API_URL = import.meta.env.VITE_API_URL;
   const methods = useForm({
     defaultValues: {
       openingHours: openingHour || [],
@@ -53,9 +69,51 @@ export default function SettingsPage() {
   });
   const { handleSubmit, setValue, watch } = methods;
 
-  useEffect(() => {
-    console.log(user);
+  const handleImageSelect = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setTempImage(reader.result as string);
+      setIsCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
 
+  const handleCropComplete = async (croppedImage: string) => {
+    if (!user) return;
+
+    try {
+      setIsUploading(true);
+
+      // Convertir l'image recadrée en fichier
+      const response = await fetch(croppedImage);
+      const blob = await response.blob();
+      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+
+      // Créer FormData pour l'envoi
+      const formData = new FormData();
+      formData.append('file', file);
+
+      await savePhotoUser(formData);
+      await getMyUser();
+
+      setIsCropModalOpen(false);
+    } catch (error) {
+      console.error("Erreur lors du téléversement de l'image:", error);
+      alert("Une erreur est survenue lors du téléversement de l'image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const getInitials = () => {
+    if (!user) return 'DR';
+    return (
+      `${user.firstname?.[0] || ''}${user.lastname?.[0] || ''}`.toUpperCase() ||
+      'DR'
+    );
+  };
+
+  useEffect(() => {
     getOpeningHours();
   }, []);
 
@@ -119,6 +177,40 @@ export default function SettingsPage() {
               <CardTitle>Informations du compte</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Section Photo de profil */}
+              <div className="flex flex-col items-center space-y-4 mb-6">
+                <div className="relative group">
+                  <Avatar className="h-40 w-40">
+                    <AvatarImage
+                      src={
+                        user?.avatar
+                          ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
+                          : ''
+                      }
+                      alt={`${user?.firstname} ${user?.lastname}`}
+                    />
+                    <AvatarFallback className="text-2xl">
+                      {getInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <button
+                    type="button"
+                    onClick={() => setIsCropModalOpen(true)}
+                    className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2 rounded-full shadow-md hover:bg-primary/90 transition-colors"
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <div className="h-5 w-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    ) : (
+                      <Camera className="h-5 w-5" />
+                    )}
+                    <span className="sr-only">Changer la photo de profil</span>
+                  </button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Cliquez sur l'icône pour changer votre photo de profil
+                </p>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Prénom</Label>
@@ -345,6 +437,58 @@ export default function SettingsPage() {
           </TabsContent>
         )}
       </Tabs>
+
+      {/* Modal de recadrage */}
+      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Recadrer l'image</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="w-full max-w-md mx-auto">
+              <ImageUpload
+                value={tempImage || ''}
+                onChange={(value) => {
+                  if (value === null) {
+                    setTempImage(null);
+                  } else if (typeof value === 'string') {
+                    setTempImage(value);
+                  } else if (value instanceof File) {
+                    handleImageSelect(value);
+                  }
+                }}
+                aspect={1}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-4 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsCropModalOpen(false)}
+              disabled={isUploading}
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                if (tempImage) {
+                  handleCropComplete(tempImage);
+                }
+              }}
+              disabled={!tempImage || isUploading}
+            >
+              {isUploading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Enregistrement...
+                </div>
+              ) : (
+                'Enregistrer'
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -117,7 +117,7 @@ export function DoctorPage() {
                 <Avatar className="h-52 w-52 mb-4">
                   {doctor.avatar ? (
                     <AvatarImage
-                      src={`${API_URL}/user/${doctor.id}/avatar/lg`}
+                      src={`${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`}
                       alt={fullName}
                     />
                   ) : (

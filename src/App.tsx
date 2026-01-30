@@ -31,6 +31,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboardingPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import DoctorPage from './pages/DoctorPage';
+import SearchPage from './pages/SearchPage';
 
 const queryClient = new QueryClient();
 
@@ -139,6 +140,7 @@ const App = () => (
           <Route path="/actualities" element={<AktualitetePage />} />
           <Route path="/contact" element={<KontaktPage />} />
           <Route path="/professionals" element={<ProfessionalPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route

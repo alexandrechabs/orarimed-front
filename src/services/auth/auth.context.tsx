@@ -19,6 +19,7 @@ type AuthContextType = {
     acceptTerms: boolean,
     kind: number,
   ) => Promise<void>;
+  getMyUser: () => void;
   updateUser: (params: any) => void;
   getOpeningHours: () => Promise<OpeningHour[]>;
   saveOpeningHours: (openingHours: OpeningHour[]) => Promise<OpeningHour[]>;
@@ -134,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function savePhotoUser(photo: FormData) {
-    const data = await authService.savePhotoUser(photo);
+    const data = await authService.savePhotoUser(photo, user.id);
     return data;
   }
 
@@ -146,6 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         specialities,
         login,
         register,
+        getMyUser,
         logout,
         updateUser,
         getOpeningHours,

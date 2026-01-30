@@ -131,9 +131,15 @@ export const userService = {
     return res.json() as Promise<any>;
   },
 
-  async searchDoctors(query: string, locale: string) {
+  async searchDoctors(
+    address: string,
+    lat: string,
+    lng: string,
+    locale: string,
+    q: string,
+  ) {
     const res = await fetch(
-      `${API_URL}/doctor/search?q=${query}&locale=${locale}`,
+      `${API_URL}/doctor/search?address=${address}&lat=${lat}&lng=${lng}&q=${q}&locale=${locale}`,
       {
         method: 'GET',
         headers: {

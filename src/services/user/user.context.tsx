@@ -16,7 +16,13 @@ type UserContextType = {
   ) => Promise<Patient | null>;
   getPatient: (id: string) => Promise<Patient | null>;
   getDoctor: (doctorIdentifier: string) => Promise<DoctorProfile | null>;
-  searchDoctors: (query: string, locale: string) => Promise<any[]>;
+  searchDoctors: (
+    address: string,
+    lat: string,
+    lng: string,
+    locale: string,
+    q: string,
+  ) => Promise<any[]>;
   searchDoctorAutocomplete: (query: string, locale: string) => Promise<any>;
   getEvents: (dateRange?: DateRange) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
@@ -105,8 +111,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
-  async function searchDoctors(query: string, locale: string): Promise<any[]> {
-    const data = await userService.searchDoctors(query, locale);
+  async function searchDoctors(
+    address: string,
+    lat: string,
+    lng: string,
+    locale: string,
+    q: string,
+  ): Promise<any[]> {
+    const data = await userService.searchDoctors(address, lat, lng, locale, q);
     return data;
   }
 

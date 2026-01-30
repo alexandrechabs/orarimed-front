@@ -4,6 +4,7 @@ export type User = {
   firstname: string;
   lastname: string;
   roleId: number;
+  avatar: string | null;
   phoneNumber: string | null;
   birthDate: string | null;
   genderId: number | null;
