@@ -70,7 +70,7 @@ export interface CalendarEvent {
   title: string;
   description?: string;
   allDay: boolean;
-  patient: {
+  patient?: {
     id?: number;
     firstname?: string;
     lastname?: string;
@@ -89,7 +89,7 @@ export interface CalendarEvent {
   endTime?: string;
   daysOfWeek?: number[];
   // Propriétés étendues
-  eventKind?: 'appointment' | 'absence';
+  type?: 'appointment' | 'absence';
 }
 
 /* ----------------------------------------
@@ -98,7 +98,7 @@ export interface CalendarEvent {
 
 const formSchema = z
   .object({
-    eventKind: z.enum(['appointment', 'absence']),
+    type: z.enum(['appointment', 'absence']),
     title: z.string().optional(),
     description: z.string().optional(),
     startDate: z.date(),
@@ -106,7 +106,6 @@ const formSchema = z
     isAllDay: z.boolean(),
     repeatType: z.enum(['none', 'daily', 'dailyWeek', 'weekly']),
     repeatEndDate: z.date().optional(),
-
     patient: z
       .object({
         firstname: z.string().min(1, 'Prénom obligatoire'),
@@ -115,12 +114,26 @@ const formSchema = z
         phoneNumber: z.string().optional(),
         id: z.number().optional(),
       })
-      .nullable(),
+      .optional(),
   })
-  .refine((data) => data.eventKind === 'absence' || data.patient !== null, {
-    path: ['patient'],
-    message: 'Un patient est obligatoire pour un rendez-vous',
-  })
+  .refine(
+    (data) => {
+      if (data.type === 'absence') return true;
+
+      // Si c'est un rendez-vous, on vérifie que le patient est valide
+      return (
+        data.patient &&
+        typeof data.patient === 'object' &&
+        data.patient.firstname &&
+        data.patient.lastname
+      );
+    },
+    {
+      path: ['patient'],
+      message:
+        'Un patient avec un nom et un prénom est obligatoire pour un rendez-vous',
+    },
+  )
   .refine((data) => !data.endDate || data.endDate > data.startDate, {
     path: ['endDate'],
     message: 'La fin doit être après le début',
@@ -130,7 +143,7 @@ const formSchema = z
     {
       path: ['repeatEndDate'],
       message: 'Une date de fin est requise pour une répétition',
-    }
+    },
   );
 
 type FormValues = z.infer<typeof formSchema>;
@@ -161,15 +174,20 @@ export default function CreateAppointmentModal({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      eventKind: 'appointment',
+      type: 'appointment',
       title: 'Consultation',
       description: '',
       startDate: new Date(),
-      endDate: undefined,
+      endDate: addMinutes(new Date(), 15),
       isAllDay: false,
       repeatType: 'none',
       repeatEndDate: undefined,
-      patient: null,
+      patient: {
+        firstname: '',
+        lastname: '',
+        email: '',
+        phoneNumber: '',
+      },
     },
   });
 
@@ -197,8 +215,7 @@ export default function CreateAppointmentModal({
     formState: { errors },
   } = form;
 
-  const eventKind = watch('eventKind');
-  const isAllDay = watch('isAllDay');
+  const type = watch('type');
 
   const startDate = useWatch({ control, name: 'startDate' });
   const title = useWatch({ control, name: 'title' });
@@ -212,24 +229,35 @@ export default function CreateAppointmentModal({
     const start = eventToEdit?.start
       ? new Date(eventToEdit.start)
       : initialDate
-      ? new Date(initialDate)
-      : new Date();
+        ? new Date(initialDate)
+        : new Date();
 
     const end = eventToEdit?.end
       ? new Date(eventToEdit.end)
       : addMinutes(start, 15);
 
+    const type = (eventToEdit as any)?.extendedProps?.type || 'appointment';
+    const defaultTitle = type === 'absence' ? 'Absence' : 'Consultation';
+
     form.reset({
-      eventKind:
-        (eventToEdit as any)?.extendedProps?.eventKind || 'appointment',
-      title: eventToEdit?.title || 'Consultation',
+      type,
+      title: eventToEdit?.title || defaultTitle,
       description: eventToEdit?.description || '',
       startDate: start,
       endDate: end,
       isAllDay: eventToEdit?.allDay || false,
       repeatType: 'none',
       repeatEndDate: undefined,
-      patient: null,
+      patient:
+        type === 'appointment'
+          ? {
+              id: eventToEdit?.patient?.id,
+              firstname: eventToEdit?.patient?.firstname || '',
+              lastname: eventToEdit?.patient?.lastname || '',
+              email: eventToEdit?.patient?.email || '',
+              phoneNumber: eventToEdit?.patient?.phoneNumber || '',
+            }
+          : null,
     });
   }, [open, initialDate, eventToEdit, form]);
 
@@ -263,11 +291,7 @@ export default function CreateAppointmentModal({
      SUBMIT
   ----------------------------------------- */
   const onSubmit = (data: FormValues) => {
-    console.log('Données du formulaire :', data);
-
     const event = buildRecurringEvent(data, user.id);
-
-    console.log('plop');
 
     if (eventToEdit) {
       onEventUpdated(event);
@@ -279,23 +303,27 @@ export default function CreateAppointmentModal({
 
   function buildRecurringEvent(
     data: FormValues,
-    userId: string
+    userId: string,
   ): CalendarEvent {
-    const base: CalendarEvent = {
+    let base: CalendarEvent = {
       id: eventToEdit?.id,
       title: data.title || 'Nouvel événement',
+      type: data.type,
       description: data.description,
       allDay: data.isAllDay,
       practitionerId: userId,
       color: appointmentTitles.find((i) => i.name === data.title)?.color,
-      patient: {
-        id: data.patient?.id,
-        firstname: data.patient?.firstname,
-        lastname: data.patient?.lastname,
-        email: data.patient?.email,
-        phoneNumber: data.patient?.phoneNumber,
-      },
     };
+
+    if (data.type === 'appointment' && data.patient) {
+      base.patient = {
+        id: data.patient.id,
+        firstname: data.patient.firstname,
+        lastname: data.patient.lastname,
+        email: data.patient.email,
+        phoneNumber: data.patient.phoneNumber,
+      };
+    }
 
     if (data.repeatType === 'none') {
       return {
@@ -310,8 +338,8 @@ export default function CreateAppointmentModal({
       data.repeatType === 'daily'
         ? [0, 1, 2, 3, 4, 5, 6]
         : data.repeatType === 'dailyWeek'
-        ? [1, 2, 3, 4, 5]
-        : [data.startDate.getDay()];
+          ? [1, 2, 3, 4, 5]
+          : [data.startDate.getDay()];
 
     return {
       ...base,
@@ -333,7 +361,7 @@ export default function CreateAppointmentModal({
             <DialogTitle className="m-4 text-center">
               {eventToEdit
                 ? `Modifier ${
-                    eventToEdit?.eventKind === 'absence'
+                    eventToEdit?.type === 'absence'
                       ? "l'absence"
                       : 'le rendez-vous'
                   }`
@@ -354,18 +382,39 @@ export default function CreateAppointmentModal({
               </div>
               <div className="w-1/2">
                 <Controller
-                  name="eventKind"
+                  name="type"
                   control={control}
                   render={({ field }) => (
                     <Select
                       value={field.value}
                       onValueChange={(value) => {
-                        field.onChange(value);
-                        form.setValue(
-                          'title',
-                          appointmentTitles.filter((t) => t.type === value)[0]
-                            .name
-                        );
+                        const newType = value as 'appointment' | 'absence';
+                        field.onChange(newType);
+
+                        // Mettre à jour le titre en fonction du type d'événement
+                        const newTitle =
+                          appointmentTitles.find((t) => t.type === newType)
+                            ?.name || 'Nouvel événement';
+                        form.setValue('title', newTitle);
+
+                        // Si on change pour une absence, on réinitialise le patient
+                        if (newType === 'absence') {
+                          form.setValue('patient', undefined, {
+                            shouldValidate: true,
+                          });
+                        } else {
+                          // Si on change pour un rendez-vous, on initialise un patient vide
+                          form.setValue(
+                            'patient',
+                            {
+                              firstname: '',
+                              lastname: '',
+                              email: '',
+                              phoneNumber: '',
+                            },
+                            { shouldValidate: true },
+                          );
+                        }
                       }}
                     >
                       <SelectTrigger>
@@ -392,7 +441,7 @@ export default function CreateAppointmentModal({
                     value={field.value}
                     onValueChange={(value) => {
                       const selected = appointmentTitles.find(
-                        (t) => t.name === value
+                        (t) => t.name === value,
                       );
                       if (selected) {
                         field.onChange(selected.name);
@@ -405,7 +454,7 @@ export default function CreateAppointmentModal({
 
                     <SelectContent>
                       {appointmentTitles
-                        .filter((t) => t.type === eventKind)
+                        .filter((t) => t.type === type)
                         .map((title) => (
                           <SelectItem key={title.name} value={title.name}>
                             <div className="flex items-center gap-2">
@@ -433,7 +482,7 @@ export default function CreateAppointmentModal({
             </div>
 
             {/* PATIENT */}
-            {eventKind === 'appointment' && (
+            {type === 'appointment' && (
               <div className="mt-2 space-y-4 relative">
                 <Label>Patient</Label>
 
@@ -475,7 +524,7 @@ export default function CreateAppointmentModal({
                                     email: p.email,
                                     phoneNumber: p.phoneNumber,
                                   },
-                                  { shouldValidate: true }
+                                  { shouldValidate: true },
                                 );
                                 clear();
                               }}
@@ -570,7 +619,7 @@ export default function CreateAppointmentModal({
                             newDate.setFullYear(
                               date.getFullYear(),
                               date.getMonth(),
-                              date.getDate()
+                              date.getDate(),
                             );
                             field.onChange(newDate);
                           }}
@@ -637,7 +686,7 @@ export default function CreateAppointmentModal({
                             newDate.setFullYear(
                               date.getFullYear(),
                               date.getMonth(),
-                              date.getDate()
+                              date.getDate(),
                             );
                             field.onChange(newDate);
                           }}

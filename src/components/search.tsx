@@ -61,7 +61,7 @@ export function SearchDoctor({
             size="xl"
             variant="accent"
             onClick={search}
-            className="w-full md:w-auto md:px-4 h-12 text-base rounded-none rounded-r-md focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="w-full md:px-4 h-12 text-base rounded-none rounded-r-md focus-visible:ring-0 focus-visible:ring-offset-0"
           >
             <Search className="w-5 h-5 mr-2" />
             {t.hero.searchDoctor}

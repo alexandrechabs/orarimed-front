@@ -2,30 +2,60 @@ import { OpeningHour } from './openingHour';
 
 export type DoctorProfile = {
   id: string;
+  doctorIdentifier: string;
   firstname: string;
   lastname: string;
   email: string;
-  city: string;
-  address: string;
   phoneNumber: string;
-  bio: string;
-  avatar?: string;
-  speciality?: {
-    id: number;
-    slug: string;
-    icon: string;
-    color: string;
-    translations: Array<{ locale: string; name: string }>;
+  speciality: {
+    id: string;
+    name: string;
+    translations: Array<{
+      id: string;
+      name: string;
+      locale: string;
+    }>;
   };
-  subSpecialitiesUsers?: Array<{
-    id: number;
-    userId: number;
-    subSpecialityId: number;
-    subSpeciality?: {
-      id: number;
-      slug: string;
-      translations: Array<{ locale: string; name: string }>;
+  address: string;
+  city: string;
+  zipCode: string;
+  country: string;
+  avatar?: string;
+  bio?: string;
+  description?: string;
+  price?: number;
+  duration?: number;
+  languages?: string[];
+  paymentMethods?: string[];
+  slots?: Array<{
+    start: string | Date;
+    end: string | Date;
+  }>;
+  education?: Array<{
+    id: string;
+    degree: string;
+    university: string;
+    year: number;
+  }>;
+  experiences?: Array<{
+    id: string;
+    position: string;
+    company: string;
+    startDate: string;
+    endDate?: string;
+    description?: string;
+  }>;
+  reviews?: Array<{
+    id: string;
+    rating: number;
+    comment: string;
+    patient: {
+      id: string;
+      firstname: string;
+      lastname: string;
+      avatar?: string;
     };
+    createdAt: string;
   }>;
   openingHours?: OpeningHour[];
 };

@@ -6,4 +6,5 @@ export type OpeningHour = {
   closeTime: string;
   userId?: string;
   centerId?: number;
+  timeZone: string;
 };

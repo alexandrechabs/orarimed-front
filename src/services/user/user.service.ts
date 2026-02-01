@@ -166,4 +166,19 @@ export const userService = {
     if (!res.ok) throw new Error('Get user failed');
     return res.json() as Promise<any>;
   },
+
+  async getAvailableSlots(doctorId: string, date: string) {
+    const res = await fetch(
+      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!res.ok) throw new Error('Get user failed');
+    return res.json() as Promise<any>;
+  },
 };

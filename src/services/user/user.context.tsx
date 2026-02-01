@@ -24,6 +24,7 @@ type UserContextType = {
     q: string,
   ) => Promise<any[]>;
   searchDoctorAutocomplete: (query: string, locale: string) => Promise<any>;
+  getAvailableSlots: (doctorId: string, date: string) => Promise<any[]>;
   getEvents: (dateRange?: DateRange) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
   updateEvent: (event: EventInput) => Promise<EventInput>;
@@ -130,6 +131,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function getAvailableSlots(
+    doctorId: string,
+    date: string,
+  ): Promise<any[]> {
+    const data = await userService.getAvailableSlots(doctorId, date);
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -143,6 +152,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         getDoctor,
         searchDoctors,
         searchDoctorAutocomplete,
+        getAvailableSlots,
       }}
     >
       {children}

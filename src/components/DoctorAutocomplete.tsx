@@ -146,7 +146,7 @@ export const DoctorAutocomplete = ({
       </div>
 
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200">
+        <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 z-10">
           <ul className="py-1 max-h-60 overflow-auto">
             {suggestions.map((suggestion) => {
               if (suggestion.type === 'doctor') {

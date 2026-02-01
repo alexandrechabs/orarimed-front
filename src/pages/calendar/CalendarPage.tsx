@@ -107,7 +107,7 @@ const CalendarPage = () => {
       };
       getEvents(dateRange);
     },
-    [getEvents]
+    [getEvents],
   );
 
   const handleEventCreated = useCallback(async (newEvent: EventInput) => {
@@ -166,7 +166,7 @@ const CalendarPage = () => {
       patient: event.extendedProps?.patient,
       practitionerId: event.extendedProps?.practitionerId || user?.id, // Utiliser l'ID de l'utilisateur connecté
       // Propriétés étendues
-      eventKind: event.extendedProps?.eventKind || 'appointment',
+      type: event.extendedProps?.type || 'appointment',
     };
 
     setEditingEvent(eventData);
@@ -220,11 +220,20 @@ const CalendarPage = () => {
   const renderEventContent = (eventInfo: any) => {
     const event = eventInfo.event;
 
+    console.log(event);
+    console.log(event.type);
+    console.log(event.extendedProps?.type);
+
     return (
       <div className="">
         <div className="font-normal truncate">
-          {formatTime(event.start)} - {event.extendedProps?.patient?.firstname}{' '}
-          {event.extendedProps?.patient?.lastname}
+          {event.extendedProps?.type === 'absence'
+            ? formatTime(event.start) + ' - ' + event.title
+            : formatTime(event.start) +
+              ' - ' +
+              event.extendedProps?.patient?.firstname +
+              ' ' +
+              event.extendedProps?.patient?.lastname}
         </div>
       </div>
     );

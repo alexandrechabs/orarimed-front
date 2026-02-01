@@ -59,15 +59,14 @@ export default function SettingsPage() {
     user?.avatar || null,
   );
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const API_URL = import.meta.env.VITE_API_URL;
   const methods = useForm({
     defaultValues: {
-      openingHours: openingHour || [],
+      openingHours: [],
     },
   });
-  const { handleSubmit, setValue, watch } = methods;
+  const { handleSubmit, setValue, watch, reset } = methods;
 
   const handleImageSelect = (file: File) => {
     const reader = new FileReader();
@@ -117,8 +116,20 @@ export default function SettingsPage() {
     getOpeningHours();
   }, []);
 
+  useEffect(() => {
+    if (openingHour) {
+      reset({
+        openingHours: openingHour,
+      });
+    }
+  }, [openingHour, reset]);
+
   const onSubmit = (formData: { openingHours: OpeningHour[] }) => {
-    saveOpeningHours(formData.openingHours);
+    let openingHours = formData.openingHours;
+    openingHours.forEach((openingHour) => {
+      openingHour.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    });
+    saveOpeningHours(openingHours);
   };
 
   const handleInputChange = (
@@ -426,7 +437,7 @@ export default function SettingsPage() {
                   </p>
 
                   <div className="mt-6">
-                    <OpeningHoursForm name="openingHours" />
+                    <OpeningHoursForm />
                   </div>
                 </div>
                 <div className="flex justify-center">
