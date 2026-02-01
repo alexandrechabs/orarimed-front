@@ -16,6 +16,18 @@ export type DoctorProfile = {
       locale: string;
     }>;
   };
+  subSpecialitiesUsers: Array<{
+    id: string;
+    subSpeciality: {
+      id: string;
+      slug: string;
+      translations: Array<{
+        id: string;
+        name: string;
+        locale: string;
+      }>;
+    };
+  }>;
   address: string;
   city: string;
   zipCode: string;
