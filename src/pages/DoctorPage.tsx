@@ -218,16 +218,14 @@ export function DoctorPage() {
                   <div className="space-y-2">
                     <div>
                       <p className="font-medium">Adresse :</p>
-                      <p className="text-muted-foreground">
-                        {doctor.address}, {doctor.city}
-                      </p>
+                      <p className="text-accent">{doctor.address}</p>
                     </div>
 
                     <div>
                       <p className="font-medium">Téléphone :</p>
                       <a
                         href={`tel:${doctor.phoneNumber.replace(/\s/g, '')}`}
-                        className="text-muted-foreground hover:underline"
+                        className="text-accent"
                       >
                         {formatPhoneNumber(doctor.phoneNumber)}
                       </a>
@@ -257,7 +255,7 @@ export function DoctorPage() {
                     <Badge
                       key={speciality.id}
                       variant="secondary"
-                      className="text-sm"
+                      className="text-sm bg-accent/10 text-accent"
                     >
                       {speciality.subSpeciality?.translations?.find(
                         (t) => t.locale === language,

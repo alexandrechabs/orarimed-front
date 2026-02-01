@@ -168,16 +168,16 @@ export function DoctorCard({ doctor, onSlotClick }: DoctorCardProps) {
                                     <div
                                       key={slotIndex}
                                       onClick={onSlotClick}
-                                      className="px-2 py-1 m-1 bg-blue-50 text-accent text-sm rounded text-center font-medium hover:bg-blue-100 transition-colors cursor-pointer"
+                                      className="px-2 py-1 m-1 bg-accent/10 text-accent text-sm rounded-md text-center font-medium hover:bg-blue-100 transition-colors cursor-pointer"
                                     >
                                       {startTime}
                                     </div>
                                   );
                                 })}
-                                {!expandedDays && (
+                                {!expandedDays && daySlots.length > 4 && (
                                   <div
                                     key={'totalSlots' + i}
-                                    className="px-2 py-1 m-1 text-xs rounded text-center font-medium hover:bg-blue-100 transition-colors cursor-pointer"
+                                    className="px-2 py-1 m-1 text-xs text-center font-medium hover:bg-blue-100 transition-colors cursor-pointer"
                                   >
                                     +{daySlots.length - 4}
                                   </div>

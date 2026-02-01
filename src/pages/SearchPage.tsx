@@ -98,6 +98,7 @@ export default function SearchPage() {
 
   const clickSlot = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     console.log('plop');
   };
 
