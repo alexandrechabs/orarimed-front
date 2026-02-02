@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { addHours, addMinutes, format } from 'date-fns';
+import { addMinutes, format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -131,7 +131,7 @@ const formSchema = z
     {
       path: ['patient'],
       message:
-        'Un patient avec un nom et un prénom est obligatoire pour un rendez-vous',
+        'Un patient avec un nom et un prénom est obligatoire pour une consultation',
     },
   )
   .refine((data) => !data.endDate || data.endDate > data.startDate, {
@@ -168,7 +168,7 @@ export default function CreateAppointmentModal({
   onEventCreated,
   onEventUpdated,
 }: Props) {
-  const { user } = useAuth();
+  const { user, getReasons } = useAuth();
   const { results, search, clear } = usePatientSearch();
 
   const form = useForm<FormValues>({
@@ -191,20 +191,7 @@ export default function CreateAppointmentModal({
     },
   });
 
-  const appointmentTitles = [
-    { name: 'Consultation', color: '#339991', type: 'appointment', time: 15 },
-    { name: 'Contrôle', color: '#00ff00', type: 'appointment', time: 30 },
-    { name: 'Urgence', color: '#0000ff', type: 'appointment', time: 15 },
-    {
-      name: 'Bilan de santé',
-      color: '#ffff00',
-      type: 'appointment',
-      time: 15,
-    },
-    { name: 'Suivi', color: '#ff00ff', type: 'appointment', time: 15 },
-    { name: 'Autre', color: '#00ffff', type: 'appointment', time: 15 },
-    { name: 'Absence', color: '#ff0000', type: 'absence' },
-  ];
+  let [appointmentTitles, setAppointmentTitles] = useState([]);
 
   const {
     control,
@@ -223,6 +210,12 @@ export default function CreateAppointmentModal({
   const didInit = useRef<false | 'initialized' | 'ready'>(false);
 
   useEffect(() => {
+    getReasons().then((reasons) => {
+      setAppointmentTitles(reasons);
+    });
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
 
     didInit.current = false;
@@ -234,10 +227,13 @@ export default function CreateAppointmentModal({
 
     const end = eventToEdit?.end
       ? new Date(eventToEdit.end)
-      : addMinutes(start, 15);
+      : addMinutes(start, 30);
 
     const type = (eventToEdit as any)?.extendedProps?.type || 'appointment';
-    const defaultTitle = type === 'absence' ? 'Absence' : 'Consultation';
+    const defaultTitle =
+      type === 'absence'
+        ? appointmentTitles.filter((i) => i.type === 'absence')[0]?.name
+        : appointmentTitles.filter((i) => i.type === 'appointment')[0]?.name;
 
     form.reset({
       type,
@@ -259,6 +255,20 @@ export default function CreateAppointmentModal({
             }
           : null,
     });
+
+    // add title in appointmentTitles if not found
+    const reason = appointmentTitles.find((r) => r.name === eventToEdit?.title);
+    if (!reason) {
+      setAppointmentTitles((prev) => [
+        ...prev,
+        {
+          name: eventToEdit?.title,
+          color: eventToEdit?.color,
+          type: eventToEdit?.type,
+          time: 30,
+        },
+      ]);
+    }
   }, [open, initialDate, eventToEdit, form]);
 
   useEffect(() => {
@@ -363,9 +373,9 @@ export default function CreateAppointmentModal({
                 ? `Modifier ${
                     eventToEdit?.type === 'absence'
                       ? "l'absence"
-                      : 'le rendez-vous'
+                      : 'la consultation'
                   }`
-                : 'Nouvel événement'}
+                : 'Nouvelle consultation'}
             </DialogTitle>
           </DialogHeader>
 
@@ -421,7 +431,9 @@ export default function CreateAppointmentModal({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="appointment">Rendez-vous</SelectItem>
+                        <SelectItem value="appointment">
+                          Consultation
+                        </SelectItem>
                         <SelectItem value="absence">Absence</SelectItem>
                       </SelectContent>
                     </Select>

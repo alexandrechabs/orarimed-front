@@ -1,3 +1,4 @@
+import { ConsultationReason } from '@/types/consultationReason';
 import { OpeningHour } from '@/types/openingHour';
 import { Speciality } from '@/types/specialty';
 import { Token } from '@/types/token';
@@ -107,6 +108,43 @@ export const authService = {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ openingHours }),
+    });
+
+    return response.json();
+  },
+
+  async getReasons(userId: string): Promise<ConsultationReason[]> {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/reasons`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.json();
+  },
+
+  async saveReasons(userId: string, reasons: ConsultationReason[]) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/reasons/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ reasons }),
     });
 
     return response.json();

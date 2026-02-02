@@ -155,7 +155,7 @@ const CalendarPage = () => {
       // Propriétés de base
       start: event.start,
       end: event.end,
-      color: event.extendedProps?.color,
+      color: event.backgroundColor,
       // Propriétés de récurrence
       daysOfWeek: event.extendedProps?.daysOfWeek || event.daysOfWeek,
       startRecur: event.extendedProps?.startRecur || event.startRecur,
@@ -219,10 +219,6 @@ const CalendarPage = () => {
   // Fonction pour personnaliser le rendu des événements
   const renderEventContent = (eventInfo: any) => {
     const event = eventInfo.event;
-
-    console.log(event);
-    console.log(event.type);
-    console.log(event.extendedProps?.type);
 
     return (
       <div className="">

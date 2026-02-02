@@ -3,12 +3,14 @@ import { authService } from './auth.service';
 import { User } from '@/types/user';
 import { OpeningHour } from '@/types/openingHour';
 import { Speciality } from '@/types/specialty';
+import { ConsultationReason } from '@/types/consultationReason';
 
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   openingHour: OpeningHour[] | null;
+  reasons: ConsultationReason[] | null;
   specialities: any[] | null;
   login: (email: string, password: string) => Promise<void>;
   register: (
@@ -23,6 +25,8 @@ type AuthContextType = {
   updateUser: (params: any) => void;
   getOpeningHours: () => Promise<OpeningHour[]>;
   saveOpeningHours: (openingHours: OpeningHour[]) => Promise<OpeningHour[]>;
+  getReasons: () => Promise<ConsultationReason[]>;
+  saveReasons: (reasons: ConsultationReason[]) => Promise<ConsultationReason[]>;
   getSpecialities: () => Promise<any>;
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
   saveSubSpecialities: (subSpecialities: number[]) => void;
@@ -39,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const [user, setUser] = useState<User | null>(null);
   const [openingHour, setOpeningHour] = useState<OpeningHour[] | null>(null);
+  const [reasons, setReasons] = useState<ConsultationReason[] | null>(null);
   const [specialities, setSpecialities] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true); // État de chargement
 
@@ -117,6 +122,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function getReasons() {
+    const data = await authService.getReasons(user.id);
+    setReasons(data);
+    return data;
+  }
+
+  async function saveReasons(reasons: ConsultationReason[]) {
+    const data = await authService.saveReasons(user.id, reasons);
+    setReasons(data);
+    return data;
+  }
+
   async function getSpecialities() {
     const data = await authService.getSpecialities();
     setSpecialities(data);
@@ -144,6 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         openingHour,
+        reasons,
         specialities,
         login,
         register,
@@ -152,6 +170,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateUser,
         getOpeningHours,
         saveOpeningHours,
+        getReasons,
+        saveReasons,
         getSpecialities,
         saveSpecialities,
         saveSubSpecialities,

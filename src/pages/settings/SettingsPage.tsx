@@ -1,11 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import OpeningHoursForm from '@/components/admin/OpeningHoursForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
@@ -13,14 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useAuth } from '@/services/auth/useAuth';
-import PhoneInput from 'react-phone-number-input';
-import type { CountryCode } from 'libphonenumber-js';
-import OpeningHoursForm from '@/components/opening-hours/OpeningHoursForm';
-import { OpeningHour } from '@/types/openingHour';
-import { ImageUpload } from '@/components/ui/ImageUpload';
-import { Camera } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -28,6 +17,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useAuth } from '@/services/auth/useAuth';
+import PhoneInput from 'react-phone-number-input';
+import type { CountryCode } from 'libphonenumber-js';
+import { OpeningHour } from '@/types/openingHour';
+import { Camera } from 'lucide-react';
+import { ConsultationReason } from '@/types/consultationReason';
+import ConsultationReasons from '@/components/admin/ConsultationReasons';
 
 export default function SettingsPage() {
   const {
@@ -37,6 +39,8 @@ export default function SettingsPage() {
     openingHour,
     getOpeningHours,
     saveOpeningHours,
+    getReasons,
+    saveReasons,
     saveSubSpecialities,
     savePhotoUser,
     getMyUser,
@@ -59,6 +63,7 @@ export default function SettingsPage() {
     user?.avatar || null,
   );
   const [isUploading, setIsUploading] = useState(false);
+  const isInitialMount = useRef(true);
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const API_URL = import.meta.env.VITE_API_URL;
   const methods = useForm({
@@ -66,6 +71,7 @@ export default function SettingsPage() {
       openingHours: [],
     },
   });
+
   const { handleSubmit, setValue, watch, reset } = methods;
 
   const handleImageSelect = (file: File) => {
@@ -113,16 +119,14 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    getOpeningHours();
+    getOpeningHours().then((openingHours) => {
+      if (openingHours) {
+        reset({
+          openingHours: openingHours,
+        });
+      }
+    });
   }, []);
-
-  useEffect(() => {
-    if (openingHour) {
-      reset({
-        openingHours: openingHour,
-      });
-    }
-  }, [openingHour, reset]);
 
   const onSubmit = (formData: { openingHours: OpeningHour[] }) => {
     let openingHours = formData.openingHours;
@@ -130,6 +134,11 @@ export default function SettingsPage() {
       openingHour.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     });
     saveOpeningHours(openingHours);
+  };
+
+  const onSubmitReason = (formData: { reasons: ConsultationReason[] }) => {
+    let reasons = formData.reasons;
+    saveReasons(reasons);
   };
 
   const handleInputChange = (
@@ -165,7 +174,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="mx-auto py-8 space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
       <div className="flex items-center">
         <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
       </div>
@@ -179,6 +188,9 @@ export default function SettingsPage() {
               <TabsTrigger value="opening-hours">
                 Horaires d'ouverture
               </TabsTrigger>
+            )}
+            {user.roleId === 2 && (
+              <TabsTrigger value="reason">Motif de consultation</TabsTrigger>
             )}
           </TabsList>
         </div>
@@ -445,6 +457,21 @@ export default function SettingsPage() {
                 </div>
               </form>
             </FormProvider>
+          </TabsContent>
+        )}
+        {user.roleId === 2 && (
+          <TabsContent value="reason">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Motif de consultation</h2>
+              <p className="text-sm text-gray-600">
+                Définissez vos motifs de consultation. Vous pourrez les modifier
+                ultérieurement.
+              </p>
+
+              <div className="mt-6">
+                <ConsultationReasons />
+              </div>
+            </div>
           </TabsContent>
         )}
       </Tabs>

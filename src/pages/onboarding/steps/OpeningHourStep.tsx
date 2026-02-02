@@ -2,7 +2,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { OpeningHour } from '@/types/openingHour';
-import OpeningHoursForm from '@/components/opening-hours/OpeningHoursForm';
+import OpeningHoursForm from '@/components/admin/OpeningHoursForm';
 import { useAuth } from '@/services/auth/useAuth';
 
 interface OpeningHourStepProps {
