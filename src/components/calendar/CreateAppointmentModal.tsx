@@ -30,10 +30,11 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Settings } from 'lucide-react';
 
 import { useAuth } from '@/services/auth/useAuth';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function usePatientSearch() {
   const [results, setResults] = useState<any[]>([]);
@@ -168,6 +169,7 @@ export default function CreateAppointmentModal({
   onEventCreated,
   onEventUpdated,
 }: Props) {
+  const navigate = useNavigate();
   const { user, getReasons } = useAuth();
   const { results, search, clear } = usePatientSearch();
 
@@ -444,7 +446,21 @@ export default function CreateAppointmentModal({
 
             {/* TITRE */}
             <div className="mt-2">
-              <Label>Motif</Label>
+              <div className="flex items-center gap-2 my-2">
+                <Label>Motif</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-4 w-4"
+                  onClick={() =>
+                    navigate('/doctor-settings?tab=consultation-reasons')
+                  }
+                  title="Gérer les motifs de consultation"
+                >
+                  <Settings className="h-3 w-3" />
+                </Button>
+              </div>
               <Controller
                 name="title"
                 control={control}

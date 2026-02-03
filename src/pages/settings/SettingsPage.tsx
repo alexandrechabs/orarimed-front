@@ -1,6 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import OpeningHoursForm from '@/components/admin/OpeningHoursForm';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -26,21 +24,13 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';
 import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
-import { OpeningHour } from '@/types/openingHour';
 import { Camera } from 'lucide-react';
-import { ConsultationReason } from '@/types/consultationReason';
-import ConsultationReasons from '@/components/admin/ConsultationReasons';
 
 export default function SettingsPage() {
   const {
     user,
     specialities,
     updateUser,
-    openingHour,
-    getOpeningHours,
-    saveOpeningHours,
-    getReasons,
-    saveReasons,
     saveSubSpecialities,
     savePhotoUser,
     getMyUser,
@@ -63,16 +53,8 @@ export default function SettingsPage() {
     user?.avatar || null,
   );
   const [isUploading, setIsUploading] = useState(false);
-  const isInitialMount = useRef(true);
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const API_URL = import.meta.env.VITE_API_URL;
-  const methods = useForm({
-    defaultValues: {
-      openingHours: [],
-    },
-  });
-
-  const { handleSubmit, setValue, watch, reset } = methods;
 
   const handleImageSelect = (file: File) => {
     const reader = new FileReader();
@@ -118,29 +100,6 @@ export default function SettingsPage() {
     );
   };
 
-  useEffect(() => {
-    getOpeningHours().then((openingHours) => {
-      if (openingHours) {
-        reset({
-          openingHours: openingHours,
-        });
-      }
-    });
-  }, []);
-
-  const onSubmit = (formData: { openingHours: OpeningHour[] }) => {
-    let openingHours = formData.openingHours;
-    openingHours.forEach((openingHour) => {
-      openingHour.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    });
-    saveOpeningHours(openingHours);
-  };
-
-  const onSubmitReason = (formData: { reasons: ConsultationReason[] }) => {
-    let reasons = formData.reasons;
-    saveReasons(reasons);
-  };
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement> | string,
     name?: string,
@@ -184,14 +143,6 @@ export default function SettingsPage() {
           <TabsList>
             <TabsTrigger value="account">Compte</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            {user.roleId === 2 && (
-              <TabsTrigger value="opening-hours">
-                Horaires d'ouverture
-              </TabsTrigger>
-            )}
-            {user.roleId === 2 && (
-              <TabsTrigger value="reason">Motif de consultation</TabsTrigger>
-            )}
           </TabsList>
         </div>
         <TabsContent value="account">
@@ -432,48 +383,6 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-
-        {user.roleId === 2 && (
-          <TabsContent value="opening-hours">
-            <FormProvider {...methods}>
-              <form
-                id="onboarding-form-1"
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-bold">Horaires d'ouverture</h2>
-                  <p className="text-sm text-gray-600">
-                    Définissez vos horaires de consultation. Vous pourrez les
-                    modifier ultérieurement.
-                  </p>
-
-                  <div className="mt-6">
-                    <OpeningHoursForm />
-                  </div>
-                </div>
-                <div className="flex justify-center">
-                  <Button type="submit">Enregistrer</Button>
-                </div>
-              </form>
-            </FormProvider>
-          </TabsContent>
-        )}
-        {user.roleId === 2 && (
-          <TabsContent value="reason">
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Motif de consultation</h2>
-              <p className="text-sm text-gray-600">
-                Définissez vos motifs de consultation. Vous pourrez les modifier
-                ultérieurement.
-              </p>
-
-              <div className="mt-6">
-                <ConsultationReasons />
-              </div>
-            </div>
-          </TabsContent>
-        )}
       </Tabs>
 
       {/* Modal de recadrage */}

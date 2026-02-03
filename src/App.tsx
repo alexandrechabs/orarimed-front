@@ -32,6 +32,7 @@ import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboa
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import DoctorPage from './pages/DoctorPage';
 import SearchPage from './pages/SearchPage';
+import DoctorSettingsPage from './pages/settings/DoctorSettingsPage';
 
 const queryClient = new QueryClient();
 
@@ -193,6 +194,14 @@ const App = () => (
                 element={
                   <ProtectedRouteByRole allowedRoles={[1, 2]}>
                     <SettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/doctor-settings"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[2]}>
+                    <DoctorSettingsPage />
                   </ProtectedRouteByRole>
                 }
               />

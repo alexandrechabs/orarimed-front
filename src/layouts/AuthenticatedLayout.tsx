@@ -68,6 +68,12 @@ const navigation: NavItem[] = [
     role: [1, 2],
   },
   {
+    name: 'Docteur',
+    href: '/doctor-settings',
+    icon: Settings,
+    role: [1, 2],
+  },
+  {
     name: 'Paramètres Admin',
     href: '/admin-settings',
     icon: Settings,
