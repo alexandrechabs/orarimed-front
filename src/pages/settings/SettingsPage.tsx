@@ -25,16 +25,13 @@ import { useAuth } from '@/services/auth/useAuth';
 import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
 import { Camera } from 'lucide-react';
+import { useUser } from '@/services/user/useUser';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
-  const {
-    user,
-    specialities,
-    updateUser,
-    saveSubSpecialities,
-    savePhotoUser,
-    getMyUser,
-  } = useAuth();
+  const { user, specialities, updateUser, savePhotoUser, getMyUser } =
+    useAuth();
+  const { saveSubSpecialities } = useUser();
   const { language } = useLanguage();
   const [formData, setFormData] = useState({
     firstname: user.firstname || '',
@@ -55,6 +52,7 @@ export default function SettingsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const API_URL = import.meta.env.VITE_API_URL;
+  const { toast } = useToast();
 
   const handleImageSelect = (file: File) => {
     const reader = new FileReader();
@@ -122,14 +120,15 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = async () => {
-    console.log(formData);
-
     // update user info
-    await saveSubSpecialities(formData.subSpecialityIds);
+    await saveSubSpecialities(user.id, formData.subSpecialityIds);
     await updateUser(formData);
 
     // TODO: Implémenter la sauvegarde des paramètres
-    console.log('Paramètres sauvegardés');
+    toast({
+      title: 'Succès',
+      description: 'Les paramètres ont été enregistrés avec succès.',
+    });
   };
 
   return (

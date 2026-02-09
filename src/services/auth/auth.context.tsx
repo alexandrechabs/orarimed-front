@@ -9,7 +9,6 @@ type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  openingHour: OpeningHour[] | null;
   reasons: ConsultationReason[] | null;
   specialities: any[] | null;
   login: (email: string, password: string) => Promise<void>;
@@ -19,17 +18,12 @@ type AuthContextType = {
     email: string,
     password: string,
     acceptTerms: boolean,
-    kind: number,
+    roleId: number,
   ) => Promise<void>;
   getMyUser: () => void;
   updateUser: (params: any) => void;
-  getOpeningHours: () => Promise<OpeningHour[]>;
-  saveOpeningHours: (openingHours: OpeningHour[]) => Promise<OpeningHour[]>;
-  getReasons: () => Promise<ConsultationReason[]>;
-  saveReasons: (reasons: ConsultationReason[]) => Promise<ConsultationReason[]>;
   getSpecialities: () => Promise<any>;
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
-  saveSubSpecialities: (subSpecialities: number[]) => void;
   savePhotoUser: (photo: FormData) => Promise<any>;
   logout: () => void;
 };
@@ -42,7 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (saved as String) || '';
   });
   const [user, setUser] = useState<User | null>(null);
-  const [openingHour, setOpeningHour] = useState<OpeningHour[] | null>(null);
   const [reasons, setReasons] = useState<ConsultationReason[] | null>(null);
   const [specialities, setSpecialities] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true); // État de chargement
@@ -78,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string,
     password: string,
     acceptTerms: boolean,
-    kind: number,
+    roleId: number,
   ) {
     const data = await authService.register({
       firstname,
@@ -86,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       acceptTerms,
-      kind,
+      roleId,
     });
 
     setUser(data.user);
@@ -110,30 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.clear();
   }
 
-  async function getOpeningHours() {
-    const data = await authService.getOpeningHours(user.id);
-    setOpeningHour(data);
-    return data;
-  }
-
-  async function saveOpeningHours(openingHours: OpeningHour[]) {
-    const data = await authService.saveOpeningHours(user.id, openingHours);
-    setOpeningHour(data);
-    return data;
-  }
-
-  async function getReasons() {
-    const data = await authService.getReasons(user.id);
-    setReasons(data);
-    return data;
-  }
-
-  async function saveReasons(reasons: ConsultationReason[]) {
-    const data = await authService.saveReasons(user.id, reasons);
-    setReasons(data);
-    return data;
-  }
-
   async function getSpecialities() {
     const data = await authService.getSpecialities();
     setSpecialities(data);
@@ -146,11 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
-  function saveSubSpecialities(params: number[]) {
-    const data = authService.saveSubSpecialities(params, user.id);
-    return;
-  }
-
   async function savePhotoUser(photo: FormData) {
     const data = await authService.savePhotoUser(photo, user.id);
     return data;
@@ -160,7 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        openingHour,
         reasons,
         specialities,
         login,
@@ -168,13 +131,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         getMyUser,
         logout,
         updateUser,
-        getOpeningHours,
-        saveOpeningHours,
-        getReasons,
-        saveReasons,
         getSpecialities,
         saveSpecialities,
-        saveSubSpecialities,
         savePhotoUser,
         isLoading,
         isAuthenticated: !!user,

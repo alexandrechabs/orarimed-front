@@ -14,6 +14,8 @@ export type User = {
   country: string | null;
   centerId: number | null;
   specialityId: number | null;
+  active: boolean;
+  visible: boolean;
   subSpecialitiesUsers: [
     { id: number; userId: number; subSpecialityId: number },
   ];

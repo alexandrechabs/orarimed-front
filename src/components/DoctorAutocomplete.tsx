@@ -97,7 +97,7 @@ export const DoctorAutocomplete = ({
           doctorIdentifier: doctor.doctorIdentifier,
           imageUrl: doctor.avatar
             ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
-            : '/user.png',
+            : '/default-avatar.png',
         });
       });
       setSuggestions(suggestions || []);

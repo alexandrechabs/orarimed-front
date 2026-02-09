@@ -42,7 +42,6 @@ export function OpeningHourStep({
   }, [user?.id, openingHours, setValue]);
 
   const onSubmit = (formData: { openingHours: OpeningHour[] }) => {
-    console.log('Horaires soumis:', formData);
     onNext({ openingHours: formData.openingHours });
   };
 

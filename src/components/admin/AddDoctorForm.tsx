@@ -1,0 +1,474 @@
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/services/user/useUser';
+import { UserRole } from '@/types/roles';
+import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import PhoneInput from 'react-phone-number-input';
+import { useAuth } from '@/services/auth/useAuth';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { AddressAutocomplete } from '../Autocomplete';
+import type { CountryCode } from 'libphonenumber-js';
+import { Checkbox } from '../ui/checkbox';
+
+const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+
+// Fonction pour créer le schéma en fonction du mode (édition ou création)
+const createDoctorSchema = (isEditMode: boolean) => {
+  const baseSchema = {
+    email: z.string().email('Email invalide'),
+    firstname: z.string().min(2, 'Le prénom est requis'),
+    lastname: z.string().min(2, 'Le nom est requis'),
+    address: z.string().min(5, "L'adresse est requise"),
+    city: z.string().min(2, 'La ville est requise'),
+    country: z.string().min(2, 'Le pays est requis'),
+    coordinate: z.object({
+      x: z.number(),
+      y: z.number(),
+    }),
+    phoneNumber: z.string().min(10, 'Numéro de téléphone invalide'),
+    visible: z.boolean().default(false).optional(),
+    specialityId: z.number().min(1, 'La spécialité est requise'),
+    subSpecialityId: z.array(z.number()).optional(), // Nouveau champ
+  };
+
+  // En mode édition, le mot de passe est optionnel et ne doit être validé que s'il est fourni
+  const passwordSchema = isEditMode
+    ? {
+        password: z
+          .union([
+            z.string().length(0), // Accepte une chaîne vide
+            z
+              .string()
+              .min(8, 'Le mot de passe doit faire au moins 8 caractères'),
+          ])
+          .optional()
+          .transform((e) => (e === '' ? undefined : e)), // Transforme une chaîne vide en undefined
+      }
+    : {
+        password: z
+          .string()
+          .min(8, 'Le mot de passe doit faire au moins 8 caractères'),
+        acceptTerms: z.boolean().refine((val) => val, {
+          message: "Vous devez accepter les conditions d'utilisation",
+        }),
+      };
+
+  return z.object({
+    ...baseSchema,
+    ...passwordSchema,
+  });
+};
+
+type DoctorFormValues = z.infer<ReturnType<typeof createDoctorSchema>>;
+
+interface DoctorFormProps {
+  onSuccess: () => void;
+  onClose: () => void;
+  user?: {
+    id?: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+    address: string;
+    city: string;
+    country: string;
+    coordinate: {
+      x: number;
+      y: number;
+    };
+    phoneNumber: string;
+    specialityId: number;
+    subSpecialityId?: number[];
+    visible: boolean;
+    active: boolean;
+  } | null;
+}
+
+export function AddDoctorForm({
+  onSuccess,
+  onClose,
+  user = null,
+}: DoctorFormProps) {
+  const { toast } = useToast();
+  const { specialities } = useAuth();
+  const { language } = useLanguage();
+  const { createUser, updateUser, saveSubSpecialities } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isEditMode = !!user;
+  const doctorSchema = createDoctorSchema(isEditMode);
+
+  const {
+    register,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<DoctorFormValues>({
+    resolver: zodResolver(doctorSchema),
+    defaultValues: user
+      ? {
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          address: user.address,
+          city: user.city,
+          country: user.country,
+          coordinate: {
+            x: user.coordinate.x,
+            y: user.coordinate.y,
+          },
+          phoneNumber: user.phoneNumber,
+          password: '', // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
+          visible: user.visible,
+          specialityId: user.specialityId,
+          subSpecialityId: user.subSpecialityId,
+        }
+      : {
+          email: '',
+          firstname: '',
+          lastname: '',
+          address: '',
+          city: '',
+          country: '',
+          coordinate: { x: 0, y: 0 },
+          phoneNumber: '',
+          password: '',
+          visible: false,
+          specialityId: 0,
+          acceptTerms: false,
+          subSpecialityId: [],
+        },
+  });
+
+  const onSubmit = async (data: DoctorFormValues) => {
+    try {
+      setIsLoading(true);
+      // Créer l'objet de base avec les champs communs
+      const baseUserData = {
+        ...(isEditMode && user?.id && { id: user.id }), // Inclure l'ID seulement en mode édition
+        email: data.email,
+        firstname: data.firstname,
+        lastname: data.lastname,
+        address: data.address,
+        city: data.city,
+        country: data.country,
+        coordinate: {
+          x: data.coordinate.x,
+          y: data.coordinate.y,
+        },
+        phoneNumber: data.phoneNumber,
+        // Ne pas envoyer le mot de passe s'il est vide (mode édition sans modification du mot de passe)
+        ...(data.password && { password: data.password }),
+        roleId: UserRole.DOCTOR,
+        visible: data.visible, // Conserver l'état actuel en mode édition
+        active: user?.active,
+        specialityId: data.specialityId,
+      };
+
+      // Créer l'objet final en fonction du mode
+      const userData = isEditMode
+        ? {
+            ...baseUserData,
+            acceptTerms: true, // Valeur par défaut en mode édition
+          }
+        : {
+            ...baseUserData,
+            acceptTerms: Boolean(data.acceptTerms),
+          };
+
+      let result;
+      if (isEditMode && user?.id) {
+        // Mise à jour de l'utilisateur existant
+        result = await updateUser(user.id, userData);
+        toast({
+          title: 'Succès',
+          description:
+            'Les informations du médecin ont été mises à jour avec succès',
+        });
+      } else {
+        // Création d'un nouvel utilisateur
+        result = await createUser(userData);
+        toast({
+          title: 'Succès',
+          description: 'Le compte docteur a été créé avec succès',
+        });
+      }
+
+      // save sub specialities
+      if (data.subSpecialityId && data.subSpecialityId.length > 0) {
+        await saveSubSpecialities(user?.id, data.subSpecialityId);
+      }
+
+      reset();
+      onSuccess?.();
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: error.message || 'Une erreur est survenue',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) => {
+        console.log('Erreurs lors de la soumission:', errors);
+      })}
+      className="space-y-4"
+    >
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label>Prénom</Label>
+          <Input {...register('firstname')} />
+          {errors.firstname && (
+            <p className="text-sm text-destructive">
+              {errors.firstname.message}
+            </p>
+          )}
+        </div>
+        <div>
+          <Label>Nom</Label>
+          <Input {...register('lastname')} />
+          {errors.lastname && (
+            <p className="text-sm text-destructive">
+              {errors.lastname.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <Label>Email</Label>
+        <Input type="email" {...register('email')} autoComplete="new-email" />
+        {errors.email && (
+          <p className="text-sm text-destructive">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div>
+        <Label>Adresse</Label>
+        <AddressAutocomplete
+          value={watch('address')} // Use watch to get the current value
+          onChange={(value) => setValue('address', value)} // Use setValue to update the value
+          onPlaceSelected={(place) => {
+            setValue('address', place.formatted_address);
+            setValue(
+              'city',
+              place.address_components.find((component) =>
+                component.types.includes('locality'),
+              )?.long_name || '',
+            );
+            setValue(
+              'country',
+              place.address_components.find((component) =>
+                component.types.includes('country'),
+              ).long_name,
+            );
+            setValue('coordinate', {
+              x: place.geometry.location.lat(),
+              y: place.geometry.location.lng(),
+            });
+          }}
+          className="bg-background"
+          placeholder="Saisissez l'adresse de votre cabinet"
+        />
+        {errors.address && (
+          <p className="text-sm text-destructive">{errors.address.message}</p>
+        )}
+      </div>
+
+      <div>
+        <Label>Téléphone</Label>
+        <PhoneInput
+          international
+          defaultCountry="AL"
+          countries={allowedCountries}
+          value={watch('phoneNumber')}
+          onChange={(value) => setValue('phoneNumber', value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-background"
+          placeholder="+33 6 12 34 56 78"
+          autoComplete="new-phone"
+        />
+        {errors.phoneNumber && (
+          <p className="text-sm text-destructive">
+            {errors.phoneNumber.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        {!isEditMode && (
+          <>
+            <Label>Mot de passe temporaire</Label>
+            <Input
+              type="password"
+              {...register('password')}
+              autoComplete="new-password"
+            />
+            {errors.password && (
+              <p className="text-sm text-destructive">
+                {errors.password.message}
+              </p>
+            )}
+          </>
+        )}
+        {isEditMode && (
+          <div className="space-y-2">
+            <Label>
+              Changer le mot de passe (laisser vide pour ne pas modifier)
+            </Label>
+            <Input
+              type="password"
+              {...register('password')}
+              autoComplete="new-password"
+              placeholder="Nouveau mot de passe"
+            />
+            {errors.password && (
+              <p className="text-sm text-destructive">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+      <div>
+        <Label>Spécialité</Label>
+        <Select
+          value={watch('specialityId')?.toString() || ''}
+          onValueChange={(value) => {
+            // Convertir la valeur en nombre car specialityId est un nombre
+            const specialityId = parseInt(value, 10);
+            setValue('specialityId', specialityId, { shouldValidate: true });
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez une spécialité" />
+          </SelectTrigger>
+          <SelectContent>
+            {specialities?.map((speciality) => (
+              <SelectItem key={speciality.id} value={speciality.id.toString()}>
+                {
+                  speciality.translations.find((t) => t.locale === language)
+                    ?.name
+                }
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.specialityId && (
+          <p className="text-sm text-destructive">
+            {errors.specialityId.message}
+          </p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label>Sous-spécialités (optionnel)</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {specialities
+            .find((s) => s.id === Number(watch('specialityId')))
+            ?.subSpecialities.map((sub) => (
+              <div key={sub.id} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={`sub-${sub.id}`}
+                  value={sub.id}
+                  checked={watch('subSpecialityId')?.includes(sub.id) || false}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setValue('subSpecialityId', [
+                        ...(watch('subSpecialityId') || []),
+                        sub.id,
+                      ]);
+                    } else {
+                      setValue(
+                        'subSpecialityId',
+                        (watch('subSpecialityId') || []).filter(
+                          (id) => id !== sub.id,
+                        ),
+                      );
+                    }
+                  }}
+                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label
+                  htmlFor={`sub-${sub.id}`}
+                  className="text-sm font-medium text-gray-700"
+                >
+                  {sub.translations?.find((t) => t.locale === language)?.name ||
+                    sub.name}
+                </label>
+              </div>
+            ))}
+        </div>
+      </div>
+      {!isEditMode && (
+        <>
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="acceptTerms"
+              {...register('acceptTerms')}
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <Label htmlFor="acceptTerms" className="text-sm font-medium">
+              J'accepte les conditions d'utilisation
+            </Label>
+          </div>
+          {errors.acceptTerms && (
+            <p className="mt-1 text-sm text-destructive">
+              {errors.acceptTerms.message}
+            </p>
+          )}
+        </>
+      )}
+
+      {/* Interrupteur Actif/Inactif */}
+      <div className="flex items-center space-x-2 mt-4">
+        <Label htmlFor="visible" className="text-sm font-medium">
+          Compte Visible
+        </Label>
+        <Checkbox
+          id="visible"
+          checked={watch('visible')}
+          onCheckedChange={(checked) => setValue('visible', Boolean(checked))}
+        />
+      </div>
+
+      <div className="flex justify-end space-x-2 pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            reset();
+            onClose?.();
+          }}
+          disabled={isLoading}
+        >
+          Annuler
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isEditMode ? 'Mettre à jour' : 'Créer le compte'}
+        </Button>
+      </div>
+    </form>
+  );
+}

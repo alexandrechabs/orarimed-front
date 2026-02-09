@@ -35,6 +35,7 @@ import { Calendar as CalendarIcon, Settings } from 'lucide-react';
 import { useAuth } from '@/services/auth/useAuth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/services/user/useUser';
 
 export function usePatientSearch() {
   const [results, setResults] = useState<any[]>([]);
@@ -170,7 +171,8 @@ export default function CreateAppointmentModal({
   onEventUpdated,
 }: Props) {
   const navigate = useNavigate();
-  const { user, getReasons } = useAuth();
+  const { user } = useAuth();
+  const { getReasons } = useUser();
   const { results, search, clear } = usePatientSearch();
 
   const form = useForm<FormValues>({
@@ -212,7 +214,7 @@ export default function CreateAppointmentModal({
   const didInit = useRef<false | 'initialized' | 'ready'>(false);
 
   useEffect(() => {
-    getReasons().then((reasons) => {
+    getReasons(user.id).then((reasons) => {
       setAppointmentTitles(reasons);
     });
   }, []);

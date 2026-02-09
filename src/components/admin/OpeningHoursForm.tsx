@@ -143,7 +143,7 @@ export default function OpeningHoursForm({
       )}
       <div className="border rounded-lg p-4 space-y-4">
         <h3 className="text-lg font-medium">Ajouter des horaires</h3>
-        <div className="flex flex-wrap items-end gap-4 p-4 bg-gray-50 rounded-lg">
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg">
           <div className="space-y-2">
             <Label>Jour</Label>
             <Select
@@ -227,35 +227,37 @@ export default function OpeningHoursForm({
             </AlertDescription>
           </Alert>
         ) : (
-          <div className="space-y-2">
-            {openingHours.map((hour: OpeningHour, index: number) => (
-              <div
-                key={hour.id || index}
-                className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
-              >
-                <div>
-                  <p className="font-medium">
-                    {
-                      DAYS_OF_WEEK.find((d) => d.value === hour.dayOfWeek)
-                        ?.label
-                    }
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {hour.period === 'morning' ? 'Matin' : 'Après-midi'}:{' '}
-                    {hour.openTime} - {hour.closeTime}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => remove(index)}
-                  className="text-red-500 hover:bg-red-50"
+          <div className="space-y-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {openingHours
+              .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+              .map((hour: OpeningHour, index: number) => (
+                <div
+                  key={hour.id || index}
+                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+                  <div>
+                    <p className="font-medium">
+                      {
+                        DAYS_OF_WEEK.find((d) => d.value === hour.dayOfWeek)
+                          ?.label
+                      }
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {hour.period === 'morning' ? 'Matin' : 'Après-midi'}:{' '}
+                      {hour.openTime} - {hour.closeTime}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => remove(index)}
+                    className="text-red-500 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
           </div>
         )}
       </div>

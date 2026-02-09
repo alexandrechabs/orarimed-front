@@ -3,9 +3,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';
 import { toast } from '@/components/ui/use-toast';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Speciality } from '@/types/specialty';
 import SpecialitiesManager from '@/components/admin/SpecialtiesManager';
+import UserList from '@/components/admin/UserList';
 
 export default function AdminSettingsPage() {
   const { t } = useLanguage();
@@ -17,7 +18,6 @@ export default function AdminSettingsPage() {
 
   // Récupérer les traductions
   const adminT = t.adminSettings;
-  const specialitiesT = t.specialitiesManager;
 
   const handleSaveSpecialities = (specialities: Speciality[]) => {
     // Validation des données avant envoi
@@ -66,7 +66,8 @@ export default function AdminSettingsPage() {
           <TabsTrigger value="general">
             {adminT.general || 'General'}
           </TabsTrigger>
-          <TabsTrigger value="users">{adminT.users || 'Users'}</TabsTrigger>
+          <TabsTrigger value="doctor">Docteur</TabsTrigger>
+          <TabsTrigger value="secretary">Secrétaire</TabsTrigger>
           <TabsTrigger value="specialities">
             {adminT.specialities || 'specialities'}
           </TabsTrigger>
@@ -94,24 +95,29 @@ export default function AdminSettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-4">
+        <TabsContent value="doctor" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>
-                {adminT.userManagement || 'User Management'}
-              </CardTitle>
+              <CardTitle>Gestion des Docteurs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <UserList type="doctor" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="secretary" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Gestion des Secretaires</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <h3 className="text-lg font-medium">
-                  {adminT.manageUsers || 'Manage Users'}
-                </h3>
                 <p className="text-sm text-muted-foreground">
-                  {adminT.manageUsersDescription ||
-                    'View and manage user accounts and permissions'}
+                  Affichez et gérez les comptes et les permissions
                 </p>
               </div>
-              {/* Add user management components here */}
+              <UserList type="secretary" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -120,7 +126,7 @@ export default function AdminSettingsPage() {
           <Card>
             <CardHeader style={{ padding: 14 }}>
               <CardTitle>{adminT.manageSpecialities}</CardTitle>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-2">
                 {adminT.manageSpecialitiesDescription}
               </p>
             </CardHeader>

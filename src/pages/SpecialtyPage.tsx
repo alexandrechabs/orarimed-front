@@ -23,8 +23,6 @@ const SpecialtyPage = () => {
     );
   }
 
-  console.log(specialities);
-
   if (!specialty || !slug) {
     return (
       <div className="min-h-screen bg-background">

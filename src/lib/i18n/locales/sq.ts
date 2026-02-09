@@ -446,17 +446,12 @@ const sq: TranslationKey = {
     title: 'Administrimi',
     description: 'Menaxho cilësimet e aplikacionit dhe konfigurimet',
     general: 'Të përgjithshme',
-    users: 'Përdoruesit',
     specialities: 'Specialitetet',
     system: 'Sistemi',
     generalSettings: 'Cilësimet e përgjithshme',
     applicationSettings: 'Cilësimet e aplikacionit',
     applicationSettingsDescription:
       'Konfiguro cilësimet e përgjithshme të aplikacionit',
-    userManagement: 'Menaxhimi i përdoruesve',
-    manageUsers: 'Menaxho përdoruesit',
-    manageUsersDescription:
-      'Shiko dhe menaxho llogaritë e përdoruesve dhe lejet',
     specialitiesManagement: 'Menaxhimi i specialiteteve',
     manageSpecialities: 'Menaxho specialitete',
     manageSpecialitiesDescription:
@@ -465,6 +460,21 @@ const sq: TranslationKey = {
     systemConfiguration: 'Konfigurimi i sistemit',
     systemConfigurationDescription:
       'Konfiguro cilësimet e përgjithshme të sistemit',
+    addDoctor: {
+      title: 'Shto docteur',
+      form: {
+        firstname: 'Emri',
+        lastname: 'Mbiemri',
+        email: 'Email',
+        phone: 'Telefon',
+        password: 'Fjalëkalim',
+        speciality: 'Specialitet',
+        submit: 'Krijo llogari',
+        cancel: 'Anulo',
+      },
+      success: 'Llogaria e docteurit u krijua me sukses',
+      error: 'Ndodhi një gabim gjatë krijimit të llogarisë',
+    },
   },
   daysOfWeek: {
     1: 'E hënë',

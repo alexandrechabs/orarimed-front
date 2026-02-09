@@ -94,7 +94,6 @@ export function PersonalInfoStep({
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
 
   const onSubmit = (formData: FormData) => {
-    console.log('Form submitted:', formData);
     if (formData.birthDate) {
       const date = new Date(formData.birthDate);
       formData.birthDate = date.toISOString().split('T')[0];
@@ -346,7 +345,6 @@ export function PersonalInfoStep({
               onChange={onChange}
               onPlaceSelected={(place) => {
                 // Vous pouvez accéder aux détails de l'adresse ici si nécessaire
-                console.log('Place details:', place);
                 setValue('address', place.formatted_address);
                 setValue(
                   'city',

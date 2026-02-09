@@ -39,7 +39,6 @@ export function OnboardingLayout({ steps, onComplete }: OnboardingLayoutProps) {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleNext = (stepData: any) => {
-    console.log(stepData);
     const newData = { ...formData, ...stepData };
     setFormData(newData);
 
@@ -59,7 +58,6 @@ export function OnboardingLayout({ steps, onComplete }: OnboardingLayoutProps) {
   };
 
   const handleComplete = async (data: any) => {
-    console.log(data);
     try {
       setIsSubmitting(true);
       await onComplete(data);

@@ -29,7 +29,7 @@ const navigation: NavItem[] = [
     name: 'Tableau de bord',
     href: '/dashboard',
     icon: LayoutDashboard,
-    role: [1, 2],
+    role: [1, 2, 3],
   },
   {
     name: 'Calendrier',
@@ -65,7 +65,7 @@ const navigation: NavItem[] = [
     name: 'Paramètres',
     href: '/settings',
     icon: Settings,
-    role: [1, 2],
+    role: [1, 2, 3],
   },
   {
     name: 'Docteur',
@@ -77,7 +77,7 @@ const navigation: NavItem[] = [
     name: 'Paramètres Admin',
     href: '/admin-settings',
     icon: Settings,
-    role: [2],
+    role: [2, 3],
   },
 ];
 

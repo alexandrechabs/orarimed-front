@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus, Pencil, X, Check } from 'lucide-react';
-import { useAuth } from '@/services/auth/useAuth';
+import { Plus, Pencil, X, Check } from 'lucide-react';
 import { ConsultationReason } from '@/types/consultationReason';
 import {
   Select,
@@ -13,10 +12,34 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Eye, EyeOff } from 'lucide-react';
+import {
+  Control,
+  FieldValues,
+  useFieldArray,
+  useFormContext,
+} from 'react-hook-form';
 
-export default function ConsultationReasons() {
-  const { getReasons, saveReasons } = useAuth();
-  const [reasons, setReasons] = useState<ConsultationReason[]>([]);
+interface ConsultationReasonsProps {
+  name?: string;
+  control?: Control<FieldValues>;
+}
+
+export default function ConsultationReasons({
+  name = 'consultationReasons',
+}: ConsultationReasonsProps) {
+  const {
+    control,
+    watch: consultationReasonsWatch,
+    setValue,
+  } = useFormContext();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name,
+    keyName: 'originalId',
+  });
+
+  const reasons = consultationReasonsWatch(name) || [];
+
   const [newReason, setNewReason] = useState<ConsultationReason>({
     name: '',
     duration: 30,
@@ -26,14 +49,8 @@ export default function ConsultationReasons() {
     active: true,
   });
 
-  useEffect(() => {
-    getReasons().then((result) => {
-      setReasons(result);
-    });
-  }, []);
-
   const addReason = () => {
-    setReasons([...reasons, newReason]);
+    append(newReason);
     setNewReason({
       name: '',
       duration: 30,
@@ -45,38 +62,64 @@ export default function ConsultationReasons() {
     });
   };
 
-  const toggleActive = (id?: number, tempId?: string) => {
-    setReasons(
-      reasons.map((reason) =>
-        (id !== undefined && reason.id === id) ||
-        (tempId && reason.tempId === tempId)
-          ? { ...reason, active: !reason.active }
-          : reason,
-      ),
+  const toggleActive = (id?: number | string, tempId?: string) => {
+    const index = fields.findIndex(
+      (field) =>
+        (id && field.id === id) || (tempId && (field as any).tempId === tempId),
     );
+
+    if (index !== -1) {
+      const currentValue = fields[index] as unknown as ConsultationReason;
+      // Utilisez setValue au lieu de update
+      setValue(`${name}.${index}.active` as any, !currentValue.active);
+    }
   };
 
-  const toggleEdit = (id: number | string, tempId?: string) => {
-    console.log(id);
-    setReasons(
-      reasons.map((reason) => {
-        const isTargetReason =
-          (id !== undefined && reason.id === id) ||
-          (tempId && reason.tempId === tempId);
-
-        return {
-          ...reason,
-          isEditing: isTargetReason ? !reason.isEditing : false,
-        };
-      }),
+  const toggleEdit = (
+    isEditing: boolean,
+    id: number | string,
+    tempId?: string,
+  ) => {
+    const index = fields.findIndex(
+      (field) =>
+        (id && field.id === id) || (tempId && (field as any).tempId === tempId),
     );
+
+    if (index !== -1) {
+      setValue(`${name}.${index}.isEditing` as any, isEditing);
+    }
   };
 
-  const save = () => {
-    saveReasons(reasons).then((result) => {
-      setReasons(result);
-    });
+  const edit = (
+    id: number | string,
+    tempId?: string,
+    updates: Partial<ConsultationReason> = {},
+  ) => {
+    const index = fields.findIndex(
+      (field) =>
+        (id && field.id === id) || (tempId && (field as any).tempId === tempId),
+    );
+
+    if (index !== -1) {
+      const currentValue = fields[index] as unknown as ConsultationReason;
+      // Conserve la valeur actuelle de isEditing si elle n'est pas dans les mises à jour
+      const updatedValue = {
+        ...currentValue,
+        ...updates,
+        // Si isEditing n'est pas dans les updates, on garde la valeur actuelle
+        isEditing: true,
+      };
+
+      setValue(`${name}.${index}` as any, updatedValue);
+    }
   };
+
+  // const save = () => {
+  //   const formValues = getValues();
+  //   const reasonsToSave = formValues[name] || [];
+  // saveReasons(id, reasonsToSave).then((result) => {
+  // });
+  // };
 
   return (
     <div className="space-y-6">
@@ -200,13 +243,9 @@ export default function ConsultationReasons() {
                       <Input
                         value={reason.name}
                         onChange={(e) =>
-                          setReasons(
-                            reasons.map((r) =>
-                              r.id === reason.id
-                                ? { ...r, name: e.target.value }
-                                : r,
-                            ),
-                          )
+                          edit(reason.id, reason.tempId, {
+                            name: e.target.value,
+                          })
                         }
                         className="flex-1"
                       />
@@ -222,16 +261,9 @@ export default function ConsultationReasons() {
                         type="number"
                         value={reason.duration}
                         onChange={(e) =>
-                          setReasons(
-                            reasons.map((r) =>
-                              r.id === reason.id
-                                ? {
-                                    ...r,
-                                    duration: parseInt(e.target.value) || 0,
-                                  }
-                                : r,
-                            ),
-                          )
+                          edit(reason.id, reason.tempId, {
+                            duration: parseInt(e.target.value) || 0,
+                          })
                         }
                         className="w-24"
                         min="5"
@@ -249,13 +281,9 @@ export default function ConsultationReasons() {
                         type="color"
                         value={reason.color}
                         onChange={(e) =>
-                          setReasons(
-                            reasons.map((r) =>
-                              r.id === reason.id
-                                ? { ...r, color: e.target.value }
-                                : r,
-                            ),
-                          )
+                          edit(reason.id, reason.tempId, {
+                            color: e.target.value,
+                          })
                         }
                         className="w-24"
                       />
@@ -270,16 +298,9 @@ export default function ConsultationReasons() {
                       <Select
                         value={reason.type}
                         onValueChange={(value) =>
-                          setReasons(
-                            reasons.map((r) =>
-                              r.id === reason.id
-                                ? {
-                                    ...r,
-                                    type: value as 'appointment' | 'absence',
-                                  }
-                                : r,
-                            ),
-                          )
+                          edit(reason.id, reason.tempId, {
+                            type: value as 'appointment' | 'absence',
+                          })
                         }
                       >
                         <SelectTrigger>
@@ -294,9 +315,12 @@ export default function ConsultationReasons() {
                       </Select>
                     </div>
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleEdit(reason.id!, reason.tempId)}
+                      onClick={() =>
+                        toggleEdit(false, reason.id!, reason.tempId)
+                      }
                     >
                       <Check className="h-4 w-4" />
                     </Button>
@@ -317,13 +341,17 @@ export default function ConsultationReasons() {
                       {reason.type}
                     </div>
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleEdit(reason.id!, reason.tempId)}
+                      onClick={(e) =>
+                        toggleEdit(true, reason.id!, reason.tempId)
+                      }
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       onClick={() => toggleActive(reason.id, reason.tempId)}
@@ -342,10 +370,6 @@ export default function ConsultationReasons() {
           </div>
         )}
       </div>
-      <Button type="button" onClick={save}>
-        <Plus className="h-4 w-4 mr-2" />
-        Enregistrer
-      </Button>
     </div>
   );
 }

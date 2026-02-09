@@ -411,17 +411,12 @@ const fr: TranslationKey = {
     title: 'Administration',
     description: "Gérez les paramètres et configurations de l'application",
     general: 'Général',
-    users: 'Utilisateurs',
     specialities: 'Spécialités',
     system: 'Système',
     generalSettings: 'Paramètres généraux',
     applicationSettings: "Paramètres de l'application",
     applicationSettingsDescription:
       "Configurez les paramètres généraux de l'application",
-    userManagement: 'Gestion des utilisateurs',
-    manageUsers: 'Gérer les utilisateurs',
-    manageUsersDescription:
-      'Affichez et gérez les comptes utilisateurs et les permissions',
     specialitiesManagement: 'Gestion des spécialités',
     manageSpecialities: 'Gérer les spécialités',
     manageSpecialitiesDescription:
@@ -430,6 +425,21 @@ const fr: TranslationKey = {
     systemConfiguration: 'Configuration système',
     systemConfigurationDescription:
       'Configurez les paramètres système et la maintenance',
+    addDoctor: {
+      title: 'Ajouter un docteur',
+      form: {
+        firstname: 'Prénom',
+        lastname: 'Nom',
+        email: 'Email',
+        phone: 'Téléphone',
+        password: 'Mot de passe',
+        speciality: 'Spécialité',
+        submit: 'Créer le compte',
+        cancel: 'Annuler',
+      },
+      success: 'Le compte docteur a été créé avec succès',
+      error: 'Une erreur est survenue lors de la création du compte',
+    },
   },
   daysOfWeek: {
     1: 'Lundi',

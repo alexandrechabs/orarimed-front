@@ -8,10 +8,11 @@ import { PersonalInfoStep } from './steps/PersonalInfoStep';
 import { OnboardingStep } from './OnboardingLayout';
 import { useEffect } from 'react';
 import { DoctorPhotoStep } from '@/components/onboarding/steps/DoctorPhotoStep';
+import { useUser } from '@/services/user/useUser';
 
 export function ProfessionalOnboardingPage() {
-  const { updateUser, saveOpeningHours, saveSubSpecialities, savePhotoUser } =
-    useAuth();
+  const { updateUser, savePhotoUser } = useAuth();
+  const { saveSubSpecialities, saveOpeningHours } = useUser();
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -39,8 +40,6 @@ export function ProfessionalOnboardingPage() {
   const handleComplete = async (data: any) => {
     let subSpecialities = data.personal.subSpecialityIds;
     delete data.personal.subSpecialityIds;
-
-    console.log(data);
 
     try {
       let photoUrl = data.photoUrl;
@@ -79,9 +78,9 @@ export function ProfessionalOnboardingPage() {
         avatar: photoUrl, // Utiliser l'URL de la photo uploadée
       };
 
-      await saveSubSpecialities(subSpecialities);
+      await saveSubSpecialities(userData.id, subSpecialities);
       await updateUser(userData);
-      await saveOpeningHours(data.openingHours);
+      await saveOpeningHours(userData.id, data.openingHours);
     } catch (error) {
       console.error('Error updating user:', error);
       throw error;

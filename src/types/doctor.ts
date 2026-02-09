@@ -7,6 +7,12 @@ export type DoctorProfile = {
   lastname: string;
   email: string;
   phoneNumber: string;
+  active: boolean;
+  visible: boolean;
+  coordinate?: {
+    x: number;
+    y: number;
+  };
   speciality: {
     id: string;
     name: string;
@@ -17,7 +23,8 @@ export type DoctorProfile = {
     }>;
   };
   subSpecialitiesUsers: Array<{
-    id: string;
+    id: number;
+    subSpecialityId: number;
     subSpeciality: {
       id: string;
       slug: string;

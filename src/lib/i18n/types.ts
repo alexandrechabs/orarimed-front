@@ -201,21 +201,32 @@ export type TranslationKey = {
     title: string;
     description: string;
     general: string;
-    users: string;
     specialities: string;
     system: string;
     generalSettings: string;
     applicationSettings: string;
     applicationSettingsDescription: string;
-    userManagement: string;
-    manageUsers: string;
-    manageUsersDescription: string;
     specialitiesManagement: string;
     manageSpecialities: string;
     manageSpecialitiesDescription: string;
     systemSettings: string;
     systemConfiguration: string;
     systemConfigurationDescription: string;
+    addDoctor: {
+      title: string;
+      form: {
+        firstname: string;
+        lastname: string;
+        email: string;
+        phone: string;
+        password: string;
+        speciality: string;
+        submit: string;
+        cancel: string;
+      };
+      success: string;
+      error: string;
+    };
   };
 
   // Common translations used across the app
