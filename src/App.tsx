@@ -176,7 +176,7 @@ const App = () => (
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[1, 2, 3]}>
+                  <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
                     <DashboardPage />
                   </ProtectedRouteByRole>
                 }
@@ -192,7 +192,7 @@ const App = () => (
               <Route
                 path="/settings"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[1, 2, 3]}>
+                  <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
                     <SettingsPage />
                   </ProtectedRouteByRole>
                 }
@@ -208,7 +208,7 @@ const App = () => (
               <Route
                 path="/admin-settings"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[1, 2, 3]}>
+                  <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
                     <AdminSettingsPage />
                   </ProtectedRouteByRole>
                 }
