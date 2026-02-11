@@ -388,4 +388,25 @@ export const userService = {
 
     return response.json();
   },
+
+  async searchClient(search: string) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(
+      `${API_URL}/patients/search?search=${search}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.json();
+  },
 };

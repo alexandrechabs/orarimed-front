@@ -82,6 +82,7 @@ type UserContextType = {
     id: string,
     reasons: ConsultationReason[],
   ) => Promise<ConsultationReason[]>;
+  searchClient: (search: string) => Promise<any[]>;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -241,6 +242,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function searchClient(search: string) {
+    const data = await userService.searchClient(search);
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -264,6 +270,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         saveOpeningHours,
         getReasons,
         saveReasons,
+        searchClient,
       }}
     >
       {children}

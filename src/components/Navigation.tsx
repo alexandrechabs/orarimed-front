@@ -110,16 +110,24 @@ const Navigation = () => {
                 ))}
                 <div className="flex items-center gap-3 pt-4 px-4">
                   <LanguageSelector />
-                  <Link key="login" to="/login" className="w-full">
-                    <Button variant="outline" className="w-full">
-                      {t.nav.login}
+                  {user ? (
+                    <Button variant="hero" size="sm" asChild>
+                      <Link to="/dashboard">{t.nav.account}</Link>
                     </Button>
-                  </Link>
-                  <Link key="register" to="/register" className="w-full">
-                    <Button variant="hero" className="w-full">
-                      {t.nav.register}
-                    </Button>
-                  </Link>
+                  ) : (
+                    <>
+                      <Link key="login" to="/login" className="w-full">
+                        <Button variant="outline" className="w-full">
+                          {t.nav.login}
+                        </Button>
+                      </Link>
+                      <Link key="register" to="/register" className="w-full">
+                        <Button variant="hero" className="w-full">
+                          {t.nav.register}
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

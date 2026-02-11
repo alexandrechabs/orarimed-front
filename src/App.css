@@ -162,3 +162,7 @@
   font-family: inherit;
   pointer-events: auto !important;
 }
+
+.fc .fc-event {
+  margin-right: 10px !important;
+}

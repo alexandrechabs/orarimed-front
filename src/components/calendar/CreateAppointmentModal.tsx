@@ -16,6 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import type { CountryCode } from 'libphonenumber-js';
+import PhoneInput from 'react-phone-number-input';
 import {
   Select,
   SelectTrigger,
@@ -30,14 +32,25 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar as CalendarIcon, Settings } from 'lucide-react';
+import {
+  Calendar as CalendarIcon,
+  Settings,
+  Armchair,
+  Stethoscope,
+  Ban,
+  CalendarOff,
+} from 'lucide-react';
 
 import { useAuth } from '@/services/auth/useAuth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '@/services/user/useUser';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { CalendarEvent } from '@/types/CalendarEvent';
+import RdvParams from './RdvParams';
 
 export function usePatientSearch() {
+  const { searchClient } = useUser();
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -48,50 +61,15 @@ export function usePatientSearch() {
     }
 
     setLoading(true);
-    // const res = await fetch(`/api/patients/search?query=${query}`);
-    // const data = await res.json();
-    setResults([
-      {
-        id: 1,
-        firstname: 'John',
-        lastname: 'Doe',
-        email: 'john.doe@example.com',
-        phoneNumber: '123-456-7890',
-      },
-    ]);
+    searchClient(query).then((patients) => {
+      setResults(patients);
+    });
     setLoading(false);
   };
 
   const clear = () => setResults([]);
 
   return { results, loading, search, clear };
-}
-
-export interface CalendarEvent {
-  id?: string;
-  title: string;
-  description?: string;
-  allDay: boolean;
-  patient?: {
-    id?: number;
-    firstname?: string;
-    lastname?: string;
-    email?: string;
-    phoneNumber?: string;
-  };
-  color: string;
-  practitionerId: string;
-  // Pour les événements uniques
-  start?: string | Date;
-  end?: string | Date;
-  // Pour les événements récurrents
-  startRecur?: string;
-  endRecur?: string;
-  startTime?: string;
-  endTime?: string;
-  daysOfWeek?: number[];
-  // Propriétés étendues
-  type?: 'appointment' | 'absence';
 }
 
 /* ----------------------------------------
@@ -173,7 +151,10 @@ export default function CreateAppointmentModal({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { getReasons } = useUser();
+  const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const { results, search, clear } = usePatientSearch();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -369,7 +350,9 @@ export default function CreateAppointmentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[95vh]">
+      <DialogContent
+        className={`max-h-[95vh] w-full ${eventToEdit ? 'max-w-none' : 'md:w-[600px] max-w-3xl'}`}
+      >
         <ScrollArea className="max-h-[90vh] pr-2">
           <DialogHeader>
             <DialogTitle className="m-4 text-center">
@@ -382,446 +365,491 @@ export default function CreateAppointmentModal({
                 : 'Nouvelle consultation'}
             </DialogTitle>
           </DialogHeader>
-
+          {!isDesktop && eventToEdit && (
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDrawerOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                <span>Détails</span>
+              </Button>
+            </div>
+          )}
           <form
             onSubmit={handleSubmit(onSubmit, (errors) => {
               console.error('Erreurs de validation :', errors);
             })}
             className="space-y-4 m-1"
           >
-            {/* TYPE */}
-            <div className="flex items-center space-x-2">
-              <div className="w-1/2">
-                <Label>Type</Label>
-              </div>
-              <div className="w-1/2">
-                <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value}
-                      onValueChange={(value) => {
-                        const newType = value as 'appointment' | 'absence';
-                        field.onChange(newType);
-
-                        // Mettre à jour le titre en fonction du type d'événement
-                        const newTitle =
-                          appointmentTitles.find((t) => t.type === newType)
-                            ?.name || 'Nouvel événement';
-                        form.setValue('title', newTitle);
-
-                        // Si on change pour une absence, on réinitialise le patient
-                        if (newType === 'absence') {
-                          form.setValue('patient', undefined, {
-                            shouldValidate: true,
-                          });
-                        } else {
-                          // Si on change pour un rendez-vous, on initialise un patient vide
-                          form.setValue(
-                            'patient',
-                            {
-                              firstname: '',
-                              lastname: '',
-                              email: '',
-                              phoneNumber: '',
-                            },
-                            { shouldValidate: true },
-                          );
-                        }
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="appointment">
-                          Consultation
-                        </SelectItem>
-                        <SelectItem value="absence">Absence</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* TITRE */}
-            <div className="mt-2">
-              <div className="flex items-center gap-2 my-2">
-                <Label>Motif</Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4"
-                  onClick={() =>
-                    navigate('/doctor-settings?tab=consultation-reasons')
-                  }
-                  title="Gérer les motifs de consultation"
-                >
-                  <Settings className="h-3 w-3" />
-                </Button>
-              </div>
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(value) => {
-                      const selected = appointmentTitles.find(
-                        (t) => t.name === value,
-                      );
-                      if (selected) {
-                        field.onChange(selected.name);
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un motif" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {appointmentTitles
-                        .filter((t) => t.type === type)
-                        .map((title) => (
-                          <SelectItem key={title.name} value={title.name}>
-                            <div className="flex items-center gap-2">
-                              <span
-                                className="h-5 w-5 rounded"
-                                style={{ backgroundColor: title.color }}
-                              />
-                              {title.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.title && (
-                <p className="text-red-500 text-sm">{errors.title.message}</p>
-              )}
-            </div>
-
-            {/* DESCRIPTION */}
-            <div className="mt-2">
-              <Label>Description</Label>
-              <Textarea className="mt-2" {...register('description')} />
-            </div>
-
-            {/* PATIENT */}
-            {type === 'appointment' && (
-              <div className="mt-2 space-y-4 relative">
-                <Label>Patient</Label>
-
-                <div className="flex items-center space-x-2 mt-4">
-                  <div className="w-1/2">
-                    {/* NOM + RECHERCHE */}
-                    <div className="relative">
+            <div className="flex">
+              <div className="w-full pr-0 md:pr-4">
+                <div className="max-w-4xl m-auto">
+                  {/* TYPE */}
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1/2">
+                      <Label>Type</Label>
+                    </div>
+                    <div className="w-1/2">
                       <Controller
-                        name="patient.lastname"
+                        name="type"
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            {...field}
-                            value={field.value ?? ''}
-                            placeholder="Nom"
-                            autoComplete="off"
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                              search(e.target.value);
-                            }}
-                          />
-                        )}
-                      />
-                      {/* Résultats de recherche */}
-                      {results.length > 0 && (
-                        <div className="absolute z-50 mt-1 w-full rounded-md border bg-background shadow">
-                          {results.map((p) => (
-                            <button
-                              key={p.id}
-                              type="button"
-                              className="w-full px-3 py-2 text-left hover:bg-muted"
-                              onClick={() => {
-                                setValue(
+                          <Select
+                            value={field.value}
+                            onValueChange={(value) => {
+                              const newType = value as
+                                | 'appointment'
+                                | 'absence';
+                              field.onChange(newType);
+
+                              // Mettre à jour le titre en fonction du type d'événement
+                              const newTitle =
+                                appointmentTitles.find(
+                                  (t) => t.type === newType,
+                                )?.name || 'Nouvel événement';
+                              form.setValue('title', newTitle);
+
+                              // Si on change pour une absence, on réinitialise le patient
+                              if (newType === 'absence') {
+                                form.setValue('patient', undefined, {
+                                  shouldValidate: true,
+                                });
+                              } else {
+                                // Si on change pour un rendez-vous, on initialise un patient vide
+                                form.setValue(
                                   'patient',
                                   {
-                                    id: p.id,
-                                    firstname: p.firstname,
-                                    lastname: p.lastname,
-                                    email: p.email,
-                                    phoneNumber: p.phoneNumber,
+                                    firstname: '',
+                                    lastname: '',
+                                    email: '',
+                                    phoneNumber: '',
                                   },
                                   { shouldValidate: true },
                                 );
-                                clear();
-                              }}
-                            >
-                              <div className="font-medium">
-                                {p.lastname} {p.firstname}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {p.email || p.phoneNumber}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="appointment">
+                                Consultation
+                              </SelectItem>
+                              <SelectItem value="absence">Absence</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
                     </div>
                   </div>
-                  <div className="w-1/2">
-                    {/* PRÉNOM */}
-                    <Input
-                      placeholder="Prénom"
-                      value={watch('patient.firstname') ?? ''}
-                      {...register('patient.firstname')}
-                    />
-                  </div>
-                </div>
 
-                <div className="flex items-center space-x-2 mt-4">
-                  {/* CONTACT */}
+                  {/* TITRE */}
+                  <div className="mt-2">
+                    <div className="flex items-center gap-2 my-2">
+                      <Label>Motif</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4"
+                        onClick={() =>
+                          navigate('/doctor-settings?tab=consultation-reasons')
+                        }
+                        title="Gérer les motifs de consultation"
+                      >
+                        <Settings className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <Controller
+                      name="title"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={(value) => {
+                            const selected = appointmentTitles.find(
+                              (t) => t.name === value,
+                            );
+                            if (selected) {
+                              field.onChange(selected.name);
+                            }
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un motif" />
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            {appointmentTitles
+                              .filter((t) => t.type === type)
+                              .map((title) => (
+                                <SelectItem key={title.name} value={title.name}>
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className="h-5 w-5 rounded"
+                                      style={{ backgroundColor: title.color }}
+                                    />
+                                    {title.name}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.title && (
+                      <p className="text-red-500 text-sm">
+                        {errors.title.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* DESCRIPTION */}
+                  <div className="mt-2">
+                    <Label>Description</Label>
+                    <Textarea className="mt-2" {...register('description')} />
+                  </div>
+
+                  {/* PATIENT */}
+                  {type === 'appointment' && (
+                    <div className="mt-2 mb-4 space-y-4 relative">
+                      <Label>Patient</Label>
+
+                      <div className="flex items-center space-x-2 mt-4">
+                        <div className="w-1/2">
+                          {/* NOM + RECHERCHE */}
+                          <div className="relative">
+                            <Controller
+                              name="patient.lastname"
+                              control={control}
+                              render={({ field }) => (
+                                <Input
+                                  {...field}
+                                  value={field.value ?? ''}
+                                  placeholder="Nom"
+                                  autoComplete="off"
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    search(e.target.value);
+                                  }}
+                                />
+                              )}
+                            />
+                            {/* Résultats de recherche */}
+                            {results.length > 0 && (
+                              <div className="absolute z-50 mt-1 w-full rounded-md border bg-background shadow">
+                                {results.map((p) => (
+                                  <button
+                                    key={p.id}
+                                    type="button"
+                                    className="w-full px-3 py-2 text-left hover:bg-muted"
+                                    onClick={() => {
+                                      setValue(
+                                        'patient',
+                                        {
+                                          id: p.id,
+                                          firstname: p.firstname,
+                                          lastname: p.lastname,
+                                          email: p.email,
+                                          phoneNumber: p.phoneNumber,
+                                        },
+                                        { shouldValidate: true },
+                                      );
+                                      clear();
+                                    }}
+                                  >
+                                    <div className="font-medium">
+                                      {p.lastname} {p.firstname}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {p.email || p.phoneNumber}
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="w-1/2">
+                          {/* PRÉNOM */}
+                          <Input
+                            placeholder="Prénom"
+                            value={watch('patient.firstname') ?? ''}
+                            {...register('patient.firstname')}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid md:flex items-center space-x-0 md:space-x-2 mt-4">
+                        {/* CONTACT */}
+                        <div className="w-full md:w-1/2">
+                          <Input
+                            placeholder="Email"
+                            value={watch('patient.email') ?? ''}
+                            {...register('patient.email')}
+                          />
+                        </div>
+                        <div className="w-full md:w-1/2 mt-4 md:mt-0">
+                          <PhoneInput
+                            international
+                            name="phoneNumber"
+                            countries={allowedCountries}
+                            defaultCountry="AL"
+                            value={watch('patient.phoneNumber') ?? ''}
+                            onChange={(value) =>
+                              setValue('patient.phoneNumber', value || '')
+                            }
+                            placeholder="Téléphone"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          />
+                        </div>
+                      </div>
+
+                      {errors.patient && (
+                        <p className="text-red-500 text-sm">
+                          {errors.patient.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ALL DAY */}
                   <div className="flex items-center space-x-2">
-                    <Input
-                      placeholder="Email"
-                      value={watch('patient.email') ?? ''}
-                      {...register('patient.email')}
+                    <Controller
+                      name="isAllDay"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      )}
                     />
-                    <Input
-                      placeholder="Téléphone"
-                      value={watch('patient.phoneNumber') ?? ''}
-                      {...register('patient.phoneNumber')}
+                    <Label>Toute la journée</Label>
+                  </div>
+
+                  {/* DATE */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Date de début */}
+                    <div>
+                      <Label>Date de début</Label>
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        render={({ field }) => (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {format(field.value, 'PPP', { locale: fr })}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="p-0">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) => {
+                                  if (!date) return;
+                                  const newDate = new Date(field.value);
+                                  newDate.setFullYear(
+                                    date.getFullYear(),
+                                    date.getMonth(),
+                                    date.getDate(),
+                                  );
+                                  field.onChange(newDate);
+                                }}
+                                locale={fr}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                      />
+                    </div>
+
+                    {/* Heure de début */}
+                    {!watch('isAllDay') && (
+                      <div>
+                        <Label>Heure de début</Label>
+                        <Controller
+                          name="startDate"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              type="time"
+                              value={format(field.value, 'HH:mm')}
+                              onChange={(e) => {
+                                const [h, m] = e.target.value.split(':');
+                                const newDate = new Date(field.value);
+                                newDate.setHours(+h, +m);
+                                field.onChange(newDate);
+                              }}
+                            />
+                          )}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Date de fin */}
+                    <div>
+                      <Label>Date de fin</Label>
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        render={({ field }) => (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {field.value
+                                  ? format(field.value, 'PPP', { locale: fr })
+                                  : 'Choisir une date'}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="p-0">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) => {
+                                  if (!date || !field.value) return;
+                                  const newDate = new Date(field.value);
+                                  newDate.setFullYear(
+                                    date.getFullYear(),
+                                    date.getMonth(),
+                                    date.getDate(),
+                                  );
+                                  field.onChange(newDate);
+                                }}
+                                locale={fr}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                      />
+                      {errors.endDate && (
+                        <p className="text-sm text-red-500">
+                          {errors.endDate.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Heure de fin */}
+                    {!watch('isAllDay') && (
+                      <div>
+                        <Label>Heure de fin</Label>
+                        <Controller
+                          name="endDate"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              type="time"
+                              value={
+                                field.value ? format(field.value, 'HH:mm') : ''
+                              }
+                              onChange={(e) => {
+                                if (!field.value) return;
+                                const [h, m] = e.target.value.split(':');
+                                const newDate = new Date(field.value);
+                                newDate.setHours(+h, +m);
+                                field.onChange(newDate);
+                              }}
+                            />
+                          )}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label>Répétition</Label>
+                    <Controller
+                      name="repeatType"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Ne pas répéter" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Ne pas répéter</SelectItem>
+                            <SelectItem value="daily">
+                              Tous les jours
+                            </SelectItem>
+                            <SelectItem value="dailyWeek">
+                              Du lundi au vendredi
+                            </SelectItem>
+                            <SelectItem value="weekly">
+                              Toutes les semaines
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
                     />
                   </div>
-                </div>
 
-                {errors.patient && (
-                  <p className="text-red-500 text-sm">
-                    {errors.patient.message}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* ALL DAY */}
-            <div className="flex items-center space-x-2">
-              <Controller
-                name="isAllDay"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Label>Toute la journée</Label>
-            </div>
-
-            {/* DATE */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Date de début */}
-              <div>
-                <Label>Date de début</Label>
-                <Controller
-                  name="startDate"
-                  control={control}
-                  render={({ field }) => (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {format(field.value, 'PPP', { locale: fr })}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            if (!date) return;
-                            const newDate = new Date(field.value);
-                            newDate.setFullYear(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                            );
-                            field.onChange(newDate);
-                          }}
-                          locale={fr}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                />
-              </div>
-
-              {/* Heure de début */}
-              {!watch('isAllDay') && (
-                <div>
-                  <Label>Heure de début</Label>
-                  <Controller
-                    name="startDate"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        type="time"
-                        value={format(field.value, 'HH:mm')}
-                        onChange={(e) => {
-                          const [h, m] = e.target.value.split(':');
-                          const newDate = new Date(field.value);
-                          newDate.setHours(+h, +m);
-                          field.onChange(newDate);
-                        }}
+                  {watch('repeatType') !== 'none' && (
+                    <div>
+                      <Label>Répéter jusqu’au</Label>
+                      <Controller
+                        name="repeatEndDate"
+                        control={control}
+                        render={({ field }) => (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {field.value
+                                  ? format(field.value, 'PPP', { locale: fr })
+                                  : 'Choisir une date'}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="p-0">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                locale={fr}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        )}
                       />
-                    )}
-                  />
+                      {errors.repeatEndDate && (
+                        <p className="text-sm text-red-500">
+                          {errors.repeatEndDate.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {eventToEdit && (
+                <div className="hidden md:block w-[180px] pl-2 border-l">
+                  {/* lister les status de rdv */}
+                  <RdvParams eventToEdit={eventToEdit} />
                 </div>
               )}
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Date de fin */}
-              <div>
-                <Label>Date de fin</Label>
-                <Controller
-                  name="endDate"
-                  control={control}
-                  render={({ field }) => (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value
-                            ? format(field.value, 'PPP', { locale: fr })
-                            : 'Choisir une date'}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            if (!date || !field.value) return;
-                            const newDate = new Date(field.value);
-                            newDate.setFullYear(
-                              date.getFullYear(),
-                              date.getMonth(),
-                              date.getDate(),
-                            );
-                            field.onChange(newDate);
-                          }}
-                          locale={fr}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                />
-                {errors.endDate && (
-                  <p className="text-sm text-red-500">
-                    {errors.endDate.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Heure de fin */}
-              {!watch('isAllDay') && (
-                <div>
-                  <Label>Heure de fin</Label>
-                  <Controller
-                    name="endDate"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        type="time"
-                        value={field.value ? format(field.value, 'HH:mm') : ''}
-                        onChange={(e) => {
-                          if (!field.value) return;
-                          const [h, m] = e.target.value.split(':');
-                          const newDate = new Date(field.value);
-                          newDate.setHours(+h, +m);
-                          field.onChange(newDate);
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div>
-              <Label>Répétition</Label>
-              <Controller
-                name="repeatType"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Ne pas répéter" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Ne pas répéter</SelectItem>
-                      <SelectItem value="daily">Tous les jours</SelectItem>
-                      <SelectItem value="dailyWeek">
-                        Du lundi au vendredi
-                      </SelectItem>
-                      <SelectItem value="weekly">
-                        Toutes les semaines
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            {watch('repeatType') !== 'none' && (
-              <div>
-                <Label>Répéter jusqu’au</Label>
-                <Controller
-                  name="repeatEndDate"
-                  control={control}
-                  render={({ field }) => (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value
-                            ? format(field.value, 'PPP', { locale: fr })
-                            : 'Choisir une date'}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          locale={fr}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                />
-                {errors.repeatEndDate && (
-                  <p className="text-sm text-red-500">
-                    {errors.repeatEndDate.message}
-                  </p>
-                )}
-              </div>
-            )}
 
             {/* ACTIONS */}
             <div className="flex justify-end gap-2 pt-4">
@@ -830,7 +858,7 @@ export default function CreateAppointmentModal({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Annuler
+                {eventToEdit ? 'Fermer' : 'Annuler'}
               </Button>
               <Button type="submit">
                 {eventToEdit ? 'Modifier' : 'Créer'}

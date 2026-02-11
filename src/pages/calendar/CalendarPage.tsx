@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -6,20 +6,24 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { useAuth } from '@/services/auth/useAuth';
 import { EventChangeArg, EventInput } from '@fullcalendar/core/index.js';
-import CreateAppointmentModal, {
-  CalendarEvent,
-} from '@/components/calendar/CreateAppointmentModal';
+import CreateAppointmentModal from '@/components/calendar/CreateAppointmentModal';
 import { useUser } from '@/services/user/useUser';
-import { time } from 'console';
 import { useToast } from '@/hooks/use-toast';
+import { CalendarEvent } from '@/types/CalendarEvent';
+import * as LucideIcons from 'lucide-react';
 
 const CalendarPage = () => {
-  const { openingHour, getOpeningHours, user } = useAuth();
-  const { events, createEvent, getEvents, updateEvent } = useUser();
+  const { user } = useAuth();
+  const {
+    events,
+    createEvent,
+    getEvents,
+    updateEvent,
+    openingHour,
+    getOpeningHours,
+  } = useUser();
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,49 +31,10 @@ const CalendarPage = () => {
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
   const [slotMinTime, setSlotMinTime] = useState('08:00:00');
   const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
-
-  const [oldEvents, setEvents] = useState<EventInput[]>([
-    // Exemple d'événement unique
-    {
-      allDay: false,
-      backgroundColor: '#ff0000',
-      borderColor: '#ff0000',
-      daysOfWeek: [2],
-      description: 'a',
-      endRecur: '2026-01-30',
-      endTime: '11:00',
-      id: 'event-1768045414266',
-      startRecur: '2026-01-06',
-      startTime: '10:30',
-      title: 'Contrôle',
-      patientId: '4067a2e8-af64-48e8-83cb-23fe3ad70519',
-    },
-    {
-      allDay: false,
-      backgroundColor: 'hsl(var(--primary))',
-      description: 'dd',
-      end: '2026-01-06T09:00:00.000Z',
-      id: 'event-1768045391349',
-      start: '2026-01-06T08:30:00.000Z',
-      title: 'Consultation',
-      patientId: '4067a2e8-af64-48e8-83cb-23fe3ad70519',
-    },
-    {
-      allDay: true,
-      backgroundColor: '#F59E0B',
-      borderColor: '#F59E0B',
-      daysOfWeek: [1, 2, 3, 4, 5],
-      description: 'eee',
-      endRecur: '2026-01-16',
-      id: 'event-1768138056405',
-      startRecur: '2026-01-13',
-      title: 'Contrôle',
-      patientId: '4067a2e8-af64-48e8-83cb-23fe3ad70519',
-    },
-  ]);
+  const calendarRef = useRef<FullCalendar>(null);
 
   useEffect(() => {
-    getOpeningHours().then((hours) => {
+    getOpeningHours(user.id).then((hours) => {
       // récupère le min de hours.openTime et le max de hours.closeTime
       const minTime = hours.reduce((min, hour) => {
         return hour.openTime < min ? hour.openTime : min;
@@ -92,6 +57,25 @@ const CalendarPage = () => {
       setSlotMaxTime(formatTimeForCalendar(maxTime, 1));
     });
   }, []);
+
+  useEffect(() => {
+    // Créer un intervalle qui se répète toutes les 1 minutes
+    const intervalId = setInterval(() => {
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        const view = calendarApi.view;
+
+        const dateRange = {
+          start: view.currentStart.toISOString(),
+          end: view.currentEnd.toISOString(),
+        };
+        getEvents(dateRange);
+      }
+    }, 60 * 1000); // 1 minute
+
+    // Nettoyer l'intervalle lors du démontage du composant
+    return () => clearInterval(intervalId);
+  }, []); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
 
   const localeMap: Record<string, string> = {
     sq: 'sq',
@@ -167,6 +151,7 @@ const CalendarPage = () => {
       practitionerId: event.extendedProps?.practitionerId || user?.id, // Utiliser l'ID de l'utilisateur connecté
       // Propriétés étendues
       type: event.extendedProps?.type || 'appointment',
+      status: event.extendedProps?.status,
     };
 
     setEditingEvent(eventData);
@@ -219,17 +204,39 @@ const CalendarPage = () => {
   // Fonction pour personnaliser le rendu des événements
   const renderEventContent = (eventInfo: any) => {
     const event = eventInfo.event;
+    let abort = false;
+    let Icon;
+    if (event.extendedProps.status === 'waiting') {
+      Icon = LucideIcons['Armchair'];
+    } else if (event.extendedProps.status === 'consultation') {
+      Icon = LucideIcons['Stethoscope'];
+    } else if (event.extendedProps.status === 'finished') {
+      Icon = LucideIcons['Check'];
+    } else if (event.extendedProps.status === 'abort excused') {
+      Icon = LucideIcons['CalendarOff'];
+      abort = true;
+    } else if (event.extendedProps.status === 'abort') {
+      Icon = LucideIcons['Ban'];
+      abort = true;
+    }
 
     return (
       <div className="">
-        <div className="font-normal truncate">
-          {event.extendedProps?.type === 'absence'
-            ? formatTime(event.start) + ' - ' + event.title
-            : formatTime(event.start) +
-              ' - ' +
-              event.extendedProps?.patient?.firstname +
-              ' ' +
-              event.extendedProps?.patient?.lastname}
+        <div className="font-normal whitespace-normal break-words">
+          {event.extendedProps?.type === 'absence' ? (
+            formatTime(event.start) + ' - ' + event.title
+          ) : (
+            <>
+              <span
+                className={`flex items-center gap-2 ${abort ? 'line-through' : ''}`}
+              >
+                {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                {formatTime(event.start)} -{' '}
+                {event.extendedProps?.patient?.firstname}{' '}
+                {event.extendedProps?.patient?.lastname}
+              </span>
+            </>
+          )}
         </div>
       </div>
     );
@@ -256,6 +263,7 @@ const CalendarPage = () => {
             className="bg-card rounded-2xl border border-border p-4 md:p-6 shadow-sm"
           >
             <FullCalendar
+              ref={calendarRef}
               plugins={[
                 dayGridPlugin,
                 timeGridPlugin,
