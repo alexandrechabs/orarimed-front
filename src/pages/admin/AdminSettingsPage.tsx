@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Speciality } from '@/types/specialty';
 import SpecialitiesManager from '@/components/admin/SpecialtiesManager';
 import UserList from '@/components/admin/UserList';
+import CenterList from '@/components/admin/CenterList';
 
 export default function AdminSettingsPage() {
   const { t } = useLanguage();
@@ -62,10 +63,11 @@ export default function AdminSettingsPage() {
       </div>
 
       <Tabs defaultValue="general" className="space-y-4">
-        <TabsList>
+        <TabsList className="inline-table">
           <TabsTrigger value="general">
             {adminT.general || 'General'}
           </TabsTrigger>
+          <TabsTrigger value="office">Cabinet médical</TabsTrigger>
           <TabsTrigger value="doctor">Docteur</TabsTrigger>
           <TabsTrigger value="secretary">Secrétaire</TabsTrigger>
           <TabsTrigger value="specialities">
@@ -91,6 +93,17 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               {/* Add settings form fields here */}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="office" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Gestion des Cabinets</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CenterList />
             </CardContent>
           </Card>
         </TabsContent>

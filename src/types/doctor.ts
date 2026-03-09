@@ -15,7 +15,7 @@ export type DoctorProfile = {
   };
   speciality: {
     id: string;
-    name: string;
+    slug: string;
     translations: Array<{
       id: string;
       name: string;

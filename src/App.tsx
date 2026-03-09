@@ -33,6 +33,9 @@ import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import DoctorPage from './pages/DoctorPage';
 import SearchPage from './pages/SearchPage';
 import DoctorSettingsPage from './pages/settings/DoctorSettingsPage';
+import AppointmentPage from './pages/AppointmentPage';
+import CenterPage from './pages/CenterPage';
+import CabinetSettingsPage from './pages/settings/CabinetSettingsPage';
 
 const queryClient = new QueryClient();
 
@@ -148,6 +151,8 @@ const App = () => (
             path="/register-professional"
             element={<ProfessionalRegisterPage />}
           />
+          <Route path="/appointment" element={<AppointmentPage />} />
+
           <Route
             path="/onboardingClient"
             element={
@@ -206,6 +211,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/cabinet-settings"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[2]}>
+                    <CabinetSettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
                 path="/admin-settings"
                 element={
                   <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
@@ -215,7 +228,8 @@ const App = () => (
               />
             </Route>
           </Route>
-          <Route path="/:city/:user" element={<DoctorPage />} />
+          <Route path="/doctor/:city/:username" element={<DoctorPage />} />
+          <Route path="/center/:city/:username" element={<CenterPage />} />
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>

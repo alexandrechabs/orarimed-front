@@ -7,11 +7,11 @@ import { User } from '@/types/user';
 import { DoctorProfile } from '@/types/doctor';
 import { OpeningHour } from '@/types/openingHour';
 import { ConsultationReason } from '@/types/consultationReason';
+import { Center } from '@/types/center';
 
 type UserContextType = {
   events: EventInput[];
   isLoading: boolean;
-  openingHour: OpeningHour[] | null;
   searchPatient: (
     firstName: string,
     lastName: string,
@@ -28,7 +28,11 @@ type UserContextType = {
   ) => Promise<any[]>;
   getUsersAdmin: (role: number) => Promise<any[]>;
   searchDoctorAutocomplete: (query: string, locale: string) => Promise<any>;
-  getAvailableSlots: (doctorId: string, date: string) => Promise<any[]>;
+  getAvailableSlots: (
+    doctorId: string,
+    date: string,
+    duration?: number,
+  ) => Promise<any[]>;
   getEvents: (dateRange?: DateRange) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
   updateEvent: (event: EventInput) => Promise<EventInput>;
@@ -77,12 +81,41 @@ type UserContextType = {
     id: string,
     openingHours: OpeningHour[],
   ) => Promise<OpeningHour[]>;
+  getOpeningHoursCenter: (id: string) => Promise<OpeningHour[]>;
+  saveOpeningHoursCenter: (
+    id: string,
+    openingHours: OpeningHour[],
+  ) => Promise<OpeningHour[]>;
+  getReasonsClient: (id: string) => Promise<ConsultationReason[]>;
   getReasons: (id: string) => Promise<ConsultationReason[]>;
   saveReasons: (
     id: string,
     reasons: ConsultationReason[],
   ) => Promise<ConsultationReason[]>;
   searchClient: (search: string) => Promise<any[]>;
+  checkValidSelection: (
+    id: string,
+    reasonId: number,
+    slot: string,
+  ) => Promise<{ valid: boolean }>;
+  createRdv: (
+    doctorId: string,
+    slot: string,
+    reasonId: number,
+  ) => Promise<void>;
+  getRdvHistoryDoctor: (id: number) => Promise<any[]>;
+  createCenter: (centerData: Center) => Promise<Center>;
+  getCenters: () => Promise<Center[]>;
+  getCenter: (id: string) => Promise<Center>;
+  updateCenter: (id: string, centerData: Center) => Promise<Center>;
+  addDoctorsToCenter: (
+    centerId: string,
+    doctors: Array<{ doctorId: string; isAdmin: boolean }>,
+  ) => Promise<any>;
+  getCenterDoctors: (centerId: string) => Promise<any[]>;
+  getDoctorCenters: (doctorId: string) => Promise<any[]>;
+  savePhotoCenter: (photo: FormData, centerId: string) => Promise<any>;
+  savePhotoUser: (photo: FormData, userId: string) => Promise<any>;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -90,7 +123,6 @@ export const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = useState<EventInput[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const [openingHour, setOpeningHour] = useState<OpeningHour[] | null>(null);
 
   async function searchPatient(
     firstName: string,
@@ -195,8 +227,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   async function getAvailableSlots(
     doctorId: string,
     date: string,
+    duration?: number,
   ): Promise<any[]> {
-    const data = await userService.getAvailableSlots(doctorId, date);
+    const data = await userService.getAvailableSlots(doctorId, date, duration);
     return data;
   }
 
@@ -222,22 +255,38 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   async function getOpeningHours(id) {
     const data = await userService.getOpeningHours(id);
-    setOpeningHour(data);
     return data;
   }
 
   async function saveOpeningHours(id: string, openingHours: OpeningHour[]) {
     const data = await userService.saveOpeningHours(id, openingHours);
-    setOpeningHour(data);
     return data;
   }
 
-  async function getReasons(id) {
+  async function getOpeningHoursCenter(id) {
+    const data = await userService.getOpeningHoursCenter(id);
+    return data;
+  }
+
+  async function saveOpeningHoursCenter(
+    id: string,
+    openingHours: OpeningHour[],
+  ) {
+    const data = await userService.saveOpeningHoursCenter(id, openingHours);
+    return data;
+  }
+
+  async function getReasonsClient(id: string) {
+    const data = await userService.getReasonsClient(id);
+    return data;
+  }
+
+  async function getReasons(id: string) {
     const data = await userService.getReasons(id);
     return data;
   }
 
-  async function saveReasons(id, reasons: ConsultationReason[]) {
+  async function saveReasons(id: string, reasons: ConsultationReason[]) {
     const data = await userService.saveReasons(id, reasons);
     return data;
   }
@@ -247,11 +296,77 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function checkValidSelection(
+    id: string,
+    reasonId: number,
+    slot: string,
+  ) {
+    const data = await userService.checkValidSelection(id, reasonId, slot);
+    return data;
+  }
+
+  async function createRdv(doctorId: string, slot: string, reasonId: number) {
+    const data = await userService.createRdv(doctorId, slot, reasonId);
+    return data;
+  }
+
+  async function getRdvHistoryDoctor(id: number) {
+    const data = await userService.getRdvHistoryDoctor(id);
+    return data;
+  }
+
+  async function createCenter(centerData: Center) {
+    const data = await userService.createCenter(centerData);
+    return data;
+  }
+
+  async function getCenters() {
+    const data = await userService.getCenters();
+    return data;
+  }
+
+  async function updateCenter(id: string, centerData: Center) {
+    const data = await userService.updateCenter(id, centerData);
+    return data;
+  }
+
+  async function getCenter(id: string) {
+    const data = await userService.getCenter(id);
+    return data;
+  }
+
+  async function addDoctorsToCenter(
+    centerId: string,
+    doctors: Array<{ doctorId: string; isAdmin: boolean }>,
+  ) {
+    const data = await userService.addDoctorsToCenter(centerId, doctors);
+    return data;
+  }
+
+  async function getCenterDoctors(centerId: string) {
+    const data = await userService.getCenterDoctors(centerId);
+    return data;
+  }
+
+  async function getDoctorCenters(doctorId: string) {
+    const data = await userService.getDoctorCenters(doctorId);
+    return data;
+  }
+
+  async function savePhotoCenter(photo: FormData, centerId: string) {
+    const data = await userService.savePhotoCenter(photo, centerId);
+    return data;
+  }
+
+  async function savePhotoUser(photo: FormData, userId: string) {
+    const data = await userService.savePhotoUser(photo, userId);
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
         events,
-        openingHour,
         isLoading,
         searchPatient,
         getPatient,
@@ -268,9 +383,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         saveSubSpecialities,
         getOpeningHours,
         saveOpeningHours,
+        getOpeningHoursCenter,
+        saveOpeningHoursCenter,
+        getReasonsClient,
         getReasons,
         saveReasons,
         searchClient,
+        checkValidSelection,
+        createRdv,
+        getRdvHistoryDoctor,
+        createCenter,
+        getCenters,
+        getCenter,
+        updateCenter,
+        addDoctorsToCenter,
+        getCenterDoctors,
+        getDoctorCenters,
+        savePhotoCenter,
+        savePhotoUser,
       }}
     >
       {children}

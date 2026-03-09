@@ -15,7 +15,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export function DoctorPage() {
   const { getDoctor } = useUser();
-  const { city, user: username } = useParams<{ city: string; user: string }>();
+  const { city, username } = useParams<{ city: string; username: string }>();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -114,46 +114,21 @@ export function DoctorPage() {
           <div className="lg:col-span-1">
             <Card>
               <CardHeader className="items-center text-center">
-                <Avatar className="h-52 w-52 mb-4">
-                  {doctor.avatar ? (
-                    <AvatarImage
-                      src={`${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`}
-                      alt={fullName}
-                    />
-                  ) : (
-                    <AvatarFallback>
-                      {fullName
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  )}
+                <Avatar className="h-44 w-44 mb-4">
+                  <AvatarImage
+                    src={
+                      doctor.avatar
+                        ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
+                        : '/default-avatar.png'
+                    }
+                    alt={fullName}
+                  />
                 </Avatar>
                 <CardTitle className="text-2xl">{fullName}</CardTitle>
                 <p className="text-muted-foreground">{specialityName}</p>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                {doctor.phoneNumber && (
-                  <div className="flex items-center space-x-2">
-                    <span className="text-muted-foreground">Téléphone :</span>
-                    <a
-                      href={`tel:${doctor.phoneNumber.replace(/\s/g, '')}`}
-                      className="hover:underline"
-                    >
-                      {formatPhoneNumber(doctor.phoneNumber)}
-                    </a>
-                  </div>
-                )}
-
-                {doctor.city && (
-                  <div className="flex items-center space-x-2">
-                    <span className="text-muted-foreground">Ville :</span>
-                    <span>{doctor.city}</span>
-                  </div>
-                )}
-
                 <Button
                   className="w-full"
                   onClick={() => {

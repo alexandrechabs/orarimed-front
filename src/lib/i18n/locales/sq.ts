@@ -521,6 +521,16 @@ const sq: TranslationKey = {
       load: 'Gabim gjatë ngarkimit të specialiteteve',
     },
   },
+  event: {
+    status: {
+      created: 'Krijuar',
+      waiting: 'Po pranoj',
+      consultation: 'Po konsulton',
+      finished: 'Përfunduar',
+      abort: 'Anuluar pa arsye',
+      abortExcused: 'Anuluar i vrapuar',
+    },
+  },
 };
 
 export default sq;

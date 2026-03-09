@@ -24,7 +24,6 @@ type AuthContextType = {
   updateUser: (params: any) => void;
   getSpecialities: () => Promise<any>;
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
-  savePhotoUser: (photo: FormData) => Promise<any>;
   logout: () => void;
 };
 
@@ -115,11 +114,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
-  async function savePhotoUser(photo: FormData) {
-    const data = await authService.savePhotoUser(photo, user.id);
-    return data;
-  }
-
   return (
     <AuthContext.Provider
       value={{
@@ -133,7 +127,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateUser,
         getSpecialities,
         saveSpecialities,
-        savePhotoUser,
         isLoading,
         isAuthenticated: !!user,
       }}

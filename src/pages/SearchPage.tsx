@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,7 +11,6 @@ import { DoctorCard } from '@/components/doctors/DoctorCard';
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { language } = useLanguage();
   const { searchDoctors, getAvailableSlots } = useUser();
 
@@ -96,12 +95,6 @@ export default function SearchPage() {
     }
   };
 
-  const clickSlot = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('plop');
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <Navigation />
@@ -135,11 +128,7 @@ export default function SearchPage() {
           ) : doctors.length > 0 ? (
             <div className="space-y-4 mt-4">
               {doctors.map((doctor) => (
-                <DoctorCard
-                  key={doctor.id}
-                  doctor={doctor}
-                  onSlotClick={clickSlot}
-                />
+                <DoctorCard key={doctor.id} doctor={doctor} />
               ))}
             </div>
           ) : (

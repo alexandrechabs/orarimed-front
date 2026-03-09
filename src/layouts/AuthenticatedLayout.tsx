@@ -38,30 +38,6 @@ const navigation: NavItem[] = [
     role: [2],
   },
   {
-    name: 'Rendez-vous',
-    href: '/appointments',
-    icon: Stethoscope,
-    role: [1, 2],
-  },
-  {
-    name: 'Médecins',
-    href: '/doctors',
-    icon: Stethoscope,
-    role: [1, 2],
-  },
-  {
-    name: 'Documents',
-    href: '/documents',
-    icon: FileText,
-    role: [1, 2],
-  },
-  {
-    name: 'Profil',
-    href: '/profile',
-    icon: UserIcon,
-    role: [1, 2],
-  },
-  {
     name: 'Paramètres',
     href: '/settings',
     icon: Settings,
@@ -70,6 +46,12 @@ const navigation: NavItem[] = [
   {
     name: 'Docteur',
     href: '/doctor-settings',
+    icon: Settings,
+    role: [1, 2],
+  },
+  {
+    name: 'Cabinet',
+    href: '/cabinet-settings',
     icon: Settings,
     role: [1, 2],
   },

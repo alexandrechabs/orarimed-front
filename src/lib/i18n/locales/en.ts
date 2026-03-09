@@ -518,6 +518,16 @@ const en: TranslationKey = {
     availability: 'Availability',
     // Add other translations as needed
   },
+  event: {
+    status: {
+      created: 'Created',
+      waiting: 'Waiting',
+      consultation: 'Consultation',
+      finished: 'Finished',
+      abort: 'Abort not excused',
+      abortExcused: 'Abort excused',
+    },
+  },
 };
 
 export default en;

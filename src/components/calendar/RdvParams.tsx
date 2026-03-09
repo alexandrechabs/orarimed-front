@@ -3,6 +3,14 @@ import { Label } from '@/components/ui/label';
 import { Armchair, Stethoscope, Ban, CalendarOff, Check } from 'lucide-react';
 import { CalendarEvent } from '@/types/CalendarEvent';
 import { useUser } from '@/services/user/useUser';
+import { toast } from '@/components/ui/use-toast';
+import { Separator } from '../ui/separator';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
+import { useState } from 'react';
+import { Card } from '../ui/card';
+import { format, parseISO } from 'date-fns';
+import * as LucideIcons from 'lucide-react';
+import { useLanguage, useDateLocale } from '@/lib/i18n/LanguageContext';
 
 interface Props {
   eventToEdit: CalendarEvent;
@@ -12,25 +20,44 @@ interface Props {
    COMPONENT
 ----------------------------------------- */
 export default function RdvParams({ eventToEdit }: Props) {
-  const { updateEvent } = useUser();
+  const { updateEvent, getRdvHistoryDoctor } = useUser();
+  const { t } = useLanguage();
+  const dateLocale = useDateLocale();
+  const [isDrawerHistoryOpen, setIsDrawerHistoryOpen] = useState(false);
+  const [isDrawerNotificationsOpen, setIsDrawerNotificationsOpen] =
+    useState(false);
+  const [historyEvents, setHistoryEvents] = useState<any[]>([]);
   const changeStatus = async (status: string) => {
     eventToEdit.status = status;
     await updateEvent(eventToEdit);
+    toast({
+      title: 'Statut du rendez-vous modifié',
+      description: 'Le statut du rendez-vous a été modifié avec succès',
+    });
+  };
+  const formatDate = (isoDate: string) => {
+    return format(parseISO(isoDate), 'PPPPp', {
+      locale: dateLocale,
+    });
+  };
+
+  const getHistory = async () => {
+    setHistoryEvents(await getRdvHistoryDoctor(eventToEdit.patient.id));
   };
 
   return (
     <>
       {eventToEdit && (
         <div>
-          <Label>Statut du Rendez-vous</Label>
+          <Label className="mb-2">Statut du Rendez-vous</Label>
           <Button
             type="button"
             onClick={() => changeStatus('waiting')}
             variant={eventToEdit.status === 'waiting' ? 'default' : 'outline'}
-            className="mb-1 mt-2 w-full justify-start text-xs"
+            className="my-2 p-2 w-full justify-start text-xs"
           >
             <Armchair />
-            En salle d'attente
+            {t.event.status.waiting}
           </Button>
           <Button
             type="button"
@@ -38,42 +65,121 @@ export default function RdvParams({ eventToEdit }: Props) {
             variant={
               eventToEdit.status === 'consultation' ? 'default' : 'outline'
             }
-            className="my-1 w-full justify-start text-xs"
+            className="my-1 p-2 w-full justify-start text-xs"
           >
             <Stethoscope />
-            En consultation
+            {t.event.status.consultation}
           </Button>
           <Button
             type="button"
             onClick={() => changeStatus('finished')}
             variant={eventToEdit.status === 'finished' ? 'finished' : 'outline'}
-            className="my-1 w-full justify-start text-xs"
+            className="my-1 p-2 w-full justify-start text-xs"
           >
             <Check />
-            Terminé
+            {t.event.status.finished}
           </Button>
           <Button
             type="button"
-            onClick={() => changeStatus('abort excused')}
+            onClick={() => changeStatus('abortExcused')}
             variant={
-              eventToEdit.status === 'abort excused' ? 'destructive' : 'outline'
+              eventToEdit.status === 'abortExcused' ? 'destructive' : 'outline'
             }
-            className="my-1 w-full justify-start text-xs"
+            className="my-1 p-2 w-full justify-start text-xs"
           >
             <CalendarOff />
-            Absent excusé
+            {t.event.status.abortExcused}
           </Button>
           <Button
             type="button"
             onClick={() => changeStatus('abort')}
             variant={eventToEdit.status === 'abort' ? 'destructive' : 'outline'}
-            className="my-1 text-xs"
+            className="my-1 p-2 w-full justify-start text-xs"
           >
             <Ban />
-            Absent non excusé
+            {t.event.status.abort}
+          </Button>
+
+          <Separator className="my-10" />
+          <Button
+            type="button"
+            onClick={() => {
+              setIsDrawerHistoryOpen(true);
+              getHistory();
+            }}
+            variant="outline"
+            className="my-1 p-2 w-full justify-start text-xs"
+          >
+            Historique des rendez-vous
+          </Button>
+          <Button
+            type="button"
+            onClick={() => setIsDrawerNotificationsOpen(true)}
+            variant="outline"
+            className="my-1 p-2 w-full justify-start text-xs"
+          >
+            Historique des notifications
           </Button>
         </div>
       )}
+      <Drawer
+        open={isDrawerHistoryOpen}
+        onOpenChange={setIsDrawerHistoryOpen}
+        direction="right"
+      >
+        <DrawerContent className="h-full w-[300px] ml-auto">
+          <DrawerHeader>
+            <DrawerTitle>Historique des rendez-vous</DrawerTitle>
+          </DrawerHeader>
+          {historyEvents &&
+            historyEvents
+              .sort(
+                (a, b) =>
+                  new Date(a.start).getTime() - new Date(b.start).getTime(),
+              )
+              .map((event) => {
+                let Icon;
+                if (event.status === 'waiting') {
+                  Icon = LucideIcons['Armchair'];
+                } else if (event.status === 'consultation') {
+                  Icon = LucideIcons['Stethoscope'];
+                } else if (event.status === 'finished') {
+                  Icon = LucideIcons['Check'];
+                } else if (event.status === 'abortExcused') {
+                  Icon = LucideIcons['CalendarOff'];
+                } else if (event.status === 'abort') {
+                  Icon = LucideIcons['Ban'];
+                }
+                return (
+                  <Card
+                    className={`m-2 p-2 border-l-8`}
+                    style={{ borderLeftColor: event.color }}
+                  >
+                    <div key={event.id}>
+                      <p className="text-sm">{event.title}</p>
+                      <p className="text-xs">{formatDate(event.start)}</p>
+                      <p className="text-xs flex">
+                        status : {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                        {t.event.status[event.status]}
+                      </p>
+                    </div>
+                  </Card>
+                );
+              })}
+        </DrawerContent>
+      </Drawer>
+      <Drawer
+        open={isDrawerNotificationsOpen}
+        onOpenChange={setIsDrawerNotificationsOpen}
+        direction="right"
+      >
+        <DrawerContent className="h-full w-[300px] ml-auto">
+          <DrawerHeader>
+            <DrawerTitle>Historique des notifications</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">coucou</div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

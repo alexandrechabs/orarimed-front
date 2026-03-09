@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -29,9 +29,8 @@ import { useUser } from '@/services/user/useUser';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
-  const { user, specialities, updateUser, savePhotoUser, getMyUser } =
-    useAuth();
-  const { saveSubSpecialities } = useUser();
+  const { user, specialities, updateUser, getMyUser } = useAuth();
+  const { saveSubSpecialities, savePhotoUser } = useUser();
   const { language } = useLanguage();
   const [formData, setFormData] = useState({
     firstname: user.firstname || '',
@@ -78,7 +77,7 @@ export default function SettingsPage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      await savePhotoUser(formData);
+      await savePhotoUser(formData, user.id);
       await getMyUser();
 
       setIsCropModalOpen(false);
@@ -88,14 +87,6 @@ export default function SettingsPage() {
     } finally {
       setIsUploading(false);
     }
-  };
-
-  const getInitials = () => {
-    if (!user) return 'DR';
-    return (
-      `${user.firstname?.[0] || ''}${user.lastname?.[0] || ''}`.toUpperCase() ||
-      'DR'
-    );
   };
 
   const handleInputChange = (
@@ -158,13 +149,10 @@ export default function SettingsPage() {
                       src={
                         user?.avatar
                           ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
-                          : ''
+                          : 'default-avatar.png'
                       }
                       alt={`${user?.firstname} ${user?.lastname}`}
                     />
-                    <AvatarFallback className="text-2xl">
-                      {getInitials()}
-                    </AvatarFallback>
                   </Avatar>
                   <button
                     type="button"

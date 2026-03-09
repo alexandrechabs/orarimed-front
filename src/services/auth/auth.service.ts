@@ -101,22 +101,4 @@ export const authService = {
 
     return response.json();
   },
-
-  async savePhotoUser(photo: FormData, userId: string) {
-    const token = localStorage.getItem('auth_token');
-
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
-    const response = await fetch(`${API_URL}/user/${userId}/upload`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: photo,
-    });
-
-    return response.json();
-  },
 };

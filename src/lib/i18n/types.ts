@@ -285,6 +285,16 @@ export type TranslationKey = {
       load: string;
     };
   };
+  event: {
+    status: {
+      created: string;
+      waiting: string;
+      consultation: string;
+      finished: string;
+      abort: string;
+      abortExcused: string;
+    };
+  };
 };
 
 export type LanguageCode = 'sq' | 'en' | 'fr' | 'de' | 'it' | 'el';

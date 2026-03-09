@@ -11,8 +11,8 @@ import { DoctorPhotoStep } from '@/components/onboarding/steps/DoctorPhotoStep';
 import { useUser } from '@/services/user/useUser';
 
 export function ProfessionalOnboardingPage() {
-  const { updateUser, savePhotoUser } = useAuth();
-  const { saveSubSpecialities, saveOpeningHours } = useUser();
+  const { updateUser } = useAuth();
+  const { saveSubSpecialities, saveOpeningHours, savePhotoUser } = useUser();
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -64,7 +64,7 @@ export function ProfessionalOnboardingPage() {
           formData.append('file', file);
 
           // 4. Envoyer au serveur
-          let result = await savePhotoUser(formData);
+          let result = await savePhotoUser(formData, data.personal.id);
           photoUrl = result.image;
         } catch (error) {
           console.error("Erreur lors du traitement de l'image :", error);

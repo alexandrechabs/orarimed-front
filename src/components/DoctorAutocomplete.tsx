@@ -28,9 +28,9 @@ export const DoctorAutocomplete = ({
     Array<{
       id: string;
       name: string;
-      type: 'doctor' | 'speciality' | 'subSpeciality';
+      type: 'doctor' | 'center' | 'speciality' | 'subSpeciality';
       speciality?: string;
-      doctorIdentifier?: string;
+      identifier?: string;
       imageUrl?: string;
     }>
   >([]);
@@ -94,10 +94,29 @@ export const DoctorAutocomplete = ({
               ?.name +
             ' ' +
             doctor.city,
-          doctorIdentifier: doctor.doctorIdentifier,
+          specialitySlug: doctor.speciality.slug,
+          identifier: doctor.doctorIdentifier,
           imageUrl: doctor.avatar
             ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
             : '/default-avatar.png',
+        });
+      });
+
+      response.centers.forEach((center) => {
+        suggestions.push({
+          id: 'center_' + center.id,
+          name: center.name,
+          type: 'center',
+          speciality:
+            center.speciality.translations.find((t) => t.locale === language)
+              ?.name +
+            ' ' +
+            center.city,
+          specialitySlug: center.speciality.slug,
+          identifier: center.centerIdentifier,
+          imageUrl: center.avatar
+            ? `${API_URL}/center/${center.id}/avatar/${center.avatar}`
+            : '/hopital.png',
         });
       });
       setSuggestions(suggestions || []);
@@ -120,14 +139,19 @@ export const DoctorAutocomplete = ({
     type: string;
     speciality?: string;
     imageUrl?: string;
-    doctorIdentifier?: string;
+    identifier?: string;
+    specialitySlug?: string;
   }) => {
     onChange(doctor.name);
     onDoctorSelect?.(doctor);
     setIsOpen(false);
 
     if (doctor.type === 'doctor') {
-      navigate(`/doctor/${doctor.doctorIdentifier}`);
+      navigate(`/doctor/${doctor.specialitySlug}/${doctor.identifier}`);
+    }
+
+    if (doctor.type === 'center') {
+      navigate(`/center/${doctor.specialitySlug}/${doctor.identifier}`);
     }
   };
 
@@ -149,7 +173,10 @@ export const DoctorAutocomplete = ({
         <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 z-10">
           <ul className="py-1 max-h-60 overflow-auto">
             {suggestions.map((suggestion) => {
-              if (suggestion.type === 'doctor') {
+              if (
+                suggestion.type === 'doctor' ||
+                suggestion.type === 'center'
+              ) {
                 return (
                   <li
                     key={suggestion.id}

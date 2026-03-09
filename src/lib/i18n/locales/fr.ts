@@ -526,6 +526,16 @@ const fr: TranslationKey = {
     availability: 'Disponibilités',
     // Ajoutez d'autres traductions selon vos besoins
   },
+  event: {
+    status: {
+      created: 'Créé',
+      waiting: 'En attente',
+      consultation: 'En consultation',
+      finished: 'Terminé',
+      abort: 'Annulé non excusé',
+      abortExcused: 'Annulé excusé',
+    },
+  },
 };
 
 export default fr;

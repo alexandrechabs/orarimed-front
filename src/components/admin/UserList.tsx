@@ -168,7 +168,7 @@ export default function UserList({ type }: { type: string }) {
   };
 
   const handleViewUser = (user: DoctorProfile) => {
-    navigate(`/doctor/${user.doctorIdentifier}`);
+    navigate(`/doctor/${user.speciality.slug}/${user.doctorIdentifier}`);
   };
 
   const handleToggleUserStatus = async () => {
@@ -309,7 +309,7 @@ export default function UserList({ type }: { type: string }) {
           Ajouter
         </Button>
       </div>
-      <div className="rounded-md border overflow-visible">
+      <div className="rounded-md border overflow-x-auto">
         <Table className="overflow-visible">
           <TableHeader>
             <TableRow>
@@ -359,10 +359,10 @@ export default function UserList({ type }: { type: string }) {
                         />
                       </div>
                       <div className="grid">
-                        <span className="truncate text-sm">
+                        <span className="text-sm">
                           {user.firstname} {user.lastname}
                         </span>
-                        <span className="truncate text-sm">{user.email}</span>
+                        <span className="text-sm">{user.email}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -449,7 +449,7 @@ export default function UserList({ type }: { type: string }) {
       </div>
       <Dialog open={isAddDoctorOpen} onOpenChange={setIsAddDoctorOpen}>
         <DialogContent
-          className="overflow-visible"
+          className="overflow-visible max-h-[90vh] overflow-y-auto"
           onInteractOutside={(e) => {
             // Empêche la fermeture de la modale lors du clic sur les suggestions
             const target = e.target as HTMLElement;

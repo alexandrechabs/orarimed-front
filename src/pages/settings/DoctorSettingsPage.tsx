@@ -87,7 +87,7 @@ export default function DoctorSettingsPage() {
     <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
       <div className="flex items-center">
         <h1 className="text-3xl font-bold tracking-tight">
-          Paramètres du cabinet
+          Paramètres du Docteur
         </h1>
       </div>
 
