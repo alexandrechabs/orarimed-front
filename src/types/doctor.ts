@@ -44,7 +44,7 @@ export type DoctorProfile = {
   description?: string;
   price?: number;
   duration?: number;
-  languages?: string[];
+  language: string;
   paymentMethods?: string[];
   slots?: Array<{
     start: string | Date;

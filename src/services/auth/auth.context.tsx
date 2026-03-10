@@ -19,6 +19,7 @@ type AuthContextType = {
     password: string,
     acceptTerms: boolean,
     roleId: number,
+    language: string,
   ) => Promise<void>;
   getMyUser: () => void;
   updateUser: (params: any) => void;
@@ -71,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     acceptTerms: boolean,
     roleId: number,
+    language: string,
   ) {
     const data = await authService.register({
       firstname,
@@ -79,6 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
       acceptTerms,
       roleId,
+      language,
     });
 
     setUser(data.user);

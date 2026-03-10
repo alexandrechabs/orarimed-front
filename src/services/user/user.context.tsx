@@ -104,6 +104,7 @@ type UserContextType = {
     reasonId: number,
   ) => Promise<void>;
   getRdvHistoryDoctor: (id: number) => Promise<any[]>;
+  getRdvNotificationsDoctor: (eventId: string) => Promise<any[]>;
   createCenter: (centerData: Center) => Promise<Center>;
   getCenters: () => Promise<Center[]>;
   getCenter: (id: string) => Promise<Center>;
@@ -315,6 +316,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function getRdvNotificationsDoctor(eventId: string) {
+    const data = await userService.getRdvNotificationsDoctor(eventId);
+    return data;
+  }
+
   async function createCenter(centerData: Center) {
     const data = await userService.createCenter(centerData);
     return data;
@@ -392,6 +398,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         checkValidSelection,
         createRdv,
         getRdvHistoryDoctor,
+        getRdvNotificationsDoctor,
         createCenter,
         getCenters,
         getCenter,

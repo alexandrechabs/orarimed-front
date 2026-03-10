@@ -533,6 +533,24 @@ export const userService = {
     return response.json();
   },
 
+  async getRdvNotificationsDoctor(eventId: string) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_URL}/events/${eventId}/notifications`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.json();
+  },
+
   async createCenter(centerData: Center) {
     const token = localStorage.getItem('auth_token');
 

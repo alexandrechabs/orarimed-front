@@ -26,7 +26,7 @@ const registerSchema = z
   });
 
 export function RegisterForm() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { register } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -52,7 +52,8 @@ export function RegisterForm() {
         values.email,
         values.password,
         values.acceptTerms,
-        1
+        1,
+        language,
       );
 
       toast({

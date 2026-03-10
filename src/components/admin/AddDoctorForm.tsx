@@ -45,6 +45,7 @@ const createDoctorSchema = (isEditMode: boolean) => {
     visible: z.boolean().default(false).optional(),
     specialityId: z.number().min(1, 'La spécialité est requise'),
     subSpecialityId: z.array(z.number()).optional(), // Nouveau champ
+    language: z.string().min(2, 'La langue est requise'),
   };
 
   // En mode édition, le mot de passe est optionnel et ne doit être validé que s'il est fourni
@@ -98,6 +99,7 @@ interface DoctorFormProps {
     subSpecialityId?: number[];
     visible: boolean;
     active: boolean;
+    language: string;
   } | null;
 }
 
@@ -148,6 +150,7 @@ export function AddDoctorForm({
           visible: user.visible,
           specialityId: user.specialityId,
           subSpecialityId: user.subSpecialityId,
+          language: user.language,
         }
       : {
           email: '',
@@ -189,6 +192,7 @@ export function AddDoctorForm({
         visible: data.visible, // Conserver l'état actuel en mode édition
         active: user?.active,
         specialityId: data.specialityId,
+        language: data.language,
       };
 
       // Créer l'objet final en fonction du mode
@@ -502,6 +506,36 @@ export function AddDoctorForm({
                 </div>
               ))}
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Langue</Label>
+          <Select
+            value={watch('language')?.toString() || ''}
+            onValueChange={(value) => {
+              // Convertir la valeur en nombre car specialityId est un nombre
+              setValue('language', value, { shouldValidate: true });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sélectionnez une spécialité" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem key="sq" value="sq">
+                Albanais
+              </SelectItem>
+              <SelectItem key="en" value="en">
+                Anglais
+              </SelectItem>
+              <SelectItem key="fr" value="fr">
+                Francais
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.language && (
+            <p className="text-sm text-destructive">
+              {errors.language.message}
+            </p>
+          )}
         </div>
         {!isEditMode && (
           <>

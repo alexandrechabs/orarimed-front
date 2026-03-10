@@ -68,6 +68,7 @@ interface EditUser {
   bio?: string;
   description?: string;
   subSpecialityId?: number[];
+  language: string;
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -152,6 +153,7 @@ export default function UserList({ type }: { type: string }) {
       bio: user.bio,
       description: user.description,
       subSpecialityId: [],
+      language: user.language,
     };
 
     setEditingUser(userToEdit);

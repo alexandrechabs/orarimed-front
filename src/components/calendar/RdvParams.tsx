@@ -20,13 +20,15 @@ interface Props {
    COMPONENT
 ----------------------------------------- */
 export default function RdvParams({ eventToEdit }: Props) {
-  const { updateEvent, getRdvHistoryDoctor } = useUser();
+  const { updateEvent, getRdvHistoryDoctor, getRdvNotificationsDoctor } =
+    useUser();
   const { t } = useLanguage();
   const dateLocale = useDateLocale();
   const [isDrawerHistoryOpen, setIsDrawerHistoryOpen] = useState(false);
   const [isDrawerNotificationsOpen, setIsDrawerNotificationsOpen] =
     useState(false);
   const [historyEvents, setHistoryEvents] = useState<any[]>([]);
+  const [notifiactionsEvents, setNotificationsEvents] = useState<any[]>([]);
   const changeStatus = async (status: string) => {
     eventToEdit.status = status;
     await updateEvent(eventToEdit);
@@ -43,6 +45,10 @@ export default function RdvParams({ eventToEdit }: Props) {
 
   const getHistory = async () => {
     setHistoryEvents(await getRdvHistoryDoctor(eventToEdit.patient.id));
+  };
+
+  const getNotifications = async () => {
+    setNotificationsEvents(await getRdvNotificationsDoctor(eventToEdit.id));
   };
 
   return (
@@ -114,7 +120,10 @@ export default function RdvParams({ eventToEdit }: Props) {
           </Button>
           <Button
             type="button"
-            onClick={() => setIsDrawerNotificationsOpen(true)}
+            onClick={() => {
+              setIsDrawerNotificationsOpen(true);
+              getNotifications();
+            }}
             variant="outline"
             className="my-1 p-2 w-full justify-start text-xs"
           >
@@ -177,7 +186,25 @@ export default function RdvParams({ eventToEdit }: Props) {
           <DrawerHeader>
             <DrawerTitle>Historique des notifications</DrawerTitle>
           </DrawerHeader>
-          <div className="p-4">coucou</div>
+          {notifiactionsEvents &&
+            notifiactionsEvents
+              .sort(
+                (a, b) =>
+                  new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime(),
+              )
+              .map((notification) => {
+                return (
+                  <Card className={`m-2 p-2`}>
+                    <div key={notification.id}>
+                      <p className="text-sm">{notification.subject}</p>
+                      <p className="text-xs">
+                        {formatDate(notification.createdAt)}
+                      </p>
+                    </div>
+                  </Card>
+                );
+              })}
         </DrawerContent>
       </Drawer>
     </>
