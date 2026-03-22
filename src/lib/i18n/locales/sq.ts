@@ -530,6 +530,15 @@ const sq: TranslationKey = {
       abort: 'Anuluar pa arsye',
       abortExcused: 'Anuluar i vrapuar',
     },
+    type: {
+      mail_appointment_reminder: 'Email kujtese për takimin',
+      mail_appointment_cancellation: 'Email për anulimin e takimit',
+      mail_appointment_cancellation_doctor:
+        'Email për mjekun për anulimin e takimit',
+      mail_appointment_confirmation: 'Email për konfirmimin e takimit',
+      mail_appointment_reschedule: 'Email për ndryshimin e takimit',
+      mail_center_invitation: 'Email ftesë për qendrën',
+    },
   },
 };
 

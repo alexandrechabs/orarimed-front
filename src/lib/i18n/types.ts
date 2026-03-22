@@ -294,6 +294,14 @@ export type TranslationKey = {
       abort: string;
       abortExcused: string;
     };
+    type: {
+      mail_appointment_reminder: string;
+      mail_appointment_cancellation: string;
+      mail_appointment_cancellation_doctor: string;
+      mail_appointment_confirmation: string;
+      mail_appointment_reschedule: string;
+      mail_center_invitation: string;
+    };
   };
 };
 

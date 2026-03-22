@@ -136,7 +136,7 @@ export default function RdvParams({ eventToEdit }: Props) {
         onOpenChange={setIsDrawerHistoryOpen}
         direction="right"
       >
-        <DrawerContent className="h-full w-[300px] ml-auto">
+        <DrawerContent className="h-full w-[300px] ml-auto overflow-x-hidden overflow-y-auto">
           <DrawerHeader>
             <DrawerTitle>Historique des rendez-vous</DrawerTitle>
           </DrawerHeader>
@@ -163,8 +163,9 @@ export default function RdvParams({ eventToEdit }: Props) {
                   <Card
                     className={`m-2 p-2 border-l-8`}
                     style={{ borderLeftColor: event.color }}
+                    key={event.id}
                   >
-                    <div key={event.id}>
+                    <div>
                       <p className="text-sm">{event.title}</p>
                       <p className="text-xs">{formatDate(event.start)}</p>
                       <p className="text-xs flex">
@@ -182,7 +183,7 @@ export default function RdvParams({ eventToEdit }: Props) {
         onOpenChange={setIsDrawerNotificationsOpen}
         direction="right"
       >
-        <DrawerContent className="h-full w-[300px] ml-auto">
+        <DrawerContent className="h-full w-[300px] ml-auto overflow-x-hidden overflow-y-auto">
           <DrawerHeader>
             <DrawerTitle>Historique des notifications</DrawerTitle>
           </DrawerHeader>
@@ -195,9 +196,11 @@ export default function RdvParams({ eventToEdit }: Props) {
               )
               .map((notification) => {
                 return (
-                  <Card className={`m-2 p-2`}>
-                    <div key={notification.id}>
-                      <p className="text-sm">{notification.subject}</p>
+                  <Card className={`m-2 p-2`} key={notification.id}>
+                    <div>
+                      <p className="text-sm">
+                        {t.event.type[notification.type]}
+                      </p>
                       <p className="text-xs">
                         {formatDate(notification.createdAt)}
                       </p>

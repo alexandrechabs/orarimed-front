@@ -535,6 +535,15 @@ const fr: TranslationKey = {
       abort: 'Annulé non excusé',
       abortExcused: 'Annulé excusé',
     },
+    type: {
+      mail_appointment_reminder: 'Mail de rappel de rendez-vous',
+      mail_appointment_cancellation: "Mail d'annulation de rendez-vous",
+      mail_appointment_cancellation_doctor:
+        'Mail médecin annulation de rendez-vous',
+      mail_appointment_confirmation: 'Mail de confirmation de rendez-vous',
+      mail_appointment_reschedule: 'Mail de report de rendez-vous',
+      mail_center_invitation: "Mail d'invitation de centre",
+    },
   },
 };
 

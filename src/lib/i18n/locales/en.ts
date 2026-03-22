@@ -527,6 +527,15 @@ const en: TranslationKey = {
       abort: 'Abort not excused',
       abortExcused: 'Abort excused',
     },
+    type: {
+      mail_appointment_reminder: 'Mail appointment reminder',
+      mail_appointment_cancellation: 'Mail appointment cancellation',
+      mail_appointment_cancellation_doctor:
+        'Mail appointment cancellation doctor',
+      mail_appointment_confirmation: 'Mail appointment confirmation',
+      mail_appointment_reschedule: 'Mail appointment reschedule',
+      mail_center_invitation: 'Mail center invitation',
+    },
   },
 };
 
