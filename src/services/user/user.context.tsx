@@ -40,18 +40,18 @@ type UserContextType = {
     email: string;
     firstname: string;
     lastname: string;
-    address: string;
-    city: string;
-    country: string;
-    coordinate: {
+    address?: string;
+    city?: string;
+    country?: string;
+    coordinate?: {
       x: number;
       y: number;
     };
     phoneNumber: string;
     password: string;
     roleId: number;
-    visible: boolean;
-    specialityId: number;
+    visible?: boolean;
+    specialityId?: number;
     acceptTerms: boolean;
   }) => Promise<User>;
   updateUser: (
@@ -60,19 +60,19 @@ type UserContextType = {
       email: string;
       firstname: string;
       lastname: string;
-      address: string;
-      city: string;
-      country: string;
-      coordinate: {
+      address?: string;
+      city?: string;
+      country?: string;
+      coordinate?: {
         x: number;
         y: number;
       };
       phoneNumber: string;
       password?: string;
       roleId: number;
-      visible: boolean;
+      visible?: boolean;
       active: boolean;
-      specialityId: number;
+      specialityId?: number;
     },
   ) => Promise<User>;
   saveSubSpecialities: (id: string, subSpecialityId: number[]) => Promise<void>;

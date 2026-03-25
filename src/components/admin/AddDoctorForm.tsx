@@ -517,7 +517,7 @@ export function AddDoctorForm({
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une spécialité" />
+              <SelectValue placeholder="Sélectionnez une langue" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem key="sq" value="sq">

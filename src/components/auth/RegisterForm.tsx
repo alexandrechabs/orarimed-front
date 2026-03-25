@@ -62,7 +62,7 @@ export function RegisterForm() {
       });
 
       // Rediriger vers la page de connexion ou le tableau de bord
-      navigate('/login');
+      navigate('/dashboard');
     } catch (error) {
       toast({
         title: t.auth.registrationError,

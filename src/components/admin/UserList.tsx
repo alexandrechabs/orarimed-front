@@ -45,6 +45,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { OpeningHour } from '@/types/openingHour';
 import ConsultationReasons from './ConsultationReasons';
 import { ConsultationReason } from '@/types/consultationReason';
+import { AddSecretaryForm } from './AddSecretaryForm';
+import DoctorSecretarySearch from './DoctorSecretarySearch';
 
 interface EditUser {
   id?: string;
@@ -86,6 +88,9 @@ export default function UserList({ type }: { type: string }) {
   const [users, setUsers] = useState<DoctorProfile[]>([]);
   const { language } = useLanguage();
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
+  const [isAddSecretaryOpen, setIsAddSecretaryOpen] = useState(false);
+  const [isAddDoctorToSecretaryOpen, setIsAddDoctorToSecretaryOpen] =
+    useState(false);
   const [editingUser, setEditingUser] = useState<EditUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userToUpdate, setUserToUpdate] = useState<DoctorProfile | null>(null);
@@ -169,6 +174,11 @@ export default function UserList({ type }: { type: string }) {
     setIsAddDoctorOpen(true);
   };
 
+  const handleEditSecretary = (user: DoctorProfile) => {
+    initUser(user);
+    setIsAddSecretaryOpen(true);
+  };
+
   const handleViewUser = (user: DoctorProfile) => {
     navigate(`/doctor/${user.speciality.slug}/${user.doctorIdentifier}`);
   };
@@ -249,6 +259,11 @@ export default function UserList({ type }: { type: string }) {
     setIsConsultationReasonModalOpen(true);
   };
 
+  const handleEditDoctorList = (user: DoctorProfile) => {
+    initUser(user);
+    setIsAddDoctorToSecretaryOpen(true);
+  };
+
   const onSubmit = (formData: { openingHours: OpeningHour[] }) => {
     setIsOpeningHoursModalOpen(false);
     let openingHours = formData.openingHours;
@@ -279,11 +294,16 @@ export default function UserList({ type }: { type: string }) {
 
   const handleAddUser = () => {
     setEditingUser(null);
-    setIsAddDoctorOpen(true);
+    if (type === 'doctor') {
+      setIsAddDoctorOpen(true);
+    } else {
+      setIsAddSecretaryOpen(true);
+    }
   };
 
   const handleSuccess = () => {
     setIsAddDoctorOpen(false);
+    setIsAddSecretaryOpen(false);
     loadUsers();
   };
 
@@ -369,11 +389,11 @@ export default function UserList({ type }: { type: string }) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {
-                      user.speciality.translations.filter(
-                        (t) => t.locale === language,
-                      )[0].name
-                    }
+                    {type === 'doctor'
+                      ? user.speciality.translations.filter(
+                          (t) => t.locale === language,
+                        )[0].name
+                      : ''}
                   </TableCell>
                   <TableCell>
                     <span
@@ -401,22 +421,38 @@ export default function UserList({ type }: { type: string }) {
                           <Pencil className="mr-2 h-4 w-4" />
                           <span>Modifier</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewUser(user)}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          <span>Voir le profil</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleEditOpeningHours(user)}
-                        >
-                          <CalendarDays className="mr-2 h-4 w-4" />
-                          <span>Horaires d'ouverture</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleEditConsultationReasons(user)}
-                        >
-                          <CalendarDays className="mr-2 h-4 w-4" />
-                          <span>Motifs de consultation</span>
-                        </DropdownMenuItem>
+                        {type === 'doctor' && (
+                          <DropdownMenuItem
+                            onClick={() => handleViewUser(user)}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            <span>Voir le profil</span>
+                          </DropdownMenuItem>
+                        )}
+                        {type === 'doctor' && (
+                          <DropdownMenuItem
+                            onClick={() => handleEditOpeningHours(user)}
+                          >
+                            <CalendarDays className="mr-2 h-4 w-4" />
+                            <span>Horaires d'ouverture</span>
+                          </DropdownMenuItem>
+                        )}
+                        {type === 'doctor' && (
+                          <DropdownMenuItem
+                            onClick={() => handleEditConsultationReasons(user)}
+                          >
+                            <CalendarDays className="mr-2 h-4 w-4" />
+                            <span>Motifs de consultation</span>
+                          </DropdownMenuItem>
+                        )}
+                        {type !== 'doctor' && (
+                          <DropdownMenuItem
+                            onClick={() => handleEditDoctorList(user)}
+                          >
+                            <CalendarDays className="mr-2 h-4 w-4" />
+                            <span>Accès docteur</span>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           className={
                             user.active
@@ -464,13 +500,39 @@ export default function UserList({ type }: { type: string }) {
             <DialogTitle>
               {editingUser
                 ? `Modifier ${editingUser.firstname} ${editingUser.lastname}`
-                : `Nouveau ${type === 'doctor' ? 'compte docteur' : 'secrétaire'}`}
+                : `Nouveau compte docteur`}
             </DialogTitle>
           </DialogHeader>
           <AddDoctorForm
             user={editingUser || undefined}
             onSuccess={handleSuccess}
             onClose={() => setIsAddDoctorOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAddSecretaryOpen} onOpenChange={setIsAddSecretaryOpen}>
+        <DialogContent
+          className="overflow-visible max-h-[90vh] overflow-y-auto"
+          onInteractOutside={(e) => {
+            // Empêche la fermeture de la modale lors du clic sur les suggestions
+            const target = e.target as HTMLElement;
+            if (target.closest('.pac-container')) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>
+              {editingUser
+                ? `Modifier ${editingUser.firstname} ${editingUser.lastname}`
+                : `Nouveau compte Secrétaire`}
+            </DialogTitle>
+          </DialogHeader>
+          <AddSecretaryForm
+            user={editingUser || undefined}
+            onSuccess={handleSuccess}
+            onClose={() => setIsAddSecretaryOpen(false)}
           />
         </DialogContent>
       </Dialog>
@@ -573,6 +635,37 @@ export default function UserList({ type }: { type: string }) {
               onClick={handleToggleUserStatus}
             >
               {userToUpdate?.active ? 'Désactiver' : 'Réactiver'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isAddDoctorToSecretaryOpen}
+        onOpenChange={setIsAddDoctorToSecretaryOpen}
+      >
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>
+              Liste des docteurs accessible pour la secrétaire
+            </DialogTitle>
+            <DialogDescription>
+              Ajoutez un accès entre docteur et la secrétaire{' '}
+              {editingUser?.firstname}
+            </DialogDescription>
+          </DialogHeader>
+          <DoctorSecretarySearch
+            secretaryId={editingUser?.id}
+            secretaryName={editingUser?.firstname}
+            onSuccess={() => setIsAddDoctorToSecretaryOpen(false)}
+            maxSelection={50}
+          />
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsAddDoctorToSecretaryOpen(false)}
+            >
+              Annuler
             </Button>
           </div>
         </DialogContent>

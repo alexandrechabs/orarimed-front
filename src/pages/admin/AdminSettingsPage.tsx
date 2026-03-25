@@ -125,11 +125,6 @@ export default function AdminSettingsPage() {
               <CardTitle>Gestion des Secretaires</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Affichez et gérez les comptes et les permissions
-                </p>
-              </div>
               <UserList type="secretary" />
             </CardContent>
           </Card>
