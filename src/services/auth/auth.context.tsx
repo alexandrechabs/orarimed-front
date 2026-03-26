@@ -9,7 +9,6 @@ type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  reasons: ConsultationReason[] | null;
   specialities: any[] | null;
   login: (email: string, password: string) => Promise<void>;
   register: (
@@ -36,7 +35,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (saved as String) || '';
   });
   const [user, setUser] = useState<User | null>(null);
-  const [reasons, setReasons] = useState<ConsultationReason[] | null>(null);
   const [specialities, setSpecialities] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true); // État de chargement
 
@@ -121,7 +119,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        reasons,
         specialities,
         login,
         register,

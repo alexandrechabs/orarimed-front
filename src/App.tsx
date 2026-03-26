@@ -181,7 +181,7 @@ const App = () => (
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
+                  <ProtectedRouteByRole allowedRoles={[1, 2, 3, 4]}>
                     <DashboardPage />
                   </ProtectedRouteByRole>
                 }
@@ -189,7 +189,7 @@ const App = () => (
               <Route
                 path="/calendrier"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[2]}>
+                  <ProtectedRouteByRole allowedRoles={[2, 3]}>
                     <CalendarPage />
                   </ProtectedRouteByRole>
                 }
@@ -197,7 +197,7 @@ const App = () => (
               <Route
                 path="/settings"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
+                  <ProtectedRouteByRole allowedRoles={[1, 2, 3, 4]}>
                     <SettingsPage />
                   </ProtectedRouteByRole>
                 }

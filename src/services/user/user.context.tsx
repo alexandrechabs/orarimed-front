@@ -12,6 +12,7 @@ import { Center } from '@/types/center';
 type UserContextType = {
   events: EventInput[];
   isLoading: boolean;
+  openingHour: OpeningHour[];
   searchPatient: (
     firstName: string,
     lastName: string,
@@ -33,7 +34,7 @@ type UserContextType = {
     date: string,
     duration?: number,
   ) => Promise<any[]>;
-  getEvents: (dateRange?: DateRange) => Promise<EventInput[]>;
+  getEvents: (dateRange?: DateRange, userId?: string) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
   updateEvent: (event: EventInput) => Promise<EventInput>;
   createUser: (userData: {
@@ -92,7 +93,7 @@ type UserContextType = {
     id: string,
     reasons: ConsultationReason[],
   ) => Promise<ConsultationReason[]>;
-  searchClient: (search: string) => Promise<any[]>;
+  searchClient: (search: string, userId?: string) => Promise<any[]>;
   checkValidSelection: (
     id: string,
     reasonId: number,
@@ -117,6 +118,11 @@ type UserContextType = {
   getDoctorCenters: (doctorId: string) => Promise<any[]>;
   savePhotoCenter: (photo: FormData, centerId: string) => Promise<any>;
   savePhotoUser: (photo: FormData, userId: string) => Promise<any>;
+  getSecretaryDoctors: (secretaryId: string) => Promise<DoctorProfile[]>;
+  addDoctorsToSecretary: (
+    secretaryId: string,
+    doctorId: Array<string>,
+  ) => Promise<any>;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -124,6 +130,7 @@ export const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = useState<EventInput[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [openingHour, setOpeningHour] = useState<OpeningHour[]>([]);
 
   async function searchPatient(
     firstName: string,
@@ -144,10 +151,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   const getEvents = useCallback(
-    async (dateRange?: DateRange): Promise<EventInput[]> => {
+    async (dateRange?: DateRange, userId?: string): Promise<EventInput[]> => {
       setLoading(true);
       try {
-        const data: EventInput[] = await userService.getEvents(dateRange);
+        const data: EventInput[] = await userService.getEvents(
+          dateRange,
+          userId,
+        );
         if (dateRange) {
           // Si on a une plage de dates spécifique, on remplace les événements
           setEvents(data);
@@ -256,6 +266,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   async function getOpeningHours(id) {
     const data = await userService.getOpeningHours(id);
+    setOpeningHour(data);
     return data;
   }
 
@@ -292,8 +303,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
-  async function searchClient(search: string) {
-    const data = await userService.searchClient(search);
+  async function searchClient(search: string, userId?: string) {
+    const data = await userService.searchClient(search, userId);
     return data;
   }
 
@@ -369,11 +380,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function addDoctorsToSecretary(
+    secretaryId: string,
+    doctors: Array<string>,
+  ) {
+    const data = await userService.addDoctorsToSecretary(secretaryId, doctors);
+    return data;
+  }
+
+  async function getSecretaryDoctors(secretaryId: string) {
+    const data = await userService.getSecretaryDoctors(secretaryId);
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
         events,
         isLoading,
+        openingHour,
         searchPatient,
         getPatient,
         getEvents,
@@ -408,6 +433,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         getDoctorCenters,
         savePhotoCenter,
         savePhotoUser,
+        getSecretaryDoctors,
+        addDoctorsToSecretary,
       }}
     >
       {children}

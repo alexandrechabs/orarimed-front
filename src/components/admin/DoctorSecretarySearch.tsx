@@ -29,9 +29,7 @@ interface DoctorSearchResult {
   doctorIdentifier: string;
 }
 
-interface DoctorWithRights extends DoctorSearchResult {
-  isAdmin: boolean;
-}
+interface DoctorWithRights extends DoctorSearchResult {}
 
 interface DoctorSecretarySearchProps {
   secretaryId: string;
@@ -46,8 +44,11 @@ export function DoctorSecretarySearch({
   onSuccess,
   maxSelection = 10,
 }: DoctorSecretarySearchProps) {
-  const { searchDoctorAutocomplete, addDoctorsToCenter, getCenterDoctors } =
-    useUser();
+  const {
+    searchDoctorAutocomplete,
+    addDoctorsToSecretary,
+    getSecretaryDoctors,
+  } = useUser();
   const { toast } = useToast();
   const { language } = useLanguage();
 
@@ -116,7 +117,7 @@ export function DoctorSecretarySearch({
         });
         return;
       }
-      setSelectedDoctors([...selectedDoctors, { ...doctor, isAdmin: false }]);
+      setSelectedDoctors([...selectedDoctors, doctor]);
     }
     setSearchQuery('');
     setSuggestions([]);
@@ -127,36 +128,16 @@ export function DoctorSecretarySearch({
     setSelectedDoctors(selectedDoctors.filter((d) => d.id !== doctorId));
   };
 
-  const handleAddDoctorsToCenter = async () => {
-    if (selectedDoctors.length === 0) {
-      toast({
-        title: 'Aucun docteur sélectionné',
-        description: 'Veuillez sélectionner au moins un docteur à ajouter',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+  const handleAddDoctorsToSecretary = async () => {
     try {
       setIsAdding(true);
       console.log(selectedDoctors);
 
-      const doctorsWithRights = selectedDoctors.map((doctor) => ({
-        doctorId: doctor.id,
-        isAdmin: doctor.isAdmin,
-      }));
+      const doctorsWithRights = selectedDoctors.map((doctor) => doctor.id);
 
-      await addDoctorsToCenter(centerId, doctorsWithRights);
+      await addDoctorsToSecretary(secretaryId, doctorsWithRights);
 
-      const adminCount = selectedDoctors.filter((d) => d.isAdmin).length;
-      const regularCount = selectedDoctors.length - adminCount;
-
-      let description = `${selectedDoctors.length} docteur(s) ajouté(s) au centre "${centerName}" avec succès`;
-      if (adminCount > 0 && regularCount > 0) {
-        description += ` (${adminCount} admin(s) et ${regularCount} régulier(s))`;
-      } else if (adminCount > 0) {
-        description += ` (${adminCount} admin(s))`;
-      }
+      let description = `${selectedDoctors.length} docteur(s) ajouté(s) à la secrétaire "${secretaryName}" avec succès`;
 
       toast({
         title: 'Succès',
@@ -302,22 +283,6 @@ export function DoctorSecretarySearch({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`admin-${doctor.id}`}
-                      checked={doctor.isAdmin}
-                      onCheckedChange={(checked) =>
-                        handleAdminRightsChange(doctor.id, checked as boolean)
-                      }
-                    />
-                    <Label
-                      htmlFor={`admin-${doctor.id}`}
-                      className="text-sm cursor-pointer flex items-center gap-1"
-                    >
-                      <Shield className="h-3 w-3" />
-                      Admin
-                    </Label>
-                  </div>
                   <button
                     onClick={() => handleRemoveDoctor(doctor.id)}
                     className="hover:bg-gray-200 rounded-full p-1"
@@ -333,7 +298,7 @@ export function DoctorSecretarySearch({
 
       {/* Bouton d'ajout */}
       <Button
-        onClick={handleAddDoctorsToCenter}
+        onClick={handleAddDoctorsToSecretary}
         disabled={selectedDoctors.length === 0 || isAdding}
         className="w-full"
       >

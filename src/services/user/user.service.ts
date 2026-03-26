@@ -46,7 +46,7 @@ export const userService = {
     return res.json() as Promise<any>;
   },
 
-  async getEvents(dateRange?: DateRange) {
+  async getEvents(dateRange?: DateRange, userId?: string) {
     const token = localStorage.getItem('auth_token');
 
     if (!token) {
@@ -62,6 +62,10 @@ export const userService = {
         end: dateRange.end,
       });
       url += `?${params.toString()}`;
+    }
+
+    if (userId) {
+      url += `${url.includes('?') ? '&' : '?'}userId=${userId}`;
     }
 
     const res = await fetch(url, {
@@ -454,7 +458,7 @@ export const userService = {
     return response.json();
   },
 
-  async searchClient(search: string) {
+  async searchClient(search: string, userId: string) {
     const token = localStorage.getItem('auth_token');
 
     if (!token) {
@@ -462,7 +466,7 @@ export const userService = {
     }
 
     const response = await fetch(
-      `${API_URL}/patients/search?search=${search}`,
+      `${API_URL}/patients/search?search=${search}&userId=${userId}`,
       {
         method: 'GET',
         headers: {
@@ -725,6 +729,56 @@ export const userService = {
       },
       body: photo,
     });
+
+    return response.json();
+  },
+
+  async addDoctorsToSecretary(secretaryId: string, doctors: Array<string>) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(
+      `${API_URL}/secretary/${secretaryId}/doctors`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ doctors }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to add doctors to secretary');
+    }
+
+    return response.json();
+  },
+
+  async getSecretaryDoctors(secretaryId: string) {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+    const response = await fetch(
+      `${API_URL}/secretary/${secretaryId}/doctors`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to get secretary doctors');
+    }
 
     return response.json();
   },

@@ -42,20 +42,22 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 import { CalendarEvent } from '@/types/CalendarEvent';
 import RdvParams from './RdvParams';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
+import { DoctorProfile } from '@/types/doctor';
+import { User } from '@/types/user';
 
 export function usePatientSearch() {
   const { searchClient } = useUser();
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const search = async (query: string) => {
+  const search = async (query: string, userId?: string) => {
     if (query.length < 2) {
       setResults([]);
       return;
     }
 
     setLoading(true);
-    searchClient(query).then((patients) => {
+    searchClient(query, userId).then((patients) => {
       setResults(patients);
     });
     setLoading(false);
@@ -127,6 +129,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   initialDate?: Date;
   eventToEdit?: CalendarEvent;
+  selectedDoctor: DoctorProfile | User | null;
   onEventCreated?: (event: CalendarEvent) => void;
   onEventUpdated?: (event: CalendarEvent) => void;
 }
@@ -139,12 +142,13 @@ export default function CreateAppointmentModal({
   onOpenChange,
   initialDate,
   eventToEdit,
+  selectedDoctor,
   onEventCreated,
   onEventUpdated,
 }: Props) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getReasons } = useUser();
+  const { getReasons, getReasonsClient } = useUser();
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const { results, search, clear } = usePatientSearch();
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -193,6 +197,14 @@ export default function CreateAppointmentModal({
       setAppointmentTitles(reasons);
     });
   }, []);
+
+  useEffect(() => {
+    if (selectedDoctor) {
+      getReasonsClient(selectedDoctor.id).then((reasons) => {
+        setAppointmentTitles(reasons);
+      });
+    }
+  }, [selectedDoctor]);
 
   useEffect(() => {
     if (!open) return;
@@ -300,7 +312,7 @@ export default function CreateAppointmentModal({
       type: data.type,
       description: data.description,
       allDay: data.isAllDay,
-      practitionerId: userId,
+      practitionerId: selectedDoctor ? selectedDoctor.id : userId,
       color: appointmentTitles.find((i) => i.name === data.title)?.color,
     };
 
@@ -534,7 +546,7 @@ export default function CreateAppointmentModal({
                                     autoComplete="off"
                                     onChange={(e) => {
                                       field.onChange(e.target.value);
-                                      search(e.target.value);
+                                      search(e.target.value, selectedDoctor.id);
                                     }}
                                   />
                                 )}

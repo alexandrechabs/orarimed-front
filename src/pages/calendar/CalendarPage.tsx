@@ -13,6 +13,16 @@ import { useUser } from '@/services/user/useUser';
 import { useToast } from '@/hooks/use-toast';
 import { CalendarEvent } from '@/types/CalendarEvent';
 import * as LucideIcons from 'lucide-react';
+import { DoctorProfile } from '@/types/doctor';
+import { User } from '@/types/user';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 const CalendarPage = () => {
   const { user } = useAuth();
@@ -23,9 +33,16 @@ const CalendarPage = () => {
     updateEvent,
     openingHour,
     getOpeningHours,
+    getSecretaryDoctors,
   } = useUser();
   const { t, language } = useLanguage();
   const { toast } = useToast();
+  const [selectedDoctor, setSelectedDoctor] = useState<
+    DoctorProfile | User | null
+  >(null);
+  const [accessDoctors, setAccessDoctors] = useState<DoctorProfile[] | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
@@ -34,28 +51,19 @@ const CalendarPage = () => {
   const calendarRef = useRef<FullCalendar>(null);
 
   useEffect(() => {
-    getOpeningHours(user.id).then((hours) => {
-      // récupère le min de hours.openTime et le max de hours.closeTime
-      const minTime = hours.reduce((min, hour) => {
-        return hour.openTime < min ? hour.openTime : min;
-      }, hours[0].openTime);
-      const maxTime = hours.reduce((max, hour) => {
-        return hour.closeTime > max ? hour.closeTime : max;
-      }, hours[0].closeTime);
-      // enlève 1 heure au min et ajouter 1 heure au max
-
-      const formatTimeForCalendar = (timeStr: string, diff: number) => {
-        let [hours, minutes] = timeStr.split(':').map(Number);
-        hours = hours + diff;
-
-        return `${hours.toString().padStart(2, '0')}:${minutes
-          .toString()
-          .padStart(2, '0')}:00`;
-      };
-
-      setSlotMinTime(formatTimeForCalendar(minTime, -1));
-      setSlotMaxTime(formatTimeForCalendar(maxTime, 1));
-    });
+    setSelectedDoctor(user);
+    if (user.roleId === 3) {
+      (async () => {
+        const doctors = await getSecretaryDoctors(user.id);
+        setAccessDoctors(doctors);
+        if (doctors.length > 0) {
+          setSelectedDoctor(doctors[0]);
+          getOpeningHour(doctors[0].id);
+        }
+      })();
+    } else {
+      getOpeningHour();
+    }
   }, []);
 
   useEffect(() => {
@@ -69,14 +77,42 @@ const CalendarPage = () => {
           start: view.currentStart.toISOString(),
           end: view.currentEnd.toISOString(),
         };
-        // getEvents(dateRange);
+        getEvents(dateRange, selectedDoctor?.id);
       }
     }, 60 * 1000); // 1 minute
 
     // Nettoyer l'intervalle lors du démontage du composant
     return () => clearInterval(intervalId);
-  }, []); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
+  }, [selectedDoctor]); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
 
+  const getOpeningHour = async (doctorId?: string) => {
+    console.log(selectedDoctor);
+
+    getOpeningHours(doctorId || selectedDoctor?.id || user?.id).then(
+      (hours) => {
+        // récupère le min de hours.openTime et le max de hours.closeTime
+        const minTime = hours.reduce((min, hour) => {
+          return hour.openTime < min ? hour.openTime : min;
+        }, hours[0].openTime);
+        const maxTime = hours.reduce((max, hour) => {
+          return hour.closeTime > max ? hour.closeTime : max;
+        }, hours[0].closeTime);
+        // enlève 1 heure au min et ajouter 1 heure au max
+
+        const formatTimeForCalendar = (timeStr: string, diff: number) => {
+          let [hours, minutes] = timeStr.split(':').map(Number);
+          hours = hours + diff;
+
+          return `${hours.toString().padStart(2, '0')}:${minutes
+            .toString()
+            .padStart(2, '0')}:00`;
+        };
+
+        setSlotMinTime(formatTimeForCalendar(minTime, -1));
+        setSlotMaxTime(formatTimeForCalendar(maxTime, 1));
+      },
+    );
+  };
   const localeMap: Record<string, string> = {
     sq: 'sq',
     en: 'en',
@@ -89,9 +125,9 @@ const CalendarPage = () => {
         start: arg.start.toISOString(),
         end: arg.end.toISOString(),
       };
-      getEvents(dateRange);
+      getEvents(dateRange, selectedDoctor?.id);
     },
-    [getEvents],
+    [getEvents, selectedDoctor],
   );
 
   const handleEventCreated = useCallback(async (newEvent: EventInput) => {
@@ -254,7 +290,43 @@ const CalendarPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="pt-4 pb-16">
+      <main className="pb-16">
+        {accessDoctors && accessDoctors.length > 0 && (
+          <div className="mx-auto px-4 lg:px-8 mb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-card rounded-2xl border border-border p-4 shadow-sm"
+            >
+              <div className="flex items-center space-x-2">
+                <Label className="text-sm font-medium">Médecin:</Label>
+                <Select
+                  value={selectedDoctor?.id || ''}
+                  onValueChange={(value) => {
+                    const doctor = accessDoctors.find((d) => d.id === value);
+                    if (doctor) {
+                      setSelectedDoctor(doctor);
+                      getOpeningHour(doctor.id);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-[250px]">
+                    <SelectValue placeholder="Sélectionner un médecin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accessDoctors.map((doctor) => (
+                      <SelectItem key={doctor.id} value={doctor.id}>
+                        {doctor.firstname} {doctor.lastname}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         <div className="mx-auto px-4 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -398,6 +470,7 @@ const CalendarPage = () => {
         }}
         initialDate={selectedDate || new Date()}
         eventToEdit={editingEvent || undefined}
+        selectedDoctor={selectedDoctor}
         onEventCreated={handleEventCreated}
         onEventUpdated={handleEventUpdated}
       />
