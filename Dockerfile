@@ -24,7 +24,7 @@ RUN API_URL=https://orarimed.com/api npm run generate:specialities
 COPY . .
 
 # Construire l'application
-RUN npm run builds
+RUN npm run build
 
 # Étape de production
 FROM nginx:stable-alpine
