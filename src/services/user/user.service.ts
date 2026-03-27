@@ -4,6 +4,7 @@ import { User } from '@/types/user';
 import { OpeningHour } from '@/types/openingHour';
 import { ConsultationReason } from '@/types/consultationReason';
 import { Center } from '@/types/center';
+import { StringDecoder } from 'node:string_decoder';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -175,19 +176,22 @@ export const userService = {
     return res.json() as Promise<any>;
   },
 
-  async getUsersAdmin(role: number) {
+  async getUsersAdmin(role: number, q?: string) {
     const token = localStorage.getItem('auth_token');
 
     if (!token) {
       throw new Error('No authentication token found');
     }
-    const res = await fetch(`${API_URL}/admin/user?role=${role}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${API_URL}/admin/user?role=${role}${q ? `&q=${q}` : ''}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!res.ok) throw new Error('Get user failed');
     return res.json() as Promise<any>;

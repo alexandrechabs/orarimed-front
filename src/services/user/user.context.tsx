@@ -27,7 +27,7 @@ type UserContextType = {
     locale: string,
     q: string,
   ) => Promise<any[]>;
-  getUsersAdmin: (role: number) => Promise<any[]>;
+  getUsersAdmin: (role: number, q?: string) => Promise<any[]>;
   searchDoctorAutocomplete: (query: string, locale: string) => Promise<any>;
   getAvailableSlots: (
     doctorId: string,
@@ -222,8 +222,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
-  async function getUsersAdmin(role: number): Promise<any[]> {
-    const data = await userService.getUsersAdmin(role);
+  async function getUsersAdmin(role: number, q?: string): Promise<any[]> {
+    const data = await userService.getUsersAdmin(role, q);
     return data;
   }
 

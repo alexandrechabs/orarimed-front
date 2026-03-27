@@ -8,6 +8,7 @@ import { Search, X, Plus, User, Shield } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useUser } from '@/services/user/useUser';
 import { useToast } from '@/hooks/use-toast';
+import { UserRole } from '@/types/roles';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,8 +47,7 @@ export function DoctorCenterSearch({
   onSuccess,
   maxSelection = 10,
 }: DoctorCenterSearchProps) {
-  const { searchDoctorAutocomplete, addDoctorsToCenter, getCenterDoctors } =
-    useUser();
+  const { getUsersAdmin, addDoctorsToCenter, getCenterDoctors } = useUser();
   const { toast } = useToast();
   const { language } = useLanguage();
 
@@ -89,8 +89,7 @@ export function DoctorCenterSearch({
     }
 
     try {
-      const response = await searchDoctorAutocomplete(query, language);
-      const doctors = response.doctors || [];
+      const doctors = await getUsersAdmin(UserRole.DOCTOR, query);
       setSuggestions(doctors);
     } catch (error) {
       console.error('Error fetching doctor suggestions:', error);
