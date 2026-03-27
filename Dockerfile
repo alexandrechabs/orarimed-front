@@ -18,13 +18,13 @@ COPY scripts/ ./scripts/
 RUN npm ci --silent
 
 # Générer les spécialités
-RUN API_URL=https://orarimed.chabs.fr/api npm run generate:specialities
+RUN API_URL=https://orarimed.com/api npm run generate:specialities
 
 # Copier le reste des fichiers
 COPY . .
 
 # Construire l'application
-RUN npm run build
+RUN npm run builds
 
 # Étape de production
 FROM nginx:stable-alpine
