@@ -23,6 +23,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const CalendarPage = () => {
   const { user } = useAuth();
@@ -50,15 +59,39 @@ const CalendarPage = () => {
   const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
   const calendarRef = useRef<FullCalendar>(null);
 
+  // États pour la popup de confirmation
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingEventMove, setPendingEventMove] = useState<{
+    event: any;
+    changeInfo: EventChangeArg;
+    formattedDate: string;
+    formattedTime: string;
+  } | null>(null);
+
   useEffect(() => {
     setSelectedDoctor(user);
     if (user.roleId === 3) {
       (async () => {
         const doctors = await getSecretaryDoctors(user.id);
         setAccessDoctors(doctors);
-        if (doctors.length > 0) {
-          setSelectedDoctor(doctors[0]);
-          getOpeningHour(doctors[0].id);
+        // get userId in url
+        let userId = new URLSearchParams(window.location.search).get('userId');
+        if (userId) {
+          const doctor = doctors.find((d) => d.id === userId);
+          if (doctor) {
+            setSelectedDoctor(doctor);
+            getOpeningHour(doctor.id);
+          } else {
+            if (doctors.length > 0) {
+              setSelectedDoctor(doctors[0]);
+              getOpeningHour(doctors[0].id);
+            }
+          }
+        } else {
+          if (doctors.length > 0) {
+            setSelectedDoctor(doctors[0]);
+            getOpeningHour(doctors[0].id);
+          }
         }
       })();
     } else {
@@ -203,6 +236,31 @@ const CalendarPage = () => {
   const handleEventDrop = async (changeInfo: EventChangeArg) => {
     const { event } = changeInfo;
 
+    // Formater les nouvelles dates pour l'affichage
+    const newStart = new Date(event.start);
+    const newEnd = new Date(event.end);
+    const formattedDate = newStart.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    const formattedTime = `${newStart.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - ${newEnd.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+
+    // Stocker les informations du déplacement en attente et afficher la popup
+    setPendingEventMove({
+      event,
+      changeInfo,
+      formattedDate,
+      formattedTime,
+    });
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmMove = async () => {
+    if (!pendingEventMove) return;
+
+    const { event, changeInfo } = pendingEventMove;
     let newEvent = events.find((e) => e.id === event.id);
 
     if (newEvent.endTime) {
@@ -213,6 +271,7 @@ const CalendarPage = () => {
       newEvent.start = event.start;
       newEvent.end = event.end;
     }
+
     try {
       await updateEvent(newEvent);
       toast({
@@ -227,6 +286,29 @@ const CalendarPage = () => {
         variant: 'destructive',
       });
     }
+
+    // Fermer la popup et réinitialiser
+    setConfirmDialogOpen(false);
+    setPendingEventMove(null);
+  };
+
+  const handleCancelMove = async () => {
+    if (!pendingEventMove) return;
+
+    // Annuler le déplacement en rechargent les événements
+    const dateRange = {
+      start:
+        pendingEventMove.changeInfo.oldEvent.start?.toISOString() ||
+        new Date().toISOString(),
+      end:
+        pendingEventMove.changeInfo.oldEvent.end?.toISOString() ||
+        new Date().toISOString(),
+    };
+    await getEvents(dateRange, selectedDoctor?.id);
+
+    // Fermer la popup et réinitialiser
+    setConfirmDialogOpen(false);
+    setPendingEventMove(null);
   };
 
   // Fonction pour formater l'heure
@@ -474,6 +556,35 @@ const CalendarPage = () => {
         onEventCreated={handleEventCreated}
         onEventUpdated={handleEventUpdated}
       />
+
+      {/* Dialog de confirmation pour déplacement de rendez-vous */}
+      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmer le déplacement</DialogTitle>
+            <DialogDescription>
+              Voulez-vous vraiment déplacer ce rendez-vous ?
+            </DialogDescription>
+          </DialogHeader>
+          {pendingEventMove && (
+            <div className="py-4">
+              <p className="text-sm font-medium">Nouveau créneau :</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {pendingEventMove.formattedDate}
+              </p>
+              <p className="text-sm text-gray-600">
+                {pendingEventMove.formattedTime}
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelMove}>
+              Annuler
+            </Button>
+            <Button onClick={handleConfirmMove}>Confirmer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -32,7 +32,7 @@ export function SearchDoctor({
               setSelectedDoctor(doctor.name);
             }}
             placeholder={t.hero.doctorPlaceholder || 'Nom, spécialité'}
-            className="rounded-none rounded-l-md focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="rounded-none rounded-l-md rounded-r-md md:rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
         <div className="relative col-span-2">
@@ -46,7 +46,7 @@ export function SearchDoctor({
               })
             }
             placeholder={t.hero.cityPlaceholder || 'Ville'}
-            className="pl-10 h-12 text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="pl-10 h-12 text-base rounded-md md:rounded-none my-2 md:my-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onPlaceSelected={(place) => {
               setSelectedCity({
                 address: place.formatted_address,
@@ -61,7 +61,7 @@ export function SearchDoctor({
             size="xl"
             variant="accent"
             onClick={search}
-            className="w-full md:px-4 h-12 text-base rounded-none rounded-r-md focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="w-full md:px-4 h-12 text-base rounded-none rounded-r-md rounded-l-md md:rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
           >
             <Search className="w-5 h-5 mr-2" />
             {t.hero.searchDoctor}

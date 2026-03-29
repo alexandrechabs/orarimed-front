@@ -47,19 +47,19 @@ const navigation: NavItem[] = [
     name: 'Docteur',
     href: '/doctor-settings',
     icon: Settings,
-    role: [1, 2],
+    role: [2],
   },
   {
     name: 'Cabinet',
     href: '/cabinet-settings',
     icon: Settings,
-    role: [1, 2],
+    role: [2],
   },
   {
     name: 'Paramètres Admin',
     href: '/admin-settings',
     icon: Settings,
-    role: [2, 4],
+    role: [4],
   },
 ];
 

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,8 @@ import React from 'react';
 import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
+import { Label } from '@/components/ui/label';
+import { AddressAutocomplete } from '@/components/Autocomplete';
 
 const formSchema = z.object({
   genderId: z.enum(['1', '2', '3'], {
@@ -56,11 +58,15 @@ const formSchema = z.object({
   city: z.string().min(2, {
     message: 'Veuillez entrer une ville valide',
   }),
-  zipCode: z.string().min(4, {
-    message: 'Code postal invalide',
-  }),
   country: z.string().min(2, {
     message: 'Veuillez sélectionner un pays',
+  }),
+  language: z.string().min(2, {
+    message: 'Veuillez sélectionner une langue',
+  }),
+  coordinate: z.object({
+    x: z.number(),
+    y: z.number(),
   }),
 });
 
@@ -82,8 +88,12 @@ export function OnboardingClientPage() {
       phoneNumber: '',
       address: '',
       city: '',
-      zipCode: '',
       country: '',
+      language: language,
+      coordinate: {
+        x: 0,
+        y: 0,
+      },
     },
   });
 
@@ -223,68 +233,23 @@ export function OnboardingClientPage() {
                 )}
               />
 
-              {/* Adresse */}
+              {/* Langue */}
               <FormField
                 control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Adresse</FormLabel>
-                    <FormControl>
-                      <Input placeholder="123 Rue de l'Exemple" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Ville */}
-              <FormField
-                control={form.control}
-                name="city"
+                name="language"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ville</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Paris" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Code postal */}
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Code postal</FormLabel>
-                    <FormControl>
-                      <Input placeholder="75000" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Pays */}
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pays</FormLabel>
+                    <FormLabel>Langue</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un pays" />
+                          <SelectValue placeholder="Sélectionnez votre genre" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="FR">France</SelectItem>
-                        <SelectItem value="AL">Albanie</SelectItem>
-                        <SelectItem value="other">Autre</SelectItem>
+                        <SelectItem value="sq">Albanais</SelectItem>
+                        <SelectItem value="en">Anglais</SelectItem>
+                        <SelectItem value="fr">Francais</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -316,6 +281,42 @@ export function OnboardingClientPage() {
                   </FormItem>
                 )}
               />
+
+              <div className="md:col-span-2">
+                <Label htmlFor="address">Adresse</Label>
+                <Controller
+                  name="address"
+                  control={form.control}
+                  rules={{ required: 'Veuillez saisir une adresse' }}
+                  render={({ field: { onChange, value } }) => (
+                    <AddressAutocomplete
+                      value={value}
+                      onChange={onChange}
+                      onPlaceSelected={(place) => {
+                        // Vous pouvez accéder aux détails de l'adresse ici si nécessaire
+                        form.setValue('address', place.formatted_address);
+                        form.setValue(
+                          'city',
+                          place.address_components.find((component) =>
+                            component.types.includes('locality'),
+                          ).long_name,
+                        );
+                        form.setValue(
+                          'country',
+                          place.address_components.find((component) =>
+                            component.types.includes('country'),
+                          ).long_name,
+                        );
+                        form.setValue('coordinate', {
+                          x: place.geometry.location.lat(),
+                          y: place.geometry.location.lng(),
+                        });
+                      }}
+                      placeholder="Saisissez votre adresse"
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             <div className="flex justify-end pt-4">

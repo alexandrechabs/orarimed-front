@@ -7,7 +7,9 @@ const specialitiesPromise = import.meta.env.PROD
   : (async () => {
       const response = await fetch('/data/specialities.ts');
       const text = await response.text();
-      const match = text.match(/export const specialities = (\[[\s\S]*?\]);/);
+      const match = text.match(
+        /export const specialities = (\[[\s\S]*?\]) as const;/,
+      );
       if (!match) throw new Error('Format de fichier invalide');
       return { specialities: eval(`(${match[1]})`) };
     })();

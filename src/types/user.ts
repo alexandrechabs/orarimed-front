@@ -16,6 +16,7 @@ export type User = {
   specialityId: number | null;
   active: boolean;
   visible: boolean;
+  language: string;
   subSpecialitiesUsers: [
     { id: number; userId: number; subSpecialityId: number },
   ];

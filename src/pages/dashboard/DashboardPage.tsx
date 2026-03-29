@@ -2,95 +2,196 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
-import { LogOut, User as UserIcon, Calendar, Clock } from 'lucide-react';
-import { User } from '@/types/user';
+import { Calendar, Clock } from 'lucide-react';
 import { useAuth } from '@/services/auth/useAuth';
+import { useUser } from '@/services/user/useUser';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const { getEvents, getSecretaryDoctors } = useUser();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [events, setEvents] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
+    if (user.roleId === 1 || user.roleId === 2) {
+      // get next rdvs
+      let dateRange;
+      if (user.roleId === 1) {
+        dateRange = {
+          start: new Date().toISOString(),
+          end: new Date(
+            new Date().setFullYear(new Date().getFullYear() + 5),
+          ).toISOString(),
+        };
+      } else {
+        // end : end of day
+        dateRange = {
+          start: new Date().toISOString(),
+          end: new Date(new Date().setHours(23, 59, 59, 999)).toISOString(),
+        };
+      }
+      getEvents(dateRange).then((events) => {
+        setEvents(events);
+      });
+    }
+    if (user.roleId === 3) {
+      getSecretaryDoctors(user.id).then((doctors) => {
+        setDoctors(doctors);
+      });
+    }
   }, [navigate]);
+
+  const redirectRdv = () => {
+    if (user.roleId === 1) navigate('/rdvs');
+    if (user.roleId === 2) navigate('/calendrier');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Bienvenue */}
           <Card className="col-span-full">
             <CardHeader>
               <CardTitle>Bienvenue, {user?.firstname} !</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">
-                Gérer vos rendez-vous et vos informations personnelles depuis
-                votre espace personnel.
-              </p>
+              {user.roleId === 1 && (
+                <p className="text-gray-600">
+                  Retrouvez vos rendez-vous et vos informations personnelles
+                  depuis votre espace personnel.
+                </p>
+              )}
+              {user.roleId === 2 && (
+                <p className="text-gray-600">
+                  Gérer vos rendez-vous et vos informations personnelles depuis
+                  votre espace personnel.
+                </p>
+              )}
+              {user.roleId === 3 && (
+                <p className="text-gray-600">
+                  Gérer les agendas de vos médecins et vos informations
+                  personnelles depuis votre espace personnel.
+                </p>
+              )}
             </CardContent>
           </Card>
 
           {/* Prochains rendez-vous */}
-          <Card className="md:col-span-2">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Prochains rendez-vous</CardTitle>
-                <Button variant="ghost" size="sm">
-                  Voir tout
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-shrink-0 bg-accent/20 p-2 rounded-full">
-                    <Calendar className="h-5 w-5 text-accent" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">
-                      Consultation générale
-                    </p>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <Clock className="h-4 w-4 mr-1" />
-                      <span>Demain, 14:30 - 15:00</span>
-                    </div>
-                  </div>
+          {(user.roleId === 1 || user.roleId === 2) && (
+            <Card className="md:col-span-2">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">
+                    Prochains rendez-vous
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => redirectRdv()}
+                  >
+                    Voir tout
+                  </Button>
                 </div>
-                <div className="text-center py-4 text-sm text-gray-500">
-                  Aucun autre rendez-vous à venir
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {events.length > 0 && (
+                    <>
+                      {events.map((event) => (
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-shrink-0 bg-accent/20 p-2 rounded-full">
+                            <Calendar className="h-5 w-5 text-accent" />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              {event.title}
+                            </p>
+                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                              <Clock className="h-4 w-4 mr-1" />
+                              <span>
+                                {new Date(event.start).toLocaleDateString(
+                                  user?.language || 'en-EN',
+                                  {
+                                    weekday: 'long',
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  },
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
 
-          {/* Informations personnelles */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Informations personnelles</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Nom complet</p>
-                <p className="text-gray-900">
-                  {user?.firstname} {user?.lastname}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Email</p>
-                <p className="text-gray-900">{user?.email}</p>
-              </div>
-              <Button variant="outline" className="w-full mt-4">
-                Modifier les informations
-              </Button>
-            </CardContent>
-          </Card>
+                      <div className="text-center py-4 text-sm text-gray-500">
+                        Aucun autre rendez-vous à venir
+                      </div>
+                    </>
+                  )}
+                  {events.length === 0 && (
+                    <div className="text-center py-4 text-sm text-gray-500">
+                      Aucun rendez-vous à venir
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {user.roleId === 3 && (
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle>Mes Docteurs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {doctors.map((doctor) => (
+                    <div
+                      key={doctor.id}
+                      className="flex bg-gray-200 p-2 rounded-lg mb-2 overflow-hidden cursor-pointer"
+                      onClick={() =>
+                        navigate(`/calendrier?userId=${doctor.id}`)
+                      }
+                    >
+                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden mr-4">
+                        <img
+                          src={
+                            doctor.avatar
+                              ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
+                              : '/default-avatar.png'
+                          }
+                          alt={doctor.firstname}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/default-avatar.png';
+                          }}
+                        />
+                      </div>
+                      <div className="grid">
+                        <span className="text-sm">
+                          {doctor.firstname} {doctor.lastname}
+                        </span>
+                        <span className="text-sm">{doctor.email}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>

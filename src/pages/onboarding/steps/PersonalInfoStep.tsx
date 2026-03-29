@@ -1,6 +1,5 @@
 // src/pages/onboarding/steps/PersonalInfoStep.tsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Controller, useFormContext } from 'react-hook-form';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';

@@ -59,6 +59,8 @@ export default function SearchPage() {
     setSelectedDoctor(query);
     if (query || city) {
       searchDoctorsList(undefined, { address: city, lat, lng }, query);
+    } else {
+      setIsLoading(false);
     }
   }, [searchParams]);
 

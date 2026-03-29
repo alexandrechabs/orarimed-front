@@ -36,6 +36,7 @@ import DoctorSettingsPage from './pages/settings/DoctorSettingsPage';
 import AppointmentPage from './pages/AppointmentPage';
 import CenterPage from './pages/CenterPage';
 import CabinetSettingsPage from './pages/settings/CabinetSettingsPage';
+import ScrollToTop from './components/ScrollToTop';
 
 const queryClient = new QueryClient();
 
@@ -136,6 +137,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           {/* Routes publiques */}
           <Route path="/" element={<Index />} />
@@ -221,7 +223,7 @@ const App = () => (
               <Route
                 path="/admin-settings"
                 element={
-                  <ProtectedRouteByRole allowedRoles={[1, 2, 4]}>
+                  <ProtectedRouteByRole allowedRoles={[4]}>
                     <AdminSettingsPage />
                   </ProtectedRouteByRole>
                 }

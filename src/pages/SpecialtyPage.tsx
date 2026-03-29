@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -11,6 +11,7 @@ import { useSpecialities } from '@/hooks/useSpecialities';
 
 const SpecialtyPage = () => {
   const { specialities, isLoading, error } = useSpecialities();
+  const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { t, language } = useLanguage();
   const specialty = slug ? specialities.find((s) => s.slug === slug) : null;
@@ -80,7 +81,15 @@ const SpecialtyPage = () => {
                 <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl mb-8">
                   {description}
                 </p>
-                <Button size="lg" variant="hero">
+                <Button
+                  size="lg"
+                  variant="hero"
+                  onClick={() =>
+                    navigate(
+                      `/search?q=${name.toLowerCase()}&city=&lat=0&lng=0`,
+                    )
+                  }
+                >
                   <Search className="w-5 h-5" />
                   {t.specialities.findButton} {name.toLowerCase()}
                 </Button>

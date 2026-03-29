@@ -30,8 +30,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import ImageUpload from '../ui/ImageUpload';
-import { describe } from 'node:test';
-import { Description } from '@radix-ui/react-toast';
 
 const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
 
