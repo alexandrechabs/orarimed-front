@@ -56,6 +56,7 @@ export const useLanguage = () => {
 
 export const useDateLocale = () => {
   const { language } = useLanguage();
+
   switch (language) {
     case 'fr':
       return fr;

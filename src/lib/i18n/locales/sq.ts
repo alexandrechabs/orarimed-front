@@ -22,6 +22,7 @@ const sq: TranslationKey = {
     freeForPatients: 'Falas për pacientët',
     doctorPlaceholder: 'Emër, specialitet',
     cityPlaceholder: 'Qytet',
+    noResults: 'Asnjë mjekë nuk përputhet me kërkimin tuaj.',
   },
   specialities: {
     title: 'Specialitetet',
@@ -390,6 +391,67 @@ const sq: TranslationKey = {
     },
   },
   other: 'Tjetër',
+
+  createRdv: {
+    searchPage: {
+      viewMoreSlots: 'Shiko më shumë kohë',
+      viewLessSlots: 'Shiko më pak',
+      noSlots: 'Nuk ka kohë të disponueshme për 4 ditët e ardhshme',
+      noSlotsShort: 'Nuk ka kohë',
+    },
+    appointmentPage: {
+      title: 'Rezervo një takim',
+      step1: 'Lloji i takimit',
+      step2: 'Koha e rezervimit',
+      step3: 'Konfirmimi',
+      continue: 'Vazhdo',
+      validate: 'Konfirmo kohën',
+      confirm: 'Konfirmo takimin',
+      duration: 'Koha',
+      step2Title: 'Zgjidh një kohë të disponueshme',
+      step2Description:
+        'Ju lutem zgjidhni një kohë të disponueshme për takimin tuaj.',
+      step3Title: 'Përmbledhje e takimit',
+      step3Doctor: 'Doktori',
+      kindRdv: 'Lloji i takimit',
+      minute: 'minutë',
+      time: 'Data dhe ora',
+      confirmationMessage:
+        'Takimi juaj u rezervua me sukses. Do të merrni një konfirmim së shpejti.',
+      goHome: 'Kthehu në faqen kryesore',
+      viewRdv: 'Shiko takimet e mia',
+      importantInfo: 'Informacione të rëndësishme',
+      cancelInfo: 'Mund të anuloni takimin tuaj deri në 24 orë përpara',
+      reminderInfo:
+        'Një njoftim përkujtues do të dërgohet me email një ditë para takimit.',
+      lateInfo: 'Ju lutem arrini 10 minuta më herët',
+    },
+  },
+
+  appointments: {
+    title: 'Takimet e mia',
+    description: 'Shikoni të gjitha takimet e kaluara dhe të ardhshme',
+    newAppointment: 'Takim i ri',
+    searchPlaceholder: 'Kërko për një takim...',
+    noAppointments: 'Nuk u gjet asnjë takim',
+    noAppointmentsDescription: 'Filloni duke rezervuar një takim të ri',
+    duration: 'Kohëzgjatja',
+    minute: 'min',
+    cancel: 'Anulo',
+    cancelConfirmTitle: 'Anulo takimin',
+    cancelConfirm: 'Jeni i sigurt që dëshironi të anuloni këtë takim?',
+    status: {
+      upcoming: 'Në ardhje',
+      completed: 'Përfunduar',
+      cancelled: 'Anuluar',
+    },
+    filters: {
+      all: 'Të gjitha',
+      upcoming: 'Në ardhje',
+      completed: 'Përfunduar',
+      cancelled: 'Anuluara',
+    },
+  },
   common: {
     success: 'Sukses',
     error: 'Gabim',
@@ -400,6 +462,9 @@ const sq: TranslationKey = {
     loading: 'Duke u ngarkuar...',
     generate: 'Gjenero',
     saveChanges: 'Ruaj ndryshimet',
+    return: 'Kthehu',
+    yes: 'Po',
+    no: 'Jo',
   },
   auth: {
     login: 'Hyrje',

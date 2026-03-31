@@ -36,7 +36,7 @@ import PhoneInput from 'react-phone-number-input';
 import type { CountryCode } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
 import { Label } from '@/components/ui/label';
-import { AddressAutocomplete } from '@/components/Autocomplete';
+import AddressAutocomplete from '@/components/Autocomplete';
 
 const formSchema = z.object({
   genderId: z.enum(['1', '2', '3'], {

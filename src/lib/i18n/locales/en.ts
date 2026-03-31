@@ -22,6 +22,7 @@ const en: TranslationKey = {
     freeForPatients: 'Free for patients',
     doctorPlaceholder: 'Name, speciality',
     cityPlaceholder: 'City',
+    noResults: 'No doctors match your search.',
   },
   specialities: {
     title: 'Specialities',
@@ -390,6 +391,66 @@ const en: TranslationKey = {
   },
   other: 'Other',
 
+  createRdv: {
+    searchPage: {
+      viewMoreSlots: 'View more slots',
+      viewLessSlots: 'View less',
+      noSlots: 'No slots available for the next 4 days',
+      noSlotsShort: 'No slots',
+    },
+    appointmentPage: {
+      title: 'Book an appointment',
+      step1: 'Appointment type',
+      step2: 'Time slot',
+      step3: 'Confirmation',
+      continue: 'Continue',
+      validate: 'Validate slot',
+      confirm: 'Confirm appointment',
+      duration: 'Duration',
+      step2Title: 'Select a time slot',
+      step2Description:
+        'Please choose an available time slot for your consultation.',
+      step3Title: 'Appointment summary',
+      step3Doctor: 'Doctor',
+      kindRdv: 'Appointment type',
+      minute: 'minute',
+      time: 'Date and time',
+      confirmationMessage:
+        'Your appointment has been successfully booked. You will receive a confirmation shortly.',
+      goHome: 'Return to home',
+      viewRdv: 'View my appointments',
+      importantInfo: 'Important information',
+      cancelInfo: 'You can cancel your appointment up to 1 hour in advance',
+      reminderInfo:
+        'A reminder will be sent by email the day before the appointment',
+      lateInfo: 'Please arrive 10 minutes early',
+    },
+  },
+  appointments: {
+    title: 'My appointments',
+    description: 'View all your past and upcoming appointments',
+    newAppointment: 'New appointment',
+    searchPlaceholder: 'Search for an appointment...',
+    noAppointments: 'No appointments found',
+    noAppointmentsDescription: 'Start by booking a new appointment',
+    duration: 'Duration',
+    minute: 'min',
+    cancel: 'Cancel',
+    cancelConfirmTitle: 'Cancel appointment',
+    cancelConfirm: 'Are you sure you want to cancel this appointment?',
+    status: {
+      upcoming: 'Upcoming',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+    },
+    filters: {
+      all: 'All',
+      upcoming: 'Upcoming',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+    },
+  },
+
   // Common translations used across the app
   common: {
     success: 'Success',
@@ -401,6 +462,9 @@ const en: TranslationKey = {
     loading: 'Loading...',
     generate: 'Generate',
     saveChanges: 'Save changes',
+    return: 'Return',
+    yes: 'Yes',
+    no: 'No',
   },
 
   auth: {

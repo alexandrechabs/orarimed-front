@@ -49,7 +49,7 @@ const DashboardPage = () => {
   }, [navigate]);
 
   const redirectRdv = () => {
-    if (user.roleId === 1) navigate('/rdvs');
+    if (user.roleId === 1) navigate('/appointments');
     if (user.roleId === 2) navigate('/calendrier');
   };
 
@@ -85,6 +85,21 @@ const DashboardPage = () => {
             </CardContent>
           </Card>
 
+          {/* Prendre un rendez-vous */}
+          {user.roleId === 1 && (
+            <Card className="md:col-span-2">
+              <CardContent className="flex justify-center items-center h-full">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => navigate('/search')}
+                >
+                  Prendre un rendez-vous
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Prochains rendez-vous */}
           {(user.roleId === 1 || user.roleId === 2) && (
             <Card className="md:col-span-2">
@@ -107,7 +122,10 @@ const DashboardPage = () => {
                   {events.length > 0 && (
                     <>
                       {events.map((event) => (
-                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={event.id}
+                          className="flex items-center p-3 bg-gray-50 rounded-lg"
+                        >
                           <div className="flex-shrink-0 bg-accent/20 p-2 rounded-full">
                             <Calendar className="h-5 w-5 text-accent" />
                           </div>

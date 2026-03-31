@@ -1,40 +1,87 @@
-import { useRef, useState } from 'react';
-import { DoctorProfile } from '@/types/doctor';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
+import { useUser } from '@/services/user/useUser';
+import { format } from 'date-fns';
 
 interface DoctorCardProps {
-  slots: any[];
+  doctor: any;
   clickSlot: (e: React.MouseEvent, slot: string | Date) => void;
 }
 
-export function Slots({ slots, clickSlot }: DoctorCardProps) {
+export const Slots = forwardRef<
+  { load: (duration: number) => void },
+  DoctorCardProps
+>(({ doctor, clickSlot }, ref) => {
+  const { t } = useLanguage();
+  const dateLocale = useDateLocale();
+  const { getAvailableSlots } = useUser();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [expandedDays, setExpandedDays] = useState<boolean>(false);
+  const [today, setToday] = useState<Date>(new Date());
+  const [slots, setSlots] = useState<any[]>([]);
+  const [numberOfDays, setNumberOfDays] = useState<number>(5); // Nombre de jours à afficher
+  const width = 550;
   let maxSlots = 0;
+
+  useEffect(() => {
+    getSlots(today, 15);
+
+    // set numberOfDays to 3 for mobile
+    if (window.innerWidth < 768) {
+      setNumberOfDays(3);
+    }
+  }, []);
+
+  const load = (duration: number) => {
+    if (window.innerWidth > 768) {
+      setNumberOfDays(6);
+    }
+    setTimeout(() => {
+      getSlots(today, duration);
+    }, 200);
+  };
+
+  useImperativeHandle(ref, () => ({
+    load,
+  }));
 
   const scrollLeft = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -272,
-        behavior: 'smooth',
-      });
-    }
+    const next = new Date(today);
+    next.setDate(today.getDate() - numberOfDays);
+    setToday(next);
+    getSlots(next, 15);
   };
 
   const scrollRight = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 272,
-        behavior: 'smooth',
-      });
-    }
+    const next = new Date(today);
+    next.setDate(today.getDate() + numberOfDays);
+    setToday(next);
+    getSlots(next, 15);
+  };
+
+  const getSlots = (date: Date, duration: number) => {
+    // TODO: Implement logic to fetch slots
+    getAvailableSlots(
+      doctor.id,
+      date.toISOString(),
+      duration,
+      numberOfDays,
+    ).then((slot) => {
+      setSlots(slot);
+    });
   };
 
   const toggleDayExpansion = () => {
@@ -59,26 +106,33 @@ export function Slots({ slots, clickSlot }: DoctorCardProps) {
         }}
       >
         {(() => {
-          // Grouper les créneaux par jour
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
+          // Déterminer la locale à utiliser (une seule fois)
+          const supportedLocales = Intl.DateTimeFormat.supportedLocalesOf([
+            'sq',
+            'en',
+            'fr',
+          ]);
 
           const days = [];
-          for (let i = 0; i < 7; i++) {
+          maxSlots = 0;
+          for (let i = 0; i < numberOfDays; i++) {
             const day = new Date(today);
+
             day.setDate(today.getDate() + i);
 
             // Formater le nom du jour
-            const dayName = day.toLocaleDateString('fr-FR', {
-              weekday: 'long',
+            const dayName = format(day, 'EEEE', {
+              locale: dateLocale,
             });
+
             const dayNumber = day.getDate();
-            const month = day.toLocaleDateString('fr-FR', {
-              month: 'short',
+            const month = format(day, 'MMM', {
+              locale: dateLocale,
             });
 
             // Filtrer les créneaux pour ce jour
             const daySlots = slots.filter((slot) => {
+              if (new Date(slot.start) < new Date()) return false;
               if (typeof slot === 'string') return false;
               const slotDate = new Date(slot.start);
               return (
@@ -90,28 +144,30 @@ export function Slots({ slots, clickSlot }: DoctorCardProps) {
 
             maxSlots = Math.max(maxSlots, daySlots.length);
 
+            // Calculer la largeur dynamique de chaque colonne
+            const columnWidth = Math.max(94, Math.floor(width / numberOfDays)); // Minimum 94px, maximum basé sur 600px total
+
             days.push(
-              <div key={i} className="min-w-[120px]">
+              <div
+                key={i}
+                className="w-[-webkit-fill-available]"
+                style={{ maxWidth: `${columnWidth}px` }}
+              >
                 <div className="font-medium text-center text-sm mb-2">
-                  {dayName.charAt(0).toUpperCase() + dayName.slice(1)}{' '}
+                  {dayName.charAt(0).toUpperCase() + dayName.slice(1)}
+                  <br />
                   {dayNumber} {month}
                 </div>
                 <div className="border rounded-lg p-2">
                   <div className="space-y-1 m-a">
                     {daySlots.length > 0 ? (
                       <div>
-                        {(expandedDays ? daySlots : daySlots.slice(0, 4)).map(
+                        {(expandedDays ? daySlots : daySlots.slice(0, 5)).map(
                           (slot, slotIndex) => {
                             // {daySlots.map((slot, slotIndex) => {
                             const startTime = new Date(
                               slot.start,
-                            ).toLocaleTimeString('fr-FR', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            });
-                            const endTime = new Date(
-                              slot.end,
-                            ).toLocaleTimeString('fr-FR', {
+                            ).toLocaleTimeString('fr', {
                               hour: '2-digit',
                               minute: '2-digit',
                             });
@@ -138,7 +194,7 @@ export function Slots({ slots, clickSlot }: DoctorCardProps) {
                       </div>
                     ) : (
                       <p className="text-xs text-muted-foreground text-center">
-                        Pas de créneau
+                        {t.createRdv.searchPage.noSlotsShort}
                       </p>
                     )}
                   </div>
@@ -158,7 +214,9 @@ export function Slots({ slots, clickSlot }: DoctorCardProps) {
           }}
           className="w-full mt-1 text-xs hover:underline"
         >
-          {expandedDays ? 'Voir moins' : 'Voir plus de créneaux'}
+          {expandedDays
+            ? t.createRdv.searchPage.viewLessSlots
+            : t.createRdv.searchPage.viewMoreSlots}
         </button>
       )}
       <div
@@ -170,4 +228,4 @@ export function Slots({ slots, clickSlot }: DoctorCardProps) {
       </div>
     </div>
   );
-}
+});

@@ -19,6 +19,7 @@ export type TranslationKey = {
     freeForPatients: string;
     doctorPlaceholder: string;
     cityPlaceholder: string;
+    noResults: string;
   };
   specialities: {
     title: string;
@@ -228,8 +229,63 @@ export type TranslationKey = {
       error: string;
     };
   };
+  createRdv: {
+    searchPage: {
+      viewMoreSlots: string;
+      viewLessSlots: string;
+      noSlots: string;
+      noSlotsShort: string;
+    };
+    appointmentPage: {
+      title: string;
+      step1: string;
+      step2: string;
+      step3: string;
+      continue: string;
+      validate: string;
+      confirm: string;
+      duration: string;
+      step2Title: string;
+      step2Description: string;
+      step3Title: string;
+      step3Doctor: string;
+      kindRdv: string;
+      minute: string;
+      time: string;
+      confirmationMessage: string;
+      goHome: string;
+      viewRdv: string;
+      importantInfo: string;
+      cancelInfo: string;
+      reminderInfo: string;
+      lateInfo: string;
+    };
+  };
 
-  // Common translations used across the app
+  appointments: {
+    title: string;
+    description: string;
+    newAppointment: string;
+    searchPlaceholder: string;
+    noAppointments: string;
+    noAppointmentsDescription: string;
+    duration: string;
+    minute: string;
+    cancel: string;
+    cancelConfirmTitle: string;
+    cancelConfirm: string;
+    status: {
+      upcoming: string;
+      completed: string;
+      cancelled: string;
+    };
+    filters: {
+      all: string;
+      upcoming: string;
+      completed: string;
+      cancelled: string;
+    };
+  };
   common: {
     success: string;
     error: string;
@@ -240,6 +296,9 @@ export type TranslationKey = {
     loading: string;
     generate: string;
     saveChanges: string;
+    return: string;
+    yes: string;
+    no: string;
   };
 
   daysOfWeek: {

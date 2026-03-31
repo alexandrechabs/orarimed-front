@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useUser } from '@/services/user/useUser';
@@ -24,13 +24,9 @@ interface TimeSlot {
 }
 
 export default function AppointmentPage() {
-  const {
-    getReasonsClient,
-    checkValidSelection,
-    getAvailableSlots,
-    createRdv,
-  } = useUser();
+  const { getReasonsClient, checkValidSelection, createRdv } = useUser();
   const { t } = useLanguage();
+  const dateLocale = useDateLocale();
   const location = useLocation();
   const navigate = useNavigate();
   const [appointmentType, setAppointmentType] = useState<ConsultationReason[]>(
@@ -43,6 +39,10 @@ export default function AppointmentPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
+  // Ref pour accéder à la fonction load du composant Slots
+  const slotsRef = useRef<{ load: (duration: number) => void }>(null);
+  const [pendingDuration, setPendingDuration] = useState<number | null>(null);
+
   useEffect(() => {
     setSelectedSlot(slot);
     getReasonsClient(doctor.id).then((reasons) => {
@@ -50,9 +50,22 @@ export default function AppointmentPage() {
     });
   }, []);
 
+  // Quand le ref est prêt et qu'il y a une durée en attente, charger les créneaux
+  useEffect(() => {
+    if (slotsRef.current && pendingDuration !== null && currentStep === 2) {
+      console.log('ploppppp');
+      slotsRef.current.load(pendingDuration);
+      setPendingDuration(null);
+    }
+  }, [slotsRef.current, pendingDuration, currentStep]);
+
   const handleConfirmAppointment = async () => {
     if (currentStep === 1) {
       if (!selectedType) return;
+      const duration =
+        appointmentType.find((type) => type.id === selectedType)?.duration ||
+        15;
+      setPendingDuration(duration);
 
       const checkResult: { valid: boolean } = await checkValidSelection(
         doctor.id,
@@ -67,13 +80,6 @@ export default function AppointmentPage() {
         setSelectedSlot(null);
         setCurrentStep(2);
         setIsLoadingSlots(true);
-        let slots = await getAvailableSlots(
-          doctor.id,
-          date || new Date().toISOString().split('T')[0],
-          appointmentType.find((type) => type.id === selectedType)?.duration ||
-            null,
-        );
-        setAvailableSlots(slots);
         setIsLoadingSlots(false);
       }
     } else if (currentStep === 2) {
@@ -82,13 +88,19 @@ export default function AppointmentPage() {
       setCurrentStep(3);
     } else if (currentStep === 3) {
       // Logique de confirmation finale
-      console.log('Confirmation du rendez-vous', {
-        doctor,
-        slot: selectedSlot || slot,
-        reason: selectedType,
-      });
       createRdv(doctor.id, selectedSlot, selectedType);
-      // navigate('/confirmation');
+
+      // Naviguer vers la page de confirmation avec les données
+      const appointmentTypeData = appointmentType.find(
+        (t) => t.id === selectedType,
+      );
+      navigate('/confirmation', {
+        state: {
+          doctor,
+          appointmentType: appointmentTypeData,
+          slot: selectedSlot || slot,
+        },
+      });
     }
   };
 
@@ -109,7 +121,9 @@ export default function AppointmentPage() {
   // Étape 1 : Sélection du type de rendez-vous
   const renderStep1 = () => (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Type de rendez-vous</h2>
+      <h2 className="text-xl font-semibold">
+        {t.createRdv.appointmentPage.step1}
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {appointmentType.map((type) => (
           <button
@@ -124,7 +138,10 @@ export default function AppointmentPage() {
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-medium">{type.name}</h3>
-                <p className="text-sm text-gray-500">Durée : {type.duration}</p>
+                <p className="text-sm text-gray-500">
+                  {t.createRdv.appointmentPage.duration} : {type.duration}{' '}
+                  {t.createRdv.appointmentPage.minute}
+                </p>
               </div>
               {selectedType === type.id && (
                 <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
@@ -153,20 +170,18 @@ export default function AppointmentPage() {
   // Étape 2 : Sélection de créneau horaire
   const renderTimeSlotStep = () => (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Sélectionnez un créneau horaire</h2>
+      <h2 className="text-xl font-semibold">
+        {t.createRdv.appointmentPage.step2Title}
+      </h2>
       <p className="text-gray-600">
-        Veuillez choisir un créneau horaire disponible pour votre consultation.
+        {t.createRdv.appointmentPage.step2Description}
       </p>
       {isLoadingSlots ? (
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      ) : availableSlots && availableSlots.length > 0 ? (
-        <Slots slots={availableSlots} clickSlot={clickSlot} />
       ) : (
-        <div className="text-center py-8 text-gray-500">
-          Aucun créneau disponible pour cette date.
-        </div>
+        <Slots doctor={doctor} clickSlot={clickSlot} ref={slotsRef} />
       )}
     </div>
   );
@@ -174,34 +189,48 @@ export default function AppointmentPage() {
   // Étape 3 : Récapitulatif
   const renderFinal = () => (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Récapitulatif</h2>
+      <h2 className="text-xl font-semibold">
+        {t.createRdv.appointmentPage.step3Title}
+      </h2>
       <div className="space-y-4">
         <div>
-          <h3 className="font-medium text-gray-700">Médecin</h3>
+          <h3 className="font-medium text-gray-700">
+            {t.createRdv.appointmentPage.step3Doctor}
+          </h3>
           <p className="text-lg">Dr {doctor.fullName}</p>
           <p className="text-gray-600">{doctor.speciality}</p>
         </div>
 
         <div>
-          <h3 className="font-medium text-gray-700">Type de consultation</h3>
+          <h3 className="font-medium text-gray-700">
+            {t.createRdv.appointmentPage.kindRdv}
+          </h3>
           <p className="text-lg">
             {appointmentType.find((t) => t.id === selectedType)?.name}
           </p>
           <p className="text-gray-600">
-            Durée :{' '}
+            {t.createRdv.appointmentPage.duration} :{' '}
             {appointmentType.find((t) => t.id === selectedType)?.duration}{' '}
-            minutes
+            {t.createRdv.appointmentPage.minute}
           </p>
         </div>
 
         <div>
-          <h3 className="font-medium text-gray-700">Date et heure</h3>
+          <h3 className="font-medium text-gray-700">
+            {t.createRdv.appointmentPage.time}
+          </h3>
           <p className="text-lg">
             {format(new Date(selectedSlot || slot), 'EEEE d MMMM yyyy', {
-              locale: fr,
+              locale: dateLocale,
             })}
           </p>
-          <p className="text-lg">{`${format(new Date(selectedSlot || slot), 'HH:mm')}`}</p>
+          <p className="text-lg">{`${format(
+            new Date(selectedSlot || slot),
+            'HH:mm',
+            {
+              locale: dateLocale,
+            },
+          )}`}</p>
         </div>
       </div>
     </div>
@@ -228,7 +257,9 @@ export default function AppointmentPage() {
             />
           </svg>
         </button>
-        <h1 className="text-3xl font-bold">Prendre rendez-vous</h1>
+        <h1 className="text-3xl font-bold">
+          {t.createRdv.appointmentPage.title}
+        </h1>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -246,7 +277,7 @@ export default function AppointmentPage() {
             >
               1
             </div>
-            <span>Type de rendez-vous</span>
+            <span>{t.createRdv.appointmentPage.step1}</span>
           </div>
           <div className="flex-1 h-1 mx-2 bg-gray-200">
             <div
@@ -268,7 +299,7 @@ export default function AppointmentPage() {
             >
               2
             </div>
-            <span>Créneau horaire</span>
+            <span>{t.createRdv.appointmentPage.step2}</span>
           </div>
           <div className="flex-1 h-1 mx-2 bg-gray-200">
             <div
@@ -290,7 +321,7 @@ export default function AppointmentPage() {
             >
               3
             </div>
-            <span>Confirmation</span>
+            <span>{t.createRdv.appointmentPage.step3}</span>
           </div>
         </div>
 
@@ -303,7 +334,7 @@ export default function AppointmentPage() {
 
       <div className="flex justify-between">
         <Button variant="outline" onClick={handleBack}>
-          {currentStep === 1 ? t.common.cancel : 'Retour'}
+          {currentStep === 1 ? t.common.cancel : t.common.return}
         </Button>
         <Button
           onClick={handleConfirmAppointment}
@@ -314,10 +345,10 @@ export default function AppointmentPage() {
           }
         >
           {currentStep === 1
-            ? 'Continuer'
+            ? t.createRdv.appointmentPage.continue
             : currentStep === 2
-              ? 'Valider le créneau'
-              : 'Confirmer le rendez-vous'}
+              ? t.createRdv.appointmentPage.validate
+              : t.createRdv.appointmentPage.confirm}
         </Button>
       </div>
     </div>

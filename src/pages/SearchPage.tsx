@@ -11,8 +11,8 @@ import { DoctorCard } from '@/components/doctors/DoctorCard';
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
-  const { language } = useLanguage();
-  const { searchDoctors, getAvailableSlots } = useUser();
+  const { t, language } = useLanguage();
+  const { searchDoctors } = useUser();
 
   const [selectedCity, setSelectedCity] = useState({
     address: '',
@@ -23,31 +23,6 @@ export default function SearchPage() {
 
   const [doctors, setDoctors] = useState<DoctorProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const scrollRight = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 272,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  const scrollLeft = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -272,
-        behavior: 'smooth',
-      });
-    }
-  };
 
   // Récupérer le terme de recherche depuis l'URL
   useEffect(() => {
@@ -81,15 +56,6 @@ export default function SearchPage() {
       );
 
       setDoctors(doctors);
-      doctors.forEach(async (doctor) => {
-        let slots = await getAvailableSlots(
-          doctor.id,
-          new Date().toISOString().split('T')[0],
-        );
-        setDoctors((prev) =>
-          prev.map((d) => (d.id === doctor.id ? { ...doctor, slots } : d)),
-        );
-      });
       setIsLoading(false);
     } catch (error) {
       console.error('Erreur lors de la recherche des médecins:', error);
@@ -100,7 +66,7 @@ export default function SearchPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Navigation />
-      <div className="max-w-4xl mx-auto mt-20">
+      <div className="max-w-5xl mx-auto mt-20">
         {/* Barre de recherche */}
         <SearchDoctor
           selectedCity={selectedCity}
@@ -135,9 +101,7 @@ export default function SearchPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Aucun médecin ne correspond à votre recherche.
-              </p>
+              <p className="text-muted-foreground">{t.hero.noResults}</p>
             </div>
           )}
         </div>

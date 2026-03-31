@@ -197,9 +197,16 @@ export const userService = {
     return res.json() as Promise<any>;
   },
 
-  async getAvailableSlots(doctorId: string, date: string, duration?: number) {
+  async getAvailableSlots(
+    doctorId: string,
+    date: string,
+    duration?: number,
+    numberOfDays?: number,
+  ) {
     const res = await fetch(
-      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}${duration ? `&duration=${duration}` : ''}`,
+      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}${
+        duration ? `&duration=${duration}` : ''
+      }${numberOfDays ? `&numberOfDays=${numberOfDays}` : ''}`,
       {
         method: 'GET',
         headers: {

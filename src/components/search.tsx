@@ -1,7 +1,7 @@
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
-import { AddressAutocomplete } from './Autocomplete';
+import AddressAutocomplete from './Autocomplete';
 import { DoctorAutocomplete } from './DoctorAutocomplete';
 
 interface MapProps {

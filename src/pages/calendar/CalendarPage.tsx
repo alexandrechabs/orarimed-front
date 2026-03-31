@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
+import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/services/auth/useAuth';
 import { EventChangeArg, EventInput } from '@fullcalendar/core/index.js';
@@ -32,6 +33,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
 
 const CalendarPage = () => {
   const { user } = useAuth();
@@ -45,6 +47,7 @@ const CalendarPage = () => {
     getSecretaryDoctors,
   } = useUser();
   const { t, language } = useLanguage();
+  const dateLocale = useDateLocale();
   const { toast } = useToast();
   const [selectedDoctor, setSelectedDoctor] = useState<
     DoctorProfile | User | null
@@ -330,7 +333,7 @@ const CalendarPage = () => {
       Icon = LucideIcons['Stethoscope'];
     } else if (event.extendedProps.status === 'finished') {
       Icon = LucideIcons['Check'];
-    } else if (event.extendedProps.status === 'abort excused') {
+    } else if (event.extendedProps.status === 'abortExcused') {
       Icon = LucideIcons['CalendarOff'];
       abort = true;
     } else if (event.extendedProps.status === 'abort') {
@@ -434,32 +437,62 @@ const CalendarPage = () => {
               }}
               views={{
                 dayGridMonth: {
-                  titleFormat: { year: 'numeric', month: 'long' },
                   dayMaxEventRows: 4,
                 },
                 timeGridWeek: {
-                  titleFormat: {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  },
                   dayMaxEventRows: 6,
                 },
                 timeGridDay: {
-                  titleFormat: {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  },
                   dayMaxEventRows: 6,
                 },
               }}
-              buttonText={{
-                today: "Aujourd'hui",
-                month: 'Mois',
-                week: 'Semaine',
-                day: 'Jour',
-                list: 'Liste',
+              titleFormat={(arg) => {
+                // get number of days diff into start and end
+                const diff = Math.abs(
+                  new Date(arg.end.marker).getTime() -
+                    new Date(arg.start.marker).getTime(),
+                );
+                let nbdays = Math.round(diff / (1000 * 60 * 60 * 24));
+
+                if (nbdays === 7) {
+                  return (
+                    format(arg.start.marker, 'dd MMMM', {
+                      locale: dateLocale,
+                    }) +
+                    ' - ' +
+                    format(arg.end.marker, 'dd MMMM yyyy', {
+                      locale: dateLocale,
+                    })
+                  );
+                } else if (nbdays > 7) {
+                  return format(arg.start.marker, 'MMMM yyyy', {
+                    locale: dateLocale,
+                  });
+                }
+                return format(arg.end.marker, 'dd MMMM yyyy', {
+                  locale: dateLocale,
+                });
+              }}
+              dayHeaderContent={(arg) => {
+                if (arg.view.type === 'timeGridDay') {
+                  return format(arg.date, 'eeee', {
+                    locale: dateLocale,
+                  });
+                } else if (arg.view.type === 'listWeek') {
+                  return format(arg.date, 'eeee dd MMMM', {
+                    locale: dateLocale,
+                  });
+                } else if (arg.view.type === 'timeGridWeek') {
+                  return format(arg.date, 'eee dd/MM', {
+                    locale: dateLocale,
+                  });
+                } else if (arg.view.type === 'dayGridMonth') {
+                  return format(arg.date, 'eee', {
+                    locale: dateLocale,
+                  });
+                } else {
+                  return;
+                }
               }}
               eventDisplay="block"
               eventTimeFormat={{
@@ -468,7 +501,9 @@ const CalendarPage = () => {
                 hour12: false,
                 meridiem: false,
               }}
+              locales={allLocales}
               locale={localeMap[language] || 'en'}
+              key={'sq'}
               dateClick={handleDateClick}
               events={events}
               editable={true}

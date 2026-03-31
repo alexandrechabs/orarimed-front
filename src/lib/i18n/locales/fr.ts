@@ -22,6 +22,7 @@ const fr: TranslationKey = {
     freeForPatients: 'Gratuit pour les patients',
     doctorPlaceholder: 'Nom, spécialité',
     cityPlaceholder: 'Ville',
+    noResults: 'Aucun médecin ne correspond à votre recherche.',
   },
   specialities: {
     title: 'Spécialités',
@@ -394,6 +395,64 @@ const fr: TranslationKey = {
   },
   other: 'Autre',
 
+  createRdv: {
+    searchPage: {
+      viewMoreSlots: 'Voir plus de créneaux',
+      viewLessSlots: 'Voir moins',
+      noSlots: 'Aucun créneau disponible pour les 4 prochains jours',
+      noSlotsShort: 'Aucun créneau',
+    },
+    appointmentPage: {
+      title: 'Prendre rendez-vous',
+      step1: 'Type de rendez-vous',
+      step2: 'Créneau horaire ',
+      step3: 'Confirmation',
+      continue: 'Continuer',
+      validate: 'Valider le créneau',
+      confirm: 'Confirmer le rendez-vous',
+      duration: 'Durée',
+      step2Title: 'Sélectionnez un créneau horaire',
+      step2Description:
+        'Veuillez choisir un créneau horaire disponible pour votre consultation.',
+      step3Title: 'Récapitulatif',
+      step3Doctor: 'Médecin',
+      kindRdv: 'Type de rendez-vous',
+      minute: 'minute',
+      time: 'Date et heure',
+      confirmationMessage:
+        'Votre rendez-vous a été pris avec succès. Vous recevrez bientôt une confirmation.',
+      goHome: "Retour à l'accueil",
+      viewRdv: 'Voir mes Rendez-vous',
+      importantInfo: 'Informations importantes',
+      cancelInfo: "Vous pouvez annuler votre rendez-vous jusqu'à 1h avant",
+      reminderInfo: 'Un rappel sera envoyé par email la veille du rendez-vous',
+      lateInfo: 'Veuillez arriver 10 minutes en avance',
+    },
+  },
+  appointments: {
+    title: 'Mes rendez-vous',
+    description: 'Consultez tous vos rendez-vous passés et à venir',
+    newAppointment: 'Nouveau rendez-vous',
+    searchPlaceholder: 'Rechercher un rendez-vous...',
+    noAppointments: 'Aucun rendez-vous trouvé',
+    noAppointmentsDescription: 'Commencez par prendre un nouveau rendez-vous',
+    duration: 'Durée',
+    minute: 'min',
+    cancel: 'Annuler',
+    cancelConfirmTitle: 'Annuler le rendez-vous',
+    cancelConfirm: 'Êtes-vous sûr de vouloir annuler ce rendez-vous ?',
+    status: {
+      upcoming: 'À venir',
+      completed: 'Terminé',
+      cancelled: 'Annulé',
+    },
+    filters: {
+      all: 'Tous',
+      upcoming: 'À venir',
+      completed: 'Terminés',
+      cancelled: 'Annulés',
+    },
+  },
   // Common translations used across the app
   common: {
     success: 'Succès',
@@ -405,6 +464,9 @@ const fr: TranslationKey = {
     loading: 'Chargement...',
     generate: 'Générer',
     saveChanges: 'Enregistrer les modifications',
+    return: 'Retour',
+    yes: 'Oui',
+    no: 'Non',
   },
 
   adminSettings: {

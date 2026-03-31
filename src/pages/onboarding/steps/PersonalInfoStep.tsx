@@ -24,7 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { AddressAutocomplete } from '@/components/Autocomplete';
+import AddressAutocomplete from '@/components/Autocomplete';
 import { cn } from '@/lib/utils';
 import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';

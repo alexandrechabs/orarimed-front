@@ -17,7 +17,7 @@ import {
 import PhoneInput from 'react-phone-number-input';
 import { useAuth } from '@/services/auth/useAuth';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { AddressAutocomplete } from '../Autocomplete';
+import AddressAutocomplete from '../Autocomplete';
 import type { CountryCode } from 'libphonenumber-js';
 import { Checkbox } from '../ui/checkbox';
 import { Center } from '@/types/center';

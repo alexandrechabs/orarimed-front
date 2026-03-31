@@ -3,9 +3,9 @@ import {
   LoadScript,
   Autocomplete as GoogleAutocomplete,
 } from '@react-google-maps/api';
-import { Input } from '@/components/ui/input';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface AddressAutocompleteProps {
   value: string;
@@ -16,9 +16,7 @@ interface AddressAutocompleteProps {
   className?: string;
 }
 
-const LIBRARIES = ['places'] as const;
-
-export function AddressAutocomplete({
+export default function AddressAutocomplete({
   value,
   onChange,
   onPlaceSelected,
@@ -26,6 +24,7 @@ export function AddressAutocomplete({
   error,
   className = '',
 }: AddressAutocompleteProps) {
+  const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,11 +48,22 @@ export function AddressAutocomplete({
     }
   }, [onPlaceSelected]);
 
+  // Mapper les codes de langue vers les langues supportées par Google
+  const getGoogleLanguageCode = (lang: string): string => {
+    const langMap: { [key: string]: string } = {
+      fr: 'fr',
+      en: 'en',
+      sq: 'sq', // Albanais
+    };
+    return langMap[lang] || 'en'; // Fallback en anglais
+  };
+
   return (
     <div className="relative w-full">
       <LoadScript
         googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
         libraries={['places']}
+        language={getGoogleLanguageCode(language)}
         onLoad={() => setIsLoading(false)}
       >
         {!isLoading && (
@@ -63,7 +73,7 @@ export function AddressAutocomplete({
             options={{
               componentRestrictions: { country: ['al', 'fr'] },
               fields: ['address_components', 'formatted_address', 'geometry'],
-              types: ['address'],
+              types: ['(regions)'],
             }}
           >
             <input

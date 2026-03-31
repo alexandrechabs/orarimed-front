@@ -34,6 +34,8 @@ import DoctorPage from './pages/DoctorPage';
 import SearchPage from './pages/SearchPage';
 import DoctorSettingsPage from './pages/settings/DoctorSettingsPage';
 import AppointmentPage from './pages/AppointmentPage';
+import ConfirmationPage from './pages/ConfirmationPage';
+import AppointmentsPage from './pages/AppointmentsPage';
 import CenterPage from './pages/CenterPage';
 import CabinetSettingsPage from './pages/settings/CabinetSettingsPage';
 import ScrollToTop from './components/ScrollToTop';
@@ -154,6 +156,7 @@ const App = () => (
             element={<ProfessionalRegisterPage />}
           />
           <Route path="/appointment" element={<AppointmentPage />} />
+          <Route path="/confirmation" element={<ConfirmationPage />} />
 
           <Route
             path="/onboardingClient"
@@ -193,6 +196,14 @@ const App = () => (
                 element={
                   <ProtectedRouteByRole allowedRoles={[2, 3]}>
                     <CalendarPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/appointments"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[1]}>
+                    <AppointmentsPage />
                   </ProtectedRouteByRole>
                 }
               />

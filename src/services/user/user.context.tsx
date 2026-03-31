@@ -33,6 +33,7 @@ type UserContextType = {
     doctorId: string,
     date: string,
     duration?: number,
+    numberOfDays?: number,
   ) => Promise<any[]>;
   getEvents: (dateRange?: DateRange, userId?: string) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
@@ -239,8 +240,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     doctorId: string,
     date: string,
     duration?: number,
+    numberOfDays?: number,
   ): Promise<any[]> {
-    const data = await userService.getAvailableSlots(doctorId, date, duration);
+    const data = await userService.getAvailableSlots(
+      doctorId,
+      date,
+      duration,
+      numberOfDays,
+    );
     return data;
   }
 

@@ -38,6 +38,12 @@ const navigation: NavItem[] = [
     role: [2, 3],
   },
   {
+    name: 'Mes rendez-vous',
+    href: '/appointments',
+    icon: CalendarIcon,
+    role: [1],
+  },
+  {
     name: 'Paramètres',
     href: '/settings',
     icon: Settings,

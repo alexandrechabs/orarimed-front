@@ -13,7 +13,7 @@ interface DoctorCardProps {
 }
 
 export function DoctorCard({ doctor }: DoctorCardProps) {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
 
   const clickSlot = async (e: React.MouseEvent, slot: string | Date) => {
@@ -75,15 +75,15 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
             </div>
           </div>
           {/* Section des créneaux par jour */}
-          {doctor.slots && doctor.slots.length > 0 ? (
-            <Slots slots={doctor.slots} clickSlot={clickSlot} />
-          ) : (
-            <div className="md:col-span-4 m-auto  ">
-              <p className="text-sm text-muted-foreground">
-                Aucun créneau disponible pour les 4 prochains jours
-              </p>
-            </div>
-          )}
+          {/* {doctor.slots && doctor.slots.length > 0 ? ( */}
+          <Slots doctor={doctor} clickSlot={clickSlot} />
+          {/* ) : ( */}
+          {/* <div className="md:col-span-4 m-auto  "> */}
+          {/* <p className="text-sm text-muted-foreground"> */}
+          {/* {t.createRdv.searchPage.noSlots} */}
+          {/* </p> */}
+          {/* </div> */}
+          {/* )} */}
         </div>
       </CardContent>
     </Card>
