@@ -12,9 +12,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser } from '@/services/user/useUser';
 import { ConsultationReason } from '@/types/consultationReason';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function DoctorSettingsPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { getOpeningHours, saveOpeningHours, getReasons, saveReasons } =
     useUser();
   const methods = useForm({
@@ -66,8 +68,8 @@ export default function DoctorSettingsPage() {
     });
     saveOpeningHours(user.id, openingHours);
     toast({
-      title: 'Succès',
-      description: "Les heures d'ouverture ont été enregistrées avec succès.",
+      title: t.common.success,
+      description: t.doctorParams.saveOpeningHour,
     });
   };
 
@@ -77,9 +79,8 @@ export default function DoctorSettingsPage() {
     let consultationReasons = formData.consultationReasons;
     saveReasons(user.id, consultationReasons);
     toast({
-      title: 'Succès',
-      description:
-        'Les motifs de consultation ont été enregistrés avec succès.',
+      title: t.common.success,
+      description: t.doctorParams.saveReason,
     });
   };
 
@@ -87,15 +88,17 @@ export default function DoctorSettingsPage() {
     <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
       <div className="flex items-center">
         <h1 className="text-3xl font-bold tracking-tight">
-          Paramètres du Docteur
+          {t.doctorParams.title}
         </h1>
       </div>
 
       <Tabs defaultValue={defaultTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="opening-hours">Horaires d'ouverture</TabsTrigger>
+          <TabsTrigger value="opening-hours">
+            {t.doctorParams.openingHours}
+          </TabsTrigger>
           <TabsTrigger value="consultation-reasons">
-            Motifs de consultation
+            {t.doctorParams.consultationReasons}
           </TabsTrigger>
         </TabsList>
 
@@ -103,7 +106,7 @@ export default function DoctorSettingsPage() {
           <TabsContent value="opening-hours">
             <Card>
               <CardHeader>
-                <CardTitle>Horaires d'ouverture</CardTitle>
+                <CardTitle>{t.doctorParams.openingHours}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormProvider {...methods}>
@@ -114,8 +117,7 @@ export default function DoctorSettingsPage() {
                   >
                     <div className="space-y-4">
                       <p className="text-sm text-gray-600">
-                        Définissez vos horaires de consultation. Vous pourrez
-                        les modifier ultérieurement.
+                        {t.doctorParams.openingHoursDescription}
                       </p>
 
                       <div className="mt-6">
@@ -123,7 +125,7 @@ export default function DoctorSettingsPage() {
                       </div>
                     </div>
                     <div className="flex justify-center">
-                      <Button type="submit">Enregistrer</Button>
+                      <Button type="submit">{t.common.save}</Button>
                     </div>
                   </form>
                 </FormProvider>
@@ -135,12 +137,11 @@ export default function DoctorSettingsPage() {
           <TabsContent value="consultation-reasons">
             <Card>
               <CardHeader>
-                <CardTitle>Motif de consultation</CardTitle>
+                <CardTitle>{t.doctorParams.consultationReasons}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-gray-600">
-                  Définissez vos motifs de consultation. Vous pourrez les
-                  modifier ultérieurement.
+                  {t.doctorParams.consultationReasonsDescription}
                 </p>
 
                 <FormProvider {...consultationReasonsMethods}>
@@ -152,7 +153,9 @@ export default function DoctorSettingsPage() {
                     className="space-y-6"
                   >
                     <ConsultationReasons />
-                    <Button type="submit">Enregistrer</Button>
+                    <div className="flex justify-center">
+                      <Button type="submit">{t.common.save}</Button>
+                    </div>
                   </form>
                 </FormProvider>
               </CardContent>

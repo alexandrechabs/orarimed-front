@@ -5,11 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock } from 'lucide-react';
 import { useAuth } from '@/services/auth/useAuth';
 import { useUser } from '@/services/user/useUser';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { getEvents, getSecretaryDoctors } = useUser();
   const navigate = useNavigate();
   const [events, setEvents] = useState<any[]>([]);
@@ -50,7 +52,7 @@ const DashboardPage = () => {
 
   const redirectRdv = () => {
     if (user.roleId === 1) navigate('/appointments');
-    if (user.roleId === 2) navigate('/calendrier');
+    if (user.roleId === 2) navigate('/calendar');
   };
 
   return (
@@ -61,26 +63,19 @@ const DashboardPage = () => {
           {/* Bienvenue */}
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>Bienvenue, {user?.firstname} !</CardTitle>
+              <CardTitle>
+                {t.dashboard.welcome}, {user?.firstname} !
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {user.roleId === 1 && (
-                <p className="text-gray-600">
-                  Retrouvez vos rendez-vous et vos informations personnelles
-                  depuis votre espace personnel.
-                </p>
+                <p className="text-gray-600">{t.dashboard.welcomeClient}</p>
               )}
               {user.roleId === 2 && (
-                <p className="text-gray-600">
-                  Gérer vos rendez-vous et vos informations personnelles depuis
-                  votre espace personnel.
-                </p>
+                <p className="text-gray-600">{t.dashboard.welcomeDoctor}</p>
               )}
               {user.roleId === 3 && (
-                <p className="text-gray-600">
-                  Gérer les agendas de vos médecins et vos informations
-                  personnelles depuis votre espace personnel.
-                </p>
+                <p className="text-gray-600">{t.dashboard.welcomeSecretary}</p>
               )}
             </CardContent>
           </Card>
@@ -94,7 +89,7 @@ const DashboardPage = () => {
                   size="sm"
                   onClick={() => navigate('/search')}
                 >
-                  Prendre un rendez-vous
+                  {t.dashboard.takeAnAppointment}
                 </Button>
               </CardContent>
             </Card>
@@ -106,14 +101,14 @@ const DashboardPage = () => {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">
-                    Prochains rendez-vous
+                    {t.dashboard.nextAppointments}
                   </CardTitle>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => redirectRdv()}
                   >
-                    Voir tout
+                    {t.dashboard.seeAll}
                   </Button>
                 </div>
               </CardHeader>
@@ -154,13 +149,13 @@ const DashboardPage = () => {
                       ))}
 
                       <div className="text-center py-4 text-sm text-gray-500">
-                        Aucun autre rendez-vous à venir
+                        {t.dashboard.noOtherNextAppointment}
                       </div>
                     </>
                   )}
                   {events.length === 0 && (
                     <div className="text-center py-4 text-sm text-gray-500">
-                      Aucun rendez-vous à venir
+                      {t.dashboard.noNextAppointment}
                     </div>
                   )}
                 </div>
@@ -171,7 +166,7 @@ const DashboardPage = () => {
           {user.roleId === 3 && (
             <Card className="md:col-span-2">
               <CardHeader>
-                <CardTitle>Mes Docteurs</CardTitle>
+                <CardTitle>{t.dashboard.myDoctors}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -179,9 +174,7 @@ const DashboardPage = () => {
                     <div
                       key={doctor.id}
                       className="flex bg-gray-200 p-2 rounded-lg mb-2 overflow-hidden cursor-pointer"
-                      onClick={() =>
-                        navigate(`/calendrier?userId=${doctor.id}`)
-                      }
+                      onClick={() => navigate(`/calendar?userId=${doctor.id}`)}
                     >
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden mr-4">
                         <img

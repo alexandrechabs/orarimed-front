@@ -44,6 +44,7 @@ import RdvParams from './RdvParams';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
 import { DoctorProfile } from '@/types/doctor';
 import { User } from '@/types/user';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function usePatientSearch() {
   const { searchClient } = useUser();
@@ -149,6 +150,7 @@ export default function CreateAppointmentModal({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { getReasons, getReasonsClient } = useUser();
+  const { t } = useLanguage();
   const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
   const { results, search, clear } = usePatientSearch();
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -364,12 +366,12 @@ export default function CreateAppointmentModal({
             <DialogHeader>
               <DialogTitle className="m-4 text-center">
                 {eventToEdit
-                  ? `Modifier ${
+                  ? `${
                       eventToEdit?.type === 'absence'
-                        ? "l'absence"
-                        : 'la consultation'
+                        ? t.agenda.updateMissing
+                        : t.agenda.updateConsult
                     }`
-                  : 'Nouvelle consultation'}
+                  : t.agenda.newConsult}
               </DialogTitle>
             </DialogHeader>
             {!isDesktop && eventToEdit && (
@@ -381,7 +383,7 @@ export default function CreateAppointmentModal({
                   className="flex items-center gap-2"
                 >
                   <Settings className="h-4 w-4" />
-                  <span>Détails</span>
+                  <span>{t.agenda.details}</span>
                 </Button>
               </div>
             )}
@@ -397,7 +399,7 @@ export default function CreateAppointmentModal({
                     {/* TYPE */}
                     <div className="flex items-center space-x-2">
                       <div className="w-1/2">
-                        <Label>Type</Label>
+                        <Label>{t.agenda.form.kind}</Label>
                       </div>
                       <div className="w-1/2">
                         <Controller
@@ -413,10 +415,9 @@ export default function CreateAppointmentModal({
                                 field.onChange(newType);
 
                                 // Mettre à jour le titre en fonction du type d'événement
-                                const newTitle =
-                                  appointmentTitles.find(
-                                    (t) => t.type === newType,
-                                  )?.name || 'Nouvel événement';
+                                const newTitle = appointmentTitles.find(
+                                  (t) => t.type === newType,
+                                )?.name;
                                 form.setValue('title', newTitle);
 
                                 // Si on change pour une absence, on réinitialise le patient
@@ -444,9 +445,11 @@ export default function CreateAppointmentModal({
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="appointment">
-                                  Consultation
+                                  {t.agenda.form.consultation}
                                 </SelectItem>
-                                <SelectItem value="absence">Absence</SelectItem>
+                                <SelectItem value="absence">
+                                  {t.agenda.form.absence}
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -457,7 +460,7 @@ export default function CreateAppointmentModal({
                     {/* TITRE */}
                     <div className="mt-2">
                       <div className="flex items-center gap-2 my-2">
-                        <Label>Motif</Label>
+                        <Label>{t.agenda.form.reason}</Label>
                         <Button
                           type="button"
                           variant="ghost"
@@ -468,7 +471,7 @@ export default function CreateAppointmentModal({
                               '/doctor-settings?tab=consultation-reasons',
                             )
                           }
-                          title="Gérer les motifs de consultation"
+                          title={t.agenda.form.addReason}
                         >
                           <Settings className="h-3 w-3" />
                         </Button>
@@ -489,7 +492,9 @@ export default function CreateAppointmentModal({
                             }}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner un motif" />
+                              <SelectValue
+                                placeholder={t.agenda.form.chooseReason}
+                              />
                             </SelectTrigger>
 
                             <SelectContent>
@@ -522,14 +527,14 @@ export default function CreateAppointmentModal({
 
                     {/* DESCRIPTION */}
                     <div className="mt-2">
-                      <Label>Description</Label>
+                      <Label>{t.agenda.form.description}</Label>
                       <Textarea className="mt-2" {...register('description')} />
                     </div>
 
                     {/* PATIENT */}
                     {type === 'appointment' && (
                       <div className="mt-2 mb-4 space-y-4 relative">
-                        <Label>Patient</Label>
+                        <Label>{t.agenda.form.patient}</Label>
 
                         <div className="flex items-center space-x-2 mt-4">
                           <div className="w-1/2">
@@ -542,7 +547,9 @@ export default function CreateAppointmentModal({
                                   <Input
                                     {...field}
                                     value={field.value ?? ''}
-                                    placeholder="Nom"
+                                    placeholder={
+                                      t.agenda.form.lastNamePlaceHolder
+                                    }
                                     autoComplete="off"
                                     onChange={(e) => {
                                       field.onChange(e.target.value);
@@ -589,7 +596,7 @@ export default function CreateAppointmentModal({
                           <div className="w-1/2">
                             {/* PRÉNOM */}
                             <Input
-                              placeholder="Prénom"
+                              placeholder={t.agenda.form.firstNamePlaceHolder}
                               value={watch('patient.firstname') ?? ''}
                               {...register('patient.firstname')}
                             />
@@ -600,7 +607,7 @@ export default function CreateAppointmentModal({
                           {/* CONTACT */}
                           <div className="w-full md:w-1/2">
                             <Input
-                              placeholder="Email"
+                              placeholder={t.agenda.form.emailPlaceHolder}
                               value={watch('patient.email') ?? ''}
                               {...register('patient.email')}
                             />
@@ -615,7 +622,7 @@ export default function CreateAppointmentModal({
                               onChange={(value) =>
                                 setValue('patient.phoneNumber', value || '')
                               }
-                              placeholder="Téléphone"
+                              placeholder={t.agenda.form.phoneNumberPlaceHolder}
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
@@ -641,14 +648,14 @@ export default function CreateAppointmentModal({
                           />
                         )}
                       />
-                      <Label>Toute la journée</Label>
+                      <Label>{t.agenda.form.allDay}</Label>
                     </div>
 
                     {/* DATE */}
                     <div className="grid grid-cols-2 gap-4">
                       {/* Date de début */}
                       <div>
-                        <Label>Date de début</Label>
+                        <Label>{t.agenda.form.startDate}</Label>
                         <Controller
                           name="startDate"
                           control={control}
@@ -689,7 +696,7 @@ export default function CreateAppointmentModal({
                       {/* Heure de début */}
                       {!watch('isAllDay') && (
                         <div>
-                          <Label>Heure de début</Label>
+                          <Label>{t.agenda.form.startHour}</Label>
                           <Controller
                             name="startDate"
                             control={control}
@@ -713,7 +720,7 @@ export default function CreateAppointmentModal({
                     <div className="grid grid-cols-2 gap-4">
                       {/* Date de fin */}
                       <div>
-                        <Label>Date de fin</Label>
+                        <Label>{t.agenda.form.endDate}</Label>
                         <Controller
                           name="endDate"
                           control={control}
@@ -761,7 +768,7 @@ export default function CreateAppointmentModal({
                       {/* Heure de fin */}
                       {!watch('isAllDay') && (
                         <div>
-                          <Label>Heure de fin</Label>
+                          <Label>{t.agenda.form.endHour}</Label>
                           <Controller
                             name="endDate"
                             control={control}
@@ -788,7 +795,7 @@ export default function CreateAppointmentModal({
                     </div>
 
                     <div>
-                      <Label>Répétition</Label>
+                      <Label>{t.agenda.form.repetition}</Label>
                       <Controller
                         name="repeatType"
                         control={control}
@@ -798,20 +805,22 @@ export default function CreateAppointmentModal({
                             onValueChange={field.onChange}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Ne pas répéter" />
+                              <SelectValue
+                                placeholder={t.agenda.form.repetitionNone}
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="none">
-                                Ne pas répéter
+                                {t.agenda.form.repetitionNone}
                               </SelectItem>
                               <SelectItem value="daily">
-                                Tous les jours
+                                {t.agenda.form.repetitionDaily}
                               </SelectItem>
                               <SelectItem value="dailyWeek">
-                                Du lundi au vendredi
+                                {t.agenda.form.repetitiondailyWeek}
                               </SelectItem>
                               <SelectItem value="weekly">
-                                Toutes les semaines
+                                {t.agenda.form.repetitionWeekly}
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -821,7 +830,7 @@ export default function CreateAppointmentModal({
 
                     {watch('repeatType') !== 'none' && (
                       <div>
-                        <Label>Répéter jusqu’au</Label>
+                        <Label>{t.agenda.form.repeatUntil}</Label>
                         <Controller
                           name="repeatEndDate"
                           control={control}
@@ -835,7 +844,7 @@ export default function CreateAppointmentModal({
                                   <CalendarIcon className="mr-2 h-4 w-4" />
                                   {field.value
                                     ? format(field.value, 'PPP', { locale: fr })
-                                    : 'Choisir une date'}
+                                    : t.agenda.form.chooseDate}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="p-0">
@@ -874,10 +883,10 @@ export default function CreateAppointmentModal({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                 >
-                  {eventToEdit ? 'Fermer' : 'Annuler'}
+                  {eventToEdit ? t.common.close : t.common.cancel}
                 </Button>
                 <Button type="submit">
-                  {eventToEdit ? 'Modifier' : 'Créer'}
+                  {eventToEdit ? t.common.modify : t.common.create}
                 </Button>
               </div>
             </form>
@@ -891,7 +900,7 @@ export default function CreateAppointmentModal({
       >
         <DrawerContent className="h-full w-[300px] ml-auto">
           <DrawerHeader>
-            <DrawerTitle>Détails du rendez-vous</DrawerTitle>
+            <DrawerTitle>{t.agenda.eventDetail}</DrawerTitle>
           </DrawerHeader>
           <div className="p-4">
             {/* Contenu du drawer */}

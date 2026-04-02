@@ -28,13 +28,17 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import ImageUpload from '@/components/ui/ImageUpload';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import AddressAutocomplete from '@/components/Autocomplete';
 
 export default function CabinetSettingsPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const API_URL = import.meta.env.VITE_API_URL;
   const {
     getOpeningHoursCenter,
@@ -59,6 +63,10 @@ export default function CabinetSettingsPage() {
       address: '',
       city: '',
       country: '',
+      coordinate: {
+        x: 0,
+        y: 0,
+      },
       visible: true,
       active: true,
     },
@@ -76,6 +84,7 @@ export default function CabinetSettingsPage() {
   const [center, setCenter] = useState<Center | null>(null);
   const [centerDoctors, setCenterDoctors] = useState<any[]>([]);
   const [doctorCenters, setDoctorCenters] = useState<Center[]>([]);
+  const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
   const [selectedCenterId, setSelectedCenterId] = useState<string>('');
   const [isCenterAdmin, setIsCenterAdmin] = useState<boolean>(false);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -111,6 +120,7 @@ export default function CabinetSettingsPage() {
             address: centerData.address || '',
             city: centerData.city || '',
             country: centerData.country || '',
+            coordinate: centerData.coordinate || { x: 0, y: 0 },
             visible: centerData.visible ?? true,
             active: centerData.active ?? true,
           });
@@ -195,9 +205,8 @@ export default function CabinetSettingsPage() {
     });
     saveOpeningHoursCenter(selectedCenterId, openingHours);
     toast({
-      title: 'Succès',
-      description:
-        "Les heures d'ouverture du cabinet ont été enregistrées avec succès.",
+      title: t.common.success,
+      description: t.cabinetParams.successHours,
     });
   };
 
@@ -207,23 +216,22 @@ export default function CabinetSettingsPage() {
     updateCenter(center.id!, formData as Center)
       .then(() => {
         toast({
-          title: 'Succès',
-          description:
-            'Les informations du cabinet ont été mises à jour avec succès.',
+          title: t.common.success,
+          description: t.cabinetParams.successInfo,
         });
         setCenter({ ...center, ...formData });
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
-          description:
-            'Une erreur est survenue lors de la mise à jour des informations du cabinet.',
+          title: t.common.error,
+          description: t.cabinetParams.errorInfo,
           variant: 'destructive',
         });
       });
   };
 
   const handleDoctorsUpdated = () => {
+    setIsAddDoctorOpen(false);
     if (selectedCenterId) {
       getCenterDoctors(selectedCenterId).then((doctors) => {
         setCenterDoctors(doctors || []);
@@ -236,14 +244,13 @@ export default function CabinetSettingsPage() {
       <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
         <div className="flex items-center">
           <h1 className="text-3xl font-bold tracking-tight">
-            Paramètres du Cabinet
+            {t.cabinetParams.title}
           </h1>
         </div>
         <Card>
           <CardContent className="py-8">
             <p className="text-center text-gray-500">
-              Vous n'êtes associé à aucun cabinet. Contactez un administrateur
-              pour être ajouté à un cabinet.
+              {t.cabinetParams.noCabinet}
             </p>
           </CardContent>
         </Card>
@@ -255,7 +262,9 @@ export default function CabinetSettingsPage() {
     return (
       <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
         <div className="flex items-center">
-          <h1 className="text-3xl font-bold tracking-tight">Chargement...</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t.common.loading}
+          </h1>
         </div>
       </div>
     );
@@ -267,12 +276,12 @@ export default function CabinetSettingsPage() {
       <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
         <div className="grid md:flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight">
-            Paramètres du Cabinet
+            {t.cabinetParams.title}
           </h1>
 
           {doctorCenters.length > 1 && (
             <div className="flex items-center space-x-2 mt-6 md:mt-0">
-              <Label htmlFor="center-select">Cabinet:</Label>
+              <Label htmlFor="center-select">{t.cabinetParams.cabinet} :</Label>
               <Select
                 value={selectedCenterId}
                 onValueChange={setSelectedCenterId}
@@ -301,14 +310,13 @@ export default function CabinetSettingsPage() {
               <div className="text-6xl text-gray-300">🔒</div>
               <div>
                 <h3 className="text-lg font-medium text-gray-900">
-                  Accès limité
+                  {t.cabinetParams.limitedAccessTitle}
                 </h3>
                 <p className="text-gray-500 mt-2">
-                  Vous n'avez pas les droits d'administration pour ce cabinet.
+                  {t.cabinetParams.limitedAccessTitle2}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Contactez un administrateur du cabinet pour obtenir les droits
-                  de modification.
+                  {t.cabinetParams.limitedAccessTitle3}
                 </p>
               </div>
             </div>
@@ -323,19 +331,19 @@ export default function CabinetSettingsPage() {
       <div className="grid md:flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <h1 className="text-3xl font-bold tracking-tight">
-            Paramètres du Cabinet
+            {t.cabinetParams.title}
           </h1>
           {isCenterAdmin && (
             <div className="flex items-center space-x-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
               <Shield className="h-4 w-4" />
-              <span>Admin</span>
+              <span>{t.cabinetParams.admin}</span>
             </div>
           )}
         </div>
 
         {doctorCenters.length > 1 && (
           <div className="flex items-center space-x-2 mt-6 md:mt-0">
-            <Label htmlFor="center-select">Cabinet:</Label>
+            <Label htmlFor="center-select">{t.cabinetParams.cabinet} :</Label>
             <Select
               value={selectedCenterId}
               onValueChange={setSelectedCenterId}
@@ -360,15 +368,19 @@ export default function CabinetSettingsPage() {
 
       <Tabs defaultValue={defaultTab} className="space-y-4">
         <TabsList className="inline-table">
-          <TabsTrigger value="info">Informations du cabinet</TabsTrigger>
-          <TabsTrigger value="opening-hours">Horaires d'ouverture</TabsTrigger>
-          <TabsTrigger value="doctors">Gestion des docteurs</TabsTrigger>
+          <TabsTrigger value="info">{t.cabinetParams.cabinetInfo}</TabsTrigger>
+          <TabsTrigger value="opening-hours">
+            {t.cabinetParams.cabinetOpening}
+          </TabsTrigger>
+          <TabsTrigger value="doctors">
+            {t.cabinetParams.cabinetDoctor}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
           <Card>
             <CardHeader>
-              <CardTitle>Informations du cabinet</CardTitle>
+              <CardTitle>{t.cabinetParams.cabinetInfo}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormProvider {...centerInfoMethods}>
@@ -400,22 +412,26 @@ export default function CabinetSettingsPage() {
                           <Camera className="h-5 w-5" />
                         )}
                         <span className="sr-only">
-                          Changer la photo de profil
+                          {t.cabinetParams.changePhoto}
                         </span>
                       </button>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Nom du cabinet</Label>
+                      <Label htmlFor="name">
+                        {t.cabinetParams.infoForm.name}
+                      </Label>
                       <Input
                         id="name"
                         {...centerInfoMethods.register('name')}
-                        placeholder="Nom du cabinet"
+                        placeholder={t.cabinetParams.infoForm.name}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">
+                        {t.cabinetParams.infoForm.email}
+                      </Label>
                       <Input
                         id="email"
                         type="email"
@@ -424,47 +440,62 @@ export default function CabinetSettingsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="phoneNumber">Téléphone</Label>
+                      <Label htmlFor="phoneNumber">
+                        {t.cabinetParams.infoForm.phone}
+                      </Label>
                       <Input
                         id="phoneNumber"
                         {...centerInfoMethods.register('phoneNumber')}
                         placeholder="01 23 45 67 89"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="city">Ville</Label>
-                      <Input
-                        id="city"
-                        {...centerInfoMethods.register('city')}
-                        placeholder="Paris"
-                      />
-                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Adresse</Label>
-                    <Input
-                      id="address"
-                      {...centerInfoMethods.register('address')}
-                      placeholder="123 rue de la Santé"
+                  <div>
+                    <Label>{t.cabinetParams.infoForm.address}</Label>
+                    <AddressAutocomplete
+                      type="address"
+                      value={centerInfoMethods.watch('address')} // Use watch to get the current value
+                      onChange={(value) =>
+                        centerInfoMethods.setValue('address', value)
+                      } // Use setValue to update the value
+                      onPlaceSelected={(place) => {
+                        centerInfoMethods.setValue(
+                          'address',
+                          place.formatted_address,
+                        );
+                        centerInfoMethods.setValue(
+                          'city',
+                          place.address_components.find((component) =>
+                            component.types.includes('locality'),
+                          )?.long_name || '',
+                        );
+                        centerInfoMethods.setValue(
+                          'country',
+                          place.address_components.find((component) =>
+                            component.types.includes('country'),
+                          ).long_name,
+                        );
+                        centerInfoMethods.setValue('coordinate', {
+                          x: place.geometry.location.lat(),
+                          y: place.geometry.location.lng(),
+                        });
+                      }}
+                      className="bg-background"
+                      placeholder="Saisissez l'adresse de votre cabinet"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="country">Pays</Label>
-                    <Input
-                      id="country"
-                      {...centerInfoMethods.register('country')}
-                      placeholder="France"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">
+                      {t.cabinetParams.infoForm.description}
+                    </Label>
                     <Textarea
                       id="description"
                       {...centerInfoMethods.register('description')}
-                      placeholder="Description du cabinet..."
+                      placeholder={
+                        t.cabinetParams.infoForm.descriptionPlaceholder
+                      }
                       rows={4}
                     />
                   </div>
@@ -478,22 +509,27 @@ export default function CabinetSettingsPage() {
                           centerInfoSetValue('visible', checked)
                         }
                       />
-                      <Label htmlFor="visible">Visible publiquement</Label>
+                      <Label htmlFor="visible">
+                        {t.cabinetParams.infoForm.visible}
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="active"
+                        disabled={true}
                         checked={centerInfoWatch('active')}
                         onCheckedChange={(checked) =>
                           centerInfoSetValue('active', checked)
                         }
                       />
-                      <Label htmlFor="active">Actif</Label>
+                      <Label htmlFor="active">
+                        {t.cabinetParams.infoForm.active}
+                      </Label>
                     </div>
                   </div>
 
                   <div className="flex justify-center">
-                    <Button type="submit">Enregistrer</Button>
+                    <Button type="submit">{t.common.save}</Button>
                   </div>
                 </form>
               </FormProvider>
@@ -504,7 +540,7 @@ export default function CabinetSettingsPage() {
         <TabsContent value="opening-hours">
           <Card>
             <CardHeader>
-              <CardTitle>Horaires d'ouverture du cabinet</CardTitle>
+              <CardTitle>{t.cabinetParams.cabinetOpening}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormProvider {...methods}>
@@ -514,8 +550,7 @@ export default function CabinetSettingsPage() {
                 >
                   <div className="space-y-4">
                     <p className="text-sm text-gray-600">
-                      Définissez les horaires d'ouverture du cabinet. Vous
-                      pourrez les modifier ultérieurement.
+                      {t.cabinetParams.cabinetOpeningDescription}
                     </p>
 
                     <div className="mt-6">
@@ -523,7 +558,7 @@ export default function CabinetSettingsPage() {
                     </div>
                   </div>
                   <div className="flex justify-center">
-                    <Button type="submit">Enregistrer</Button>
+                    <Button type="submit">{t.common.save}</Button>
                   </div>
                 </form>
               </FormProvider>
@@ -534,19 +569,28 @@ export default function CabinetSettingsPage() {
         <TabsContent value="doctors">
           <Card>
             <CardHeader>
-              <CardTitle>Gestion des docteurs du cabinet</CardTitle>
+              <div className="block md:flex md:justify-between items-center">
+                <CardTitle>{t.cabinetParams.cabinetDoctor}</CardTitle>
+                <div className="flex justify-end">
+                  <Button
+                    className="mt-4"
+                    onClick={() => setIsAddDoctorOpen(true)}
+                  >
+                    {t.cabinetParams.addDoctor}
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-4">
                 <p className="text-sm text-gray-600">
-                  Ajoutez ou retirez des docteurs du cabinet. Vous pouvez
-                  définir leurs droits d'administration.
+                  {t.cabinetParams.cabinetDoctorDescription}
                 </p>
 
                 {centerDoctors.length > 0 && (
                   <div className="space-y-2">
                     <h3 className="text-lg font-medium">
-                      Docteurs actuels ({centerDoctors.length})
+                      {t.cabinetParams.currentDoctors} ({centerDoctors.length})
                     </h3>
                     <div className="space-y-2">
                       {centerDoctors.map((doctor) => (
@@ -554,32 +598,38 @@ export default function CabinetSettingsPage() {
                           key={doctor.id}
                           className="flex items-center justify-between p-3 border rounded-lg"
                         >
-                          <div>
-                            <div className="font-medium">
-                              Dr {doctor.firstname} {doctor.lastname}
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden mr-4">
+                              <img
+                                src={
+                                  user?.avatar
+                                    ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
+                                    : '/default-avatar.png'
+                                }
+                                alt={doctor?.firstname}
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = '/default-avatar.png';
+                                }}
+                              />
                             </div>
-                            {doctor.isAdmin && (
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                Admin
-                              </span>
-                            )}
+                            <div>
+                              <div className="font-medium">
+                                Dr {doctor.firstname} {doctor.lastname}
+                              </div>
+                              {doctor.isAdmin && (
+                                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                  {t.cabinetParams.admin}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-
-                <div className="mt-6">
-                  <h3 className="text-lg font-medium mb-4">
-                    Ajouter un docteur
-                  </h3>
-                  <DoctorCenterSearch
-                    centerId={center.id!}
-                    centerName={center.name}
-                    onSuccess={handleDoctorsUpdated}
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -613,7 +663,7 @@ export default function CabinetSettingsPage() {
               onClick={() => setIsCropModalOpen(false)}
               disabled={isUploading}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               onClick={() => {
@@ -626,11 +676,33 @@ export default function CabinetSettingsPage() {
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Enregistrement...
+                  {t.common.saving}
                 </div>
               ) : (
-                'Enregistrer'
+                t.common.save
               )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAddDoctorOpen} onOpenChange={setIsAddDoctorOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>{t.cabinetParams.doctorList}</DialogTitle>
+            <DialogDescription>
+              {t.cabinetParams.addDoctorList}
+            </DialogDescription>
+          </DialogHeader>
+          <DoctorCenterSearch
+            centerId={center?.id}
+            centerName={center?.name}
+            onSuccess={handleDoctorsUpdated}
+            maxSelection={50}
+          />
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setIsAddDoctorOpen(false)}>
+              {t.common.cancel}
             </Button>
           </div>
         </DialogContent>

@@ -16,6 +16,8 @@ import { cn } from '@/lib/utils';
 import logoIcon from '@/assets/logo-icon.png';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/services/auth/useAuth';
+import LanguageSelector from '@/components/LanguageSelector';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 type NavItem = {
   name: string;
@@ -24,64 +26,67 @@ type NavItem = {
   role?: number[];
 };
 
-const navigation: NavItem[] = [
-  {
-    name: 'Tableau de bord',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    role: [1, 2, 3, 4],
-  },
-  {
-    name: 'Calendrier',
-    href: '/calendrier',
-    icon: CalendarIcon,
-    role: [2, 3],
-  },
-  {
-    name: 'Mes rendez-vous',
-    href: '/appointments',
-    icon: CalendarIcon,
-    role: [1],
-  },
-  {
-    name: 'Paramètres',
-    href: '/settings',
-    icon: Settings,
-    role: [1, 2, 3, 4],
-  },
-  {
-    name: 'Docteur',
-    href: '/doctor-settings',
-    icon: Settings,
-    role: [2],
-  },
-  {
-    name: 'Cabinet',
-    href: '/cabinet-settings',
-    icon: Settings,
-    role: [2],
-  },
-  {
-    name: 'Paramètres Admin',
-    href: '/admin-settings',
-    icon: Settings,
-    role: [4],
-  },
-];
-
 interface AuthenticatedLayoutProps {
   children?: React.ReactNode;
 }
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   children,
 }) => {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activePath, setActivePath] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+
+  const navigation: NavItem[] = [
+    {
+      name: t.nav.connected.dashboard,
+      href: '/dashboard',
+      icon: LayoutDashboard,
+      role: [1, 2, 3, 4],
+    },
+    {
+      name: t.nav.connected.calendar,
+      href: '/calendar',
+      icon: CalendarIcon,
+      role: [2, 3],
+    },
+    {
+      name: t.nav.connected.appointments,
+      href: '/appointments',
+      icon: CalendarIcon,
+      role: [1],
+    },
+    {
+      name: t.nav.connected.settings,
+      href: '/settings',
+      icon: Settings,
+      role: [1, 2, 3, 4],
+    },
+    {
+      name: t.nav.connected.doctor,
+      href: '/doctor-settings',
+      icon: Settings,
+      role: [2],
+    },
+    {
+      name: t.nav.connected.cabinet,
+      href: '/cabinet-settings',
+      icon: Settings,
+      role: [2],
+    },
+    {
+      name: t.nav.connected.admin,
+      href: '/admin-settings',
+      icon: Settings,
+      role: [4],
+    },
+  ];
 
   useEffect(() => {
     if (!user) {
@@ -222,15 +227,38 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
               {/* Profile dropdown */}
               <div className="relative ml-3">
                 <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-700">
-                      {user.firstname} {user.lastname}
-                    </p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
+                  <div className="flex items-center text-right">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden mr-4">
+                      <img
+                        src={
+                          user?.avatar
+                            ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
+                            : '/default-avatar.png'
+                        }
+                        alt={user?.firstname}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/default-avatar.png';
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">
+                        {user.firstname}
+                      </p>
+                      <p className="text-sm font-medium text-gray-700">
+                        {user.lastname}
+                      </p>
+                    </div>
                   </div>
+
+                  <LanguageSelector />
                   <Button variant="ghost" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Déconnexion</span>
+                    <span className="hidden sm:inline">
+                      {t.nav.connected.logout}
+                    </span>
                   </Button>
                 </div>
               </div>

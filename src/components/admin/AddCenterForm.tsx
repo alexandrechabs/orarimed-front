@@ -273,6 +273,7 @@ export function AddCenterForm({
         <div>
           <Label>Adresse</Label>
           <AddressAutocomplete
+            type="address"
             value={watch('address')} // Use watch to get the current value
             onChange={(value) => setValue('address', value)} // Use setValue to update the value
             onPlaceSelected={(place) => {

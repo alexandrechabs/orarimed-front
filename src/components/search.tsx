@@ -37,6 +37,7 @@ export function SearchDoctor({
         </div>
         <div className="relative col-span-2">
           <AddressAutocomplete
+            type="(regions)"
             value={selectedCity.address}
             onChange={(value) =>
               setSelectedCity({

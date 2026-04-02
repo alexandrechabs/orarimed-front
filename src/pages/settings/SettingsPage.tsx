@@ -31,7 +31,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function SettingsPage() {
   const { user, specialities, updateUser, getMyUser } = useAuth();
   const { saveSubSpecialities, savePhotoUser } = useUser();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     firstname: user.firstname || '',
     lastname: user.lastname || '',
@@ -44,6 +44,7 @@ export default function SettingsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
+  const [smsNotifications, setSmsNotifications] = useState(true);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [tempImage, setTempImage] = useState<string | null>(
     user?.avatar || null,
@@ -125,20 +126,22 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
       <div className="flex items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t.params.title}</h1>
       </div>
 
       <Tabs defaultValue="account" className="w-full">
         <div className="w-full overflow-x-auto pb-2">
           <TabsList>
-            <TabsTrigger value="account">Compte</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="account">{t.params.account}</TabsTrigger>
+            <TabsTrigger value="notifications">
+              {t.params.notifications}
+            </TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>Informations du compte</CardTitle>
+              <CardTitle>{t.params.accountTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Section Photo de profil */}
@@ -165,16 +168,16 @@ export default function SettingsPage() {
                     ) : (
                       <Camera className="h-5 w-5" />
                     )}
-                    <span className="sr-only">Changer la photo de profil</span>
+                    <span className="sr-only">{t.params.changePicture}</span>
                   </button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Cliquez sur l'icône pour changer votre photo de profil
+                  {t.params.clickToChange}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">Prénom</Label>
+                  <Label htmlFor="firstName">{t.params.firstname}</Label>
                   <Input
                     id="firstName"
                     name="firstname"
@@ -183,7 +186,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Nom</Label>
+                  <Label htmlFor="lastName">{t.params.lastname}</Label>
                   <Input
                     id="lastName"
                     name="lastname"
@@ -194,7 +197,7 @@ export default function SettingsPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t.params.email}</Label>
                   <Input
                     id="email"
                     name="email"
@@ -203,7 +206,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Téléphone</Label>
+                  <Label htmlFor="phone">{t.params.phone}</Label>
                   <PhoneInput
                     international
                     name="phoneNumber"
@@ -219,7 +222,7 @@ export default function SettingsPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="speciality">Spécialité médicale</Label>
+                  <Label htmlFor="speciality">{t.params.speciality}</Label>
                   <Select
                     onValueChange={(value) => {
                       handleInputChange(value, 'specialityId');
@@ -228,7 +231,7 @@ export default function SettingsPage() {
                     defaultValue={formData.specialityId}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une spécialité" />
+                      <SelectValue placeholder={t.params.selectSpeciality} />
                     </SelectTrigger>
                     <SelectContent>
                       {specialities.map((speciality) => (
@@ -247,7 +250,7 @@ export default function SettingsPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Sous-spécialités (optionnel)</Label>
+                  <Label>{t.params.subSpeciality}</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {specialities
                       .find((s) => s.id === Number(formData.specialityId))
@@ -304,7 +307,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="flex justify-center">
-                <Button onClick={handleSaveSettings}>Enregistrer</Button>
+                <Button onClick={handleSaveSettings}>{t.common.save}</Button>
               </div>
             </CardContent>
           </Card>
@@ -313,16 +316,16 @@ export default function SettingsPage() {
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>Notifications</CardTitle>
+              <CardTitle>{t.params.notificationTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between space-x-4">
                 <div className="space-y-1">
                   <Label htmlFor="notifications">
-                    Activer les notifications
+                    {t.params.activeNotification}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Recevoir des notifications de l'application
+                    {t.params.activeNotificationDetail}
                   </p>
                 </div>
                 <Switch
@@ -336,10 +339,10 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between space-x-4">
                   <div className="space-y-1">
                     <Label htmlFor="email-notifications">
-                      Notifications par email
+                      {t.params.emailNotification}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Recevoir des notifications par email
+                      {t.params.emailNotificationDetail}
                     </p>
                   </div>
                   <Switch
@@ -353,16 +356,33 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between space-x-4">
                   <div className="space-y-1">
                     <Label htmlFor="push-notifications">
-                      Notifications push
+                      {t.params.pushNotification}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Recevoir des notifications sur votre appareil
+                      {t.params.pushNotificationDetail}
                     </p>
                   </div>
                   <Switch
                     id="push-notifications"
                     checked={pushNotifications}
                     onCheckedChange={setPushNotifications}
+                    disabled={!notificationsEnabled}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between space-x-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="push-notifications">
+                      {t.params.smsNotification}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t.params.smsNotificationDetail}
+                    </p>
+                  </div>
+                  <Switch
+                    id="push-notifications"
+                    checked={pushNotifications}
+                    onCheckedChange={setSmsNotifications}
                     disabled={!notificationsEnabled}
                   />
                 </div>

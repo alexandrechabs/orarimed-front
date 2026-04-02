@@ -11,25 +11,18 @@ import {
 } from '@/components/ui/select';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { OpeningHour } from '@/types/openingHour';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 type PeriodType = 'morning' | 'afternoon';
-
-export const DAYS_OF_WEEK = [
-  { value: 1, label: 'Lundi' },
-  { value: 2, label: 'Mardi' },
-  { value: 3, label: 'Mercredi' },
-  { value: 4, label: 'Jeudi' },
-  { value: 5, label: 'Vendredi' },
-  { value: 6, label: 'Samedi' },
-  { value: 0, label: 'Dimanche' },
-] as const;
-
-export const PERIODS = [
-  { value: 'morning', label: 'Matin' },
-  { value: 'afternoon', label: 'Après-midi' },
-] as const;
 
 interface OpeningHoursFormProps {
   name?: string;
@@ -39,10 +32,26 @@ export default function OpeningHoursForm({
   name = 'openingHours',
 }: OpeningHoursFormProps) {
   const { control, watch } = useFormContext();
+  const { t } = useLanguage();
   const { fields, append, remove } = useFieldArray({
     control,
     name,
   });
+
+  const DAYS_OF_WEEK = [
+    { value: 1, label: t.daysOfWeek[1] },
+    { value: 2, label: t.daysOfWeek[2] },
+    { value: 3, label: t.daysOfWeek[3] },
+    { value: 4, label: t.daysOfWeek[4] },
+    { value: 5, label: t.daysOfWeek[5] },
+    { value: 6, label: t.daysOfWeek[6] },
+    { value: 0, label: t.daysOfWeek[0] },
+  ];
+
+  const PERIODS = [
+    { value: 'morning', label: t.doctorParams.openingForm.morning },
+    { value: 'afternoon', label: t.doctorParams.openingForm.afternoon },
+  ];
 
   const openingHours = watch(name) || [];
 
@@ -52,6 +61,16 @@ export default function OpeningHoursForm({
     openTime: '09:00',
     closeTime: '12:00',
     userId: '',
+  });
+
+  const [errorDialog, setErrorDialog] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+  }>({
+    open: false,
+    title: '',
+    message: '',
   });
 
   const isTimeSlotTaken = (
@@ -68,17 +87,27 @@ export default function OpeningHoursForm({
   const handleAddHour = () => {
     // Vérifier que l'heure de fin est après l'heure de début
     if (newHour.closeTime <= newHour.openTime) {
-      alert("L'heure de fermeture doit être après l'heure d'ouverture");
+      setErrorDialog({
+        open: true,
+        title: t.doctorParams.orderHoursError,
+        message: t.doctorParams.orderHoursError,
+      });
       return;
     }
 
     // Vérifier si le créneau existe déjà
     if (isTimeSlotTaken(newHour.dayOfWeek, newHour.period)) {
-      const day =
-        DAYS_OF_WEEK.find((d) => d.value === newHour.dayOfWeek)?.label ||
-        'ce jour';
-      const period = newHour.period === 'morning' ? 'matin' : 'après-midi';
-      alert(`Un créneau pour le ${day} ${period} existe déjà.`);
+      const day = DAYS_OF_WEEK.find(
+        (d) => d.value === newHour.dayOfWeek,
+      )?.label;
+      const period = PERIODS.find((p) => p.value === newHour.period)?.label;
+      setErrorDialog({
+        open: true,
+        title: t.doctorParams.hoursAlreadyExistTitle,
+        message: t.doctorParams.hoursAlreadyExist
+          .replace('{day}', day || '')
+          .replace('{period}', period || ''),
+      });
       return;
     }
 
@@ -136,16 +165,17 @@ export default function OpeningHoursForm({
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Attention : Certains créneaux se chevauchent. Veuillez vérifier vos
-            horaires.
+            {t.doctorParams.openingForm.alert}
           </AlertDescription>
         </Alert>
       )}
       <div className="border rounded-lg p-4 space-y-4">
-        <h3 className="text-lg font-medium">Ajouter des horaires</h3>
+        <h3 className="text-lg font-medium">
+          {t.doctorParams.openingForm.title}
+        </h3>
         <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg">
           <div className="space-y-2">
-            <Label>Jour</Label>
+            <Label>{t.doctorParams.openingForm.day}</Label>
             <Select
               value={newHour.dayOfWeek.toString()}
               onValueChange={(value) =>
@@ -166,7 +196,7 @@ export default function OpeningHoursForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Créneau</Label>
+            <Label>{t.doctorParams.openingForm.timeSlot}</Label>
             <Select
               value={newHour.period}
               onValueChange={(value: PeriodType) =>
@@ -174,7 +204,9 @@ export default function OpeningHoursForm({
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sélectionner un créneau" />
+                <SelectValue
+                  placeholder={t.doctorParams.openingForm.selectTimeSlot}
+                />
               </SelectTrigger>
               <SelectContent>
                 {PERIODS.map((period) => (
@@ -187,7 +219,7 @@ export default function OpeningHoursForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Heure d'ouverture</Label>
+            <Label>{t.doctorParams.openingForm.openingHour}</Label>
             <Input
               type="time"
               value={newHour.openTime}
@@ -199,7 +231,7 @@ export default function OpeningHoursForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Heure de fermeture</Label>
+            <Label>{t.doctorParams.openingForm.closingHour}</Label>
             <Input
               type="time"
               value={newHour.closeTime}
@@ -211,19 +243,20 @@ export default function OpeningHoursForm({
           </div>
 
           <Button type="button" onClick={handleAddHour} className="mb-1">
-            <Plus className="mr-2 h-4 w-4" /> Ajouter
+            <Plus className="mr-2 h-4 w-4" /> {t.common.add}
           </Button>
         </div>
       </div>
 
       <div className="mt-6 space-y-4">
-        <h3 className="text-lg font-medium">Horaires configurés</h3>
+        <h3 className="text-lg font-medium">
+          {t.doctorParams.openingHoursConfigured}
+        </h3>
         {openingHours.length === 0 ? (
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Aucun horaire n'a encore été configuré. Ajoutez vos horaires de
-              consultation ci-dessus.
+              {t.doctorParams.openingHoursNotConfigured}
             </AlertDescription>
           </Alert>
         ) : (
@@ -243,8 +276,10 @@ export default function OpeningHoursForm({
                       }
                     </p>
                     <p className="text-sm text-gray-600">
-                      {hour.period === 'morning' ? 'Matin' : 'Après-midi'}:{' '}
-                      {hour.openTime} - {hour.closeTime}
+                      {hour.period === 'morning'
+                        ? t.doctorParams.openingForm.morning
+                        : t.doctorParams.openingForm.afternoon}
+                      : {hour.openTime} - {hour.closeTime}
                     </p>
                   </div>
                   <Button
@@ -261,6 +296,28 @@ export default function OpeningHoursForm({
           </div>
         )}
       </div>
+
+      {/* Dialog d'erreur */}
+      <Dialog
+        open={errorDialog.open}
+        onOpenChange={(open) => setErrorDialog({ ...errorDialog, open })}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{errorDialog.title}</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-600">{errorDialog.message}</p>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setErrorDialog({ ...errorDialog, open: false })}
+            >
+              {t.common.close}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

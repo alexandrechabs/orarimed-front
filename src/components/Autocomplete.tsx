@@ -11,6 +11,7 @@ interface AddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   onPlaceSelected?: (place: google.maps.places.PlaceResult) => void;
+  type: string;
   placeholder?: string;
   error?: string;
   className?: string;
@@ -20,6 +21,7 @@ export default function AddressAutocomplete({
   value,
   onChange,
   onPlaceSelected,
+  type = '',
   placeholder = '',
   error,
   className = '',
@@ -73,7 +75,7 @@ export default function AddressAutocomplete({
             options={{
               componentRestrictions: { country: ['al', 'fr'] },
               fields: ['address_components', 'formatted_address', 'geometry'],
-              types: ['(regions)'],
+              types: [type],
             }}
           >
             <input

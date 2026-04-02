@@ -192,7 +192,7 @@ const App = () => (
                 }
               />
               <Route
-                path="/calendrier"
+                path="/calendar"
                 element={
                   <ProtectedRouteByRole allowedRoles={[2, 3]}>
                     <CalendarPage />

@@ -55,7 +55,7 @@ export default function RdvParams({ eventToEdit }: Props) {
     <>
       {eventToEdit && (
         <div>
-          <Label className="mb-2">Statut du Rendez-vous</Label>
+          <Label className="mb-2">{t.agenda.eventStatus}</Label>
           <Button
             type="button"
             onClick={() => changeStatus('waiting')}
@@ -116,7 +116,7 @@ export default function RdvParams({ eventToEdit }: Props) {
             variant="outline"
             className="my-1 p-2 w-full justify-start text-xs"
           >
-            Historique des rendez-vous
+            {t.agenda.eventHistory}
           </Button>
           <Button
             type="button"
@@ -127,7 +127,7 @@ export default function RdvParams({ eventToEdit }: Props) {
             variant="outline"
             className="my-1 p-2 w-full justify-start text-xs"
           >
-            Historique des notifications
+            {t.agenda.eventNotifications}
           </Button>
         </div>
       )}
@@ -138,7 +138,7 @@ export default function RdvParams({ eventToEdit }: Props) {
       >
         <DrawerContent className="h-full w-[300px] ml-auto overflow-x-hidden overflow-y-auto">
           <DrawerHeader>
-            <DrawerTitle>Historique des rendez-vous</DrawerTitle>
+            <DrawerTitle>{t.agenda.eventHistory}</DrawerTitle>
           </DrawerHeader>
           {historyEvents &&
             historyEvents
@@ -169,7 +169,8 @@ export default function RdvParams({ eventToEdit }: Props) {
                       <p className="text-sm">{event.title}</p>
                       <p className="text-xs">{formatDate(event.start)}</p>
                       <p className="text-xs flex">
-                        status : {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                        {t.agenda.status} :{' '}
+                        {Icon && <Icon className="h-4 w-4 shrink-0" />}
                         {t.event.status[event.status]}
                       </p>
                     </div>
@@ -185,7 +186,7 @@ export default function RdvParams({ eventToEdit }: Props) {
       >
         <DrawerContent className="h-full w-[300px] ml-auto overflow-x-hidden overflow-y-auto">
           <DrawerHeader>
-            <DrawerTitle>Historique des notifications</DrawerTitle>
+            <DrawerTitle>{t.agenda.eventNotifications}</DrawerTitle>
           </DrawerHeader>
           {notifiactionsEvents &&
             notifiactionsEvents

@@ -290,6 +290,7 @@ export function OnboardingClientPage() {
                   rules={{ required: 'Veuillez saisir une adresse' }}
                   render={({ field: { onChange, value } }) => (
                     <AddressAutocomplete
+                      type="address"
                       value={value}
                       onChange={onChange}
                       onPlaceSelected={(place) => {

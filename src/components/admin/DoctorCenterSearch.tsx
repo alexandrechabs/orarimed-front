@@ -49,7 +49,7 @@ export function DoctorCenterSearch({
 }: DoctorCenterSearchProps) {
   const { getUsersAdmin, addDoctorsToCenter, getCenterDoctors } = useUser();
   const { toast } = useToast();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<DoctorSearchResult[]>([]);
@@ -109,8 +109,11 @@ export function DoctorCenterSearch({
     if (!selectedDoctors.find((d) => d.id === doctor.id)) {
       if (selectedDoctors.length >= maxSelection) {
         toast({
-          title: 'Limite atteinte',
-          description: `Vous ne pouvez sélectionner que ${maxSelection} docteurs au maximum`,
+          title: t.common.limitReached,
+          description: t.cabinetParams.doctorSearch.maxDoctor.replace(
+            '{max}',
+            maxSelection.toString(),
+          ),
           variant: 'destructive',
         });
         return;
@@ -129,8 +132,8 @@ export function DoctorCenterSearch({
   const handleAddDoctorsToCenter = async () => {
     if (selectedDoctors.length === 0) {
       toast({
-        title: 'Aucun docteur sélectionné',
-        description: 'Veuillez sélectionner au moins un docteur à ajouter',
+        title: t.cabinetParams.doctorSearch.noDoctorTitle,
+        description: t.cabinetParams.doctorSearch.noDoctorDescription,
         variant: 'destructive',
       });
       return;
@@ -150,15 +153,24 @@ export function DoctorCenterSearch({
       const adminCount = selectedDoctors.filter((d) => d.isAdmin).length;
       const regularCount = selectedDoctors.length - adminCount;
 
-      let description = `${selectedDoctors.length} docteur(s) ajouté(s) au centre "${centerName}" avec succès`;
+      let description = t.cabinetParams.doctorSearch.addDoctorDescription
+        .replace('{length}', selectedDoctors.length.toString())
+        .replace('{centerName}', centerName);
       if (adminCount > 0 && regularCount > 0) {
-        description += ` (${adminCount} admin(s) et ${regularCount} régulier(s))`;
-      } else if (adminCount > 0) {
-        description += ` (${adminCount} admin(s))`;
+        description += t.cabinetParams.doctorSearch.addDoctorDescription2
+          .replace('{adminCount}', adminCount.toString())
+          .replace('{regularCount}', regularCount.toString());
+      }
+      if (adminCount > 0) {
+        description +=
+          t.cabinetParams.doctorSearch.addDoctorDescriptio3.replace(
+            '{adminCount}',
+            adminCount.toString(),
+          );
       }
 
       toast({
-        title: 'Succès',
+        title: t.common.success,
         description,
       });
 
@@ -166,10 +178,10 @@ export function DoctorCenterSearch({
       onSuccess?.();
     } catch (error) {
       toast({
-        title: 'Erreur',
+        title: t.common.error,
         description:
           error.message ||
-          "Une erreur est survenue lors de l'ajout des docteurs",
+          t.cabinetParams.doctorSearch.addDoctorErrorDescription,
         variant: 'destructive',
       });
     } finally {
@@ -206,7 +218,7 @@ export function DoctorCenterSearch({
             value={searchQuery}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            placeholder="Rechercher un docteur par nom ou spécialité..."
+            placeholder={t.cabinetParams.doctorSearch.searchDoctor}
             className="pl-10"
           />
         </div>
@@ -248,7 +260,7 @@ export function DoctorCenterSearch({
                       {getDoctorName(doctor)}
                       {isSelected && (
                         <Badge variant="secondary" className="ml-2 text-xs">
-                          Déjà sélectionné
+                          {t.cabinetParams.doctorSearch.alreadySelected}
                         </Badge>
                       )}
                     </div>
@@ -267,7 +279,8 @@ export function DoctorCenterSearch({
       {selectedDoctors.length > 0 && (
         <div className="space-y-3">
           <div className="text-sm font-medium text-gray-700">
-            Docteurs sélectionnés ({selectedDoctors.length}/{maxSelection}):
+            {t.cabinetParams.doctorSearch.doctorSelected} (
+            {selectedDoctors.length}/{maxSelection}):
           </div>
           <div className="space-y-2">
             {selectedDoctors.map((doctor) => (
@@ -314,7 +327,7 @@ export function DoctorCenterSearch({
                       className="text-sm cursor-pointer flex items-center gap-1"
                     >
                       <Shield className="h-3 w-3" />
-                      Admin
+                      {t.cabinetParams.admin}
                     </Label>
                   </div>
                   <button
@@ -337,11 +350,14 @@ export function DoctorCenterSearch({
         className="w-full"
       >
         {isAdding ? (
-          <>Ajout en cours...</>
+          <>{t.common.saving}</>
         ) : (
           <>
             <Plus className="h-4 w-4 mr-2" />
-            Ajouter {selectedDoctors.length} docteur(s) au centre
+            {t.cabinetParams.doctorSearch.addDoctorButton.replace(
+              '{selectedDoctors}',
+              selectedDoctors.length.toString(),
+            )}
           </>
         )}
       </Button>

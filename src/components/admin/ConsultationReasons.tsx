@@ -18,6 +18,7 @@ import {
   useFieldArray,
   useFormContext,
 } from 'react-hook-form';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface ConsultationReasonsProps {
   name?: string;
@@ -27,6 +28,7 @@ interface ConsultationReasonsProps {
 export default function ConsultationReasons({
   name = 'consultationReasons',
 }: ConsultationReasonsProps) {
+  const { t } = useLanguage();
   const {
     control,
     watch: consultationReasonsWatch,
@@ -62,16 +64,19 @@ export default function ConsultationReasons({
     });
   };
 
-  const toggleActive = (id?: number | string, tempId?: string) => {
+  const toggleActive = (
+    active: boolean,
+    id?: number | string,
+    tempId?: string,
+  ) => {
     const index = fields.findIndex(
       (field) =>
         (id && field.id === id) || (tempId && (field as any).tempId === tempId),
     );
 
     if (index !== -1) {
-      const currentValue = fields[index] as unknown as ConsultationReason;
       // Utilisez setValue au lieu de update
-      setValue(`${name}.${index}.active` as any, !currentValue.active);
+      setValue(`${name}.${index}.active` as any, !active);
     }
   };
 
@@ -130,7 +135,7 @@ export default function ConsultationReasons({
               htmlFor="reason-name"
               className="text-sm font-medium mb-1 block"
             >
-              Nom du motif
+              {t.doctorParams.reasonForm.name}
             </Label>
             <Input
               value={newReason.name}
@@ -146,7 +151,7 @@ export default function ConsultationReasons({
               htmlFor="reason-duration"
               className="text-sm font-medium mb-1 block"
             >
-              Durée (min)
+              {t.doctorParams.reasonForm.duration}
             </Label>
             <Input
               type="number"
@@ -169,7 +174,7 @@ export default function ConsultationReasons({
               htmlFor="reason-color"
               className="text-sm font-medium mb-1 block"
             >
-              Couleur
+              {t.doctorParams.reasonForm.color}
             </Label>
             <Input
               type="color"
@@ -185,7 +190,7 @@ export default function ConsultationReasons({
               htmlFor="reason-type"
               className="text-sm font-medium mb-1 block"
             >
-              Type
+              {t.doctorParams.reasonForm.type}
             </Label>
             <Select
               value={newReason.type}
@@ -200,8 +205,12 @@ export default function ConsultationReasons({
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="appointment">Consultation</SelectItem>
-                <SelectItem value="absence">Absence</SelectItem>
+                <SelectItem value="appointment">
+                  {t.doctorParams.reasonForm.consultation}
+                </SelectItem>
+                <SelectItem value="absence">
+                  {t.doctorParams.reasonForm.absence}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -212,17 +221,17 @@ export default function ConsultationReasons({
               disabled={!newReason.name.trim()}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Ajouter
+              {t.common.add}
             </Button>
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Mes motifs de consultation</h3>
+        <h3 className="text-lg font-medium">{t.doctorParams.reasonTitle}</h3>
         {reasons.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Aucun motif de consultation défini
+            {t.doctorParams.noReaasons}
           </p>
         ) : (
           <div className="space-y-2">
@@ -238,7 +247,7 @@ export default function ConsultationReasons({
                         htmlFor="reason-name"
                         className="text-sm font-medium mb-1 block"
                       >
-                        Nom
+                        {t.doctorParams.reasonForm.name}
                       </Label>
                       <Input
                         value={reason.name}
@@ -255,7 +264,7 @@ export default function ConsultationReasons({
                         htmlFor="reason-duration"
                         className="text-sm font-medium mb-1 block"
                       >
-                        Durée
+                        {t.doctorParams.reasonForm.duration}
                       </Label>
                       <Input
                         type="number"
@@ -275,7 +284,7 @@ export default function ConsultationReasons({
                         htmlFor="reason-color"
                         className="text-sm font-medium mb-1 block"
                       >
-                        Couleur
+                        {t.doctorParams.reasonForm.color}
                       </Label>
                       <Input
                         type="color"
@@ -293,7 +302,7 @@ export default function ConsultationReasons({
                         htmlFor="reason-type"
                         className="text-sm font-medium mb-1 block"
                       >
-                        Type
+                        {t.doctorParams.reasonForm.type}
                       </Label>
                       <Select
                         value={reason.type}
@@ -304,13 +313,17 @@ export default function ConsultationReasons({
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Type" />
+                          <SelectValue
+                            placeholder={t.doctorParams.reasonForm.type}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="appointment">
-                            Consultation
+                            {t.doctorParams.reasonForm.consultation}
                           </SelectItem>
-                          <SelectItem value="absence">Absence</SelectItem>
+                          <SelectItem value="absence">
+                            {t.doctorParams.reasonForm.absence}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -329,7 +342,7 @@ export default function ConsultationReasons({
                   <>
                     <div className="flex-1">{reason.name}</div>
                     <div className="w-24 text-sm text-muted-foreground">
-                      {reason.duration} minutes
+                      {reason.duration} {t.doctorParams.minutes}
                     </div>
                     <div className="w-32 text-sm">
                       <div
@@ -338,7 +351,9 @@ export default function ConsultationReasons({
                       />
                     </div>
                     <div className="w-24 text-sm text-muted-foreground mx-auto">
-                      {reason.type}
+                      {reason.type === 'appointment'
+                        ? t.doctorParams.reasonForm.consultation
+                        : t.doctorParams.reasonForm.absence}
                     </div>
                     <Button
                       type="button"
@@ -354,8 +369,14 @@ export default function ConsultationReasons({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleActive(reason.id, reason.tempId)}
-                      title={reason.active === false ? 'Activer' : 'Désactiver'}
+                      onClick={() =>
+                        toggleActive(reason.active, reason.id, reason.tempId)
+                      }
+                      title={
+                        reason.active === false
+                          ? t.common.activate
+                          : t.common.deactivate
+                      }
                     >
                       {reason.active === false ? (
                         <EyeOff className="h-4 w-4 text-muted-foreground" />
