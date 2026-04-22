@@ -61,6 +61,7 @@ const CalendarPage = () => {
   const [slotMinTime, setSlotMinTime] = useState('08:00:00');
   const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
   const calendarRef = useRef<FullCalendar>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   // États pour la popup de confirmation
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -120,6 +121,27 @@ const CalendarPage = () => {
     // Nettoyer l'intervalle lors du démontage du composant
     return () => clearInterval(intervalId);
   }, [selectedDoctor]); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
+
+  useEffect(() => {
+    const btn = document.querySelector('.fc-toggleVisibility-button');
+
+    if (!btn) return;
+
+    btn.innerHTML = isVisible
+      ? `
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      `
+      : `
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M1 1l22 22"/>
+        </svg>
+      `;
+  }, [isVisible]);
 
   const getOpeningHour = async (doctorId?: string) => {
     console.log(selectedDoctor);
@@ -354,8 +376,12 @@ const CalendarPage = () => {
               >
                 {Icon && <Icon className="h-4 w-4 shrink-0" />}
                 {formatTime(event.start)} -{' '}
-                {event.extendedProps?.patient?.firstname}{' '}
-                {event.extendedProps?.patient?.lastname}
+                {isVisible
+                  ? event.extendedProps?.patient?.firstname
+                  : '******'}{' '}
+                {isVisible
+                  ? event.extendedProps?.patient?.lastname
+                  : '******'}
               </span>
             </>
           )}
@@ -433,8 +459,16 @@ const CalendarPage = () => {
                 center: 'title',
                 right:
                   window.innerWidth < 768
-                    ? 'timeGridDay,listWeek'
-                    : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                    ? 'toggleVisibility timeGridDay,listWeek'
+                    : 'toggleVisibility dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+              }}
+              customButtons={{
+                toggleVisibility: {
+                  text: '',
+                  click: () => {
+                    setIsVisible((prev) => !prev);
+                  },
+                },
               }}
               views={{
                 dayGridMonth: {
