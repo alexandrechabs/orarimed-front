@@ -63,6 +63,7 @@
 }
 .fc-v-event {
     background-color: hsl(var(--primary)/0.5);
+    overflow: hidden;
 }
 
 /* Réduire l'espacement global */
