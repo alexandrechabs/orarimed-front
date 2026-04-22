@@ -17,6 +17,7 @@ export type User = {
   active: boolean;
   visible: boolean;
   language: string;
+  emailVerified: boolean;
   subSpecialitiesUsers: [
     { id: number; userId: number; subSpecialityId: number },
   ];

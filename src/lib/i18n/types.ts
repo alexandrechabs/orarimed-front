@@ -197,6 +197,24 @@ export type TranslationKey = {
     registrationError: string;
     goBack: string;
   };
+  verifyEmail: {
+    title: string;
+    description: string;
+    leftTitle: string;
+    leftDescription: string;
+    verifiedTitle: string;
+    verifiedDescription: string;
+    codePlaceholder: string;
+    verifyButton: string;
+    verifyLoading: string;
+    notReceived: string;
+    resendButton: string;
+    resendLoading: string;
+    successVerify: string;
+    errorVerify: string;
+    successSend: string;
+    errorSend: string;
+  };
   onboarding: {
     step: string;
     of: string;
@@ -389,6 +407,9 @@ export type TranslationKey = {
     status: string;
     eventHistory: string;
     eventNotifications: string;
+    mooveTitle: string;
+    mooveDescription: string;
+    mooveSlot: string;
     form: {
       kind: string;
       consultation: string;

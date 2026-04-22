@@ -101,4 +101,41 @@ export const authService = {
 
     return response.json();
   },
+
+  async verifyEmail(code: string) {
+    const token = localStorage.getItem('auth_token');
+    const response = await fetch(`${API_URL}/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Code invalide ou expiré');
+    }
+
+    return response.json();
+  },
+
+  async resendVerificationEmail() {
+    const token = localStorage.getItem('auth_token');
+    const response = await fetch(`${API_URL}/resend-verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erreur lors de l\'envoi du code');
+    }
+
+    return response.json();
+  },
 };

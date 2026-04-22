@@ -291,7 +291,7 @@ export default function SettingsPage() {
                                     (id) => id !== sub.id,
                                   );
                             }}
-                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-gray-300 ring-blue-600 focus:ring-blue-500"
                           />
                           <label
                             htmlFor={`sub-${sub.id}`}

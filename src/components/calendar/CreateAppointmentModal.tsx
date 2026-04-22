@@ -44,7 +44,7 @@ import RdvParams from './RdvParams';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
 import { DoctorProfile } from '@/types/doctor';
 import { User } from '@/types/user';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function usePatientSearch() {
   const { searchClient } = useUser();
@@ -148,6 +148,7 @@ export default function CreateAppointmentModal({
   onEventUpdated,
 }: Props) {
   const navigate = useNavigate();
+  const dateLocale = useDateLocale();
   const { user } = useAuth();
   const { getReasons, getReasonsClient } = useUser();
   const { t } = useLanguage();
@@ -667,7 +668,7 @@ export default function CreateAppointmentModal({
                                   className="w-full justify-start"
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {format(field.value, 'PPP', { locale: fr })}
+                                  {format(field.value, 'PPP', { locale: dateLocale })}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="p-0">
@@ -684,7 +685,7 @@ export default function CreateAppointmentModal({
                                     );
                                     field.onChange(newDate);
                                   }}
-                                  locale={fr}
+                                  locale={dateLocale}
                                   initialFocus
                                 />
                               </PopoverContent>
@@ -733,7 +734,7 @@ export default function CreateAppointmentModal({
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
                                   {field.value
-                                    ? format(field.value, 'PPP', { locale: fr })
+                                    ? format(field.value, 'PPP', { locale: dateLocale })
                                     : 'Choisir une date'}
                                 </Button>
                               </PopoverTrigger>
@@ -751,7 +752,7 @@ export default function CreateAppointmentModal({
                                     );
                                     field.onChange(newDate);
                                   }}
-                                  locale={fr}
+                                  locale={dateLocale}
                                   initialFocus
                                 />
                               </PopoverContent>

@@ -242,13 +242,14 @@ const CalendarPage = () => {
     // Formater les nouvelles dates pour l'affichage
     const newStart = new Date(event.start);
     const newEnd = new Date(event.end);
-    const formattedDate = newStart.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
+    const formattedDate = format(newStart, 'eeee dd MMMM yyyy', {
+      locale: dateLocale,
     });
-    const formattedTime = `${newStart.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - ${newEnd.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    const formattedTime = `${format(newStart, 'HH:mm', {
+      locale: dateLocale,
+    })} - ${format(newEnd, 'HH:mm', {
+      locale: dateLocale,
+    })}`;
 
     // Stocker les informations du déplacement en attente et afficher la popup
     setPendingEventMove({
@@ -596,14 +597,14 @@ const CalendarPage = () => {
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirmer le déplacement</DialogTitle>
+            <DialogTitle>{t.agenda.mooveTitle}</DialogTitle>
             <DialogDescription>
-              Voulez-vous vraiment déplacer ce rendez-vous ?
+              {t.agenda.mooveDescription}
             </DialogDescription>
           </DialogHeader>
           {pendingEventMove && (
             <div className="py-4">
-              <p className="text-sm font-medium">Nouveau créneau :</p>
+              <p className="text-sm font-medium">{t.agenda.mooveSlot} :</p>
               <p className="text-sm text-gray-600 mt-1">
                 {pendingEventMove.formattedDate}
               </p>
@@ -614,9 +615,9 @@ const CalendarPage = () => {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={handleCancelMove}>
-              Annuler
+              {t.common.cancel}
             </Button>
-            <Button onClick={handleConfirmMove}>Confirmer</Button>
+            <Button onClick={handleConfirmMove}>{t.common.confirm}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

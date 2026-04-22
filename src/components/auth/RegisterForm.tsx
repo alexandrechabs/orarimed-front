@@ -61,8 +61,8 @@ export function RegisterForm() {
         description: t.auth.registrationSuccessMessage,
       });
 
-      // Rediriger vers la page de connexion ou le tableau de bord
-      navigate('/dashboard');
+      // Rediriger vers la page de vérification email
+      navigate(`/verify-email`);
     } catch (error) {
       toast({
         title: t.auth.registrationError,

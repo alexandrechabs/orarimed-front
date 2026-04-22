@@ -21,6 +21,8 @@ type AuthContextType = {
     language: string,
   ) => Promise<void>;
   getMyUser: () => void;
+  verifyEmail: (code: string) => Promise<void>;
+  resendVerificationEmail: () => Promise<void>;
   updateUser: (params: any) => void;
   getSpecialities: () => Promise<any>;
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
@@ -114,6 +116,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSpecialities(data);
     return data;
   }
+  
+  async function verifyEmail(code: string) {
+    await authService.verifyEmail(code);
+  }
+  
+  async function resendVerificationEmail() {
+    await authService.resendVerificationEmail();
+  }
 
   return (
     <AuthContext.Provider
@@ -123,6 +133,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         getMyUser,
+        verifyEmail,
+        resendVerificationEmail,
         logout,
         updateUser,
         getSpecialities,
