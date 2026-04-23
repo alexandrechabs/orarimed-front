@@ -200,7 +200,7 @@ const sq: TranslationKey = {
       title: 'Bashkohu me OrariMed si profesionist shëndetësor',
       subtitle:
         'Menaxho oraret, rrit dukshmërinë dhe prit më shumë pacientë. Platforma jonë është projektuar për të thjeshtësuar punën tënde të përditshme.',
-      cta: 'Krijo llogarinë tënde',
+      cta: 'Bisedo me një Konsulent',
     },
     benefits: {
       title: 'Përfitimet për profesionistët',
@@ -300,7 +300,7 @@ const sq: TranslationKey = {
       title: 'Gati për të filluar?',
       subtitle:
         'Bashkohu me profesionistët që po transformojnë mënyrën e menaxhimit të takimeve mjekësore.',
-      cta: 'Krijo llogarinë',
+      cta: 'Bisedo me një Konsulent',
     },
   },
   other: 'Tjetër',

@@ -92,7 +92,7 @@ const HeroSection = () => {
             <Button
               size="xl"
               variant="heroOutline"
-              className="z-[-1] bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              className="z-[1] bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary"
               asChild
             >
               <Link to="/professionals">

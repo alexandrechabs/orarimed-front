@@ -198,7 +198,7 @@ const en: TranslationKey = {
       title: 'Join OrariMed as a healthcare professional',
       subtitle:
         'Manage your schedules, increase visibility and welcome more patients. Our platform is designed to simplify your daily work.',
-      cta: 'Create your account',
+      cta: 'Chat with a Consultant',
     },
     benefits: {
       title: 'Benefits for professionals',
@@ -299,7 +299,7 @@ const en: TranslationKey = {
       title: 'Ready to get started?',
       subtitle:
         'Join the professionals who are transforming the way they manage medical appointments.',
-      cta: 'Create your account',
+      cta: 'Chat with a Consultant',
     },
   },
   other: 'Other',

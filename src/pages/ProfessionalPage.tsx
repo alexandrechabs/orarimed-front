@@ -129,7 +129,7 @@ const ProfessionalPage = () => {
                   className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-xl"
                   asChild
                 >
-                  <Link to="/register-professional">
+                  <Link to="/contact">
                     <UserPlus className="w-5 h-5" />
                     {t.professionalsPage.hero.cta}
                   </Link>
@@ -275,7 +275,7 @@ const ProfessionalPage = () => {
                   </ul>
 
                   <Button size="xl" className="w-full" asChild>
-                    <Link to="/register-professional">
+                    <Link to="/contact">
                       <UserPlus className="w-5 h-5" />
                       {t.professionalsPage.pricing.cta}
                     </Link>
@@ -345,7 +345,7 @@ const ProfessionalPage = () => {
               className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-xl"
               asChild
             >
-              <Link to="/register-professional">
+              <Link to="/contact">
                 <UserPlus className="w-5 h-5" />
                 {t.professionalsPage.finalCta.cta}
               </Link>

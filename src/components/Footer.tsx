@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import logoIcon from '@/assets/logo-icon.png';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -13,14 +14,14 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-xl">
-                  O
-                </span>
-              </div>
-              <span className="font-display font-bold text-xl">
-                Orari<span className="text-accent">Med</span>
-              </span>
+              <img
+              src={logoIcon}
+              alt="OrariMed"
+              className="w-10 h-10 rounded-xl"
+            />
+            <span className="font-display font-bold text-xl">
+              Orari<span>Med</span>
+            </span>
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
               {t.footer.description}

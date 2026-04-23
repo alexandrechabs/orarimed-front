@@ -199,7 +199,7 @@ const fr: TranslationKey = {
       title: 'Rejoignez OrariMed en tant que professionnel de santé',
       subtitle:
         'Gérez vos horaires, augmentez votre visibilité et accueillez plus de patients. Notre plateforme est conçue pour simplifier votre travail quotidien.',
-      cta: 'Créez votre compte',
+      cta: 'Échanger avec un Conseiller',
     },
     benefits: {
       title: 'Avantages pour les professionnels',
@@ -303,7 +303,7 @@ const fr: TranslationKey = {
       title: 'Prêt à commencer ?',
       subtitle:
         'Rejoignez les professionnels qui transforment la gestion des rendez-vous médicaux.',
-      cta: 'Créer un compte',
+      cta: 'Échanger avec un Conseiller',
     },
   },
   other: 'Autre',
