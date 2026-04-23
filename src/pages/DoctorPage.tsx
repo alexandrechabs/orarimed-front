@@ -146,7 +146,7 @@ export function DoctorPage() {
                     });
                   }}
                 >
-                  Prendre rendez-vous
+                  {t.doctor.takeAppointment}
                 </Button>
               </CardContent>
             </Card>
@@ -155,7 +155,7 @@ export function DoctorPage() {
             {doctor.openingHours && doctor.openingHours.length > 0 && (
               <Card className="mt-4">
                 <CardHeader>
-                  <CardTitle>Horaires d'ouverture</CardTitle>
+                  <CardTitle>{t.doctor.openingHours}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -197,18 +197,18 @@ export function DoctorPage() {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Informations pratiques</CardTitle>
+                <CardTitle>{t.doctor.practicalInfo}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div>
-                      <p className="font-medium">Adresse :</p>
+                      <p className="font-medium">{t.doctor.address} :</p>
                       <p className="text-accent">{doctor.address}</p>
                     </div>
 
                     <div>
-                      <p className="font-medium">Téléphone :</p>
+                      <p className="font-medium">{t.doctor.phone} :</p>
                       <a
                         href={`tel:${doctor.phoneNumber.replace(/\s/g, '')}`}
                         className="text-accent"
@@ -233,7 +233,7 @@ export function DoctorPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Spécialités</CardTitle>
+                <CardTitle>{t.doctor.specialties}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -254,19 +254,18 @@ export function DoctorPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>À propos</CardTitle>
+                <CardTitle>{t.doctor.about}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  {doctor.bio ||
-                    `${fullName} n'a pas encore rédigé sa biographie.`}
+                  {doctor.bio || `${fullName} ${t.doctor.noBiography}`}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Formation et expérience</CardTitle>
+                <CardTitle>{t.doctor.education}</CardTitle>
               </CardHeader>
               <CardContent>
                 {doctor.education ? (
@@ -276,7 +275,7 @@ export function DoctorPage() {
                   />
                 ) : (
                   <p className="text-muted-foreground">
-                    Les informations de formation ne sont pas disponibles.
+                    {t.doctor.noEducation}
                   </p>
                 )}
               </CardContent>

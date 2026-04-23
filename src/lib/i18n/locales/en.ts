@@ -169,6 +169,18 @@ const en: TranslationKey = {
       },
     },
   },
+  doctor: {
+    takeAppointment: 'Take appointment',
+    openingHours: 'Opening hours',
+    practicalInfo: 'Practical information',
+    address: 'Address',
+    phone: 'Phone',
+    specialties: 'Specialties',
+    about: 'About',
+    noBiography: " hasn't written a biography yet.",
+    education: 'Education and experience',
+    noEducation: 'Education information is not available.',
+  },
   professionalsPage: {
     badge: 'For healthcare professionals',
     hero: {

@@ -166,6 +166,18 @@ export type TranslationKey = {
       };
     };
   };
+  doctor: {
+    takeAppointment: string;
+    openingHours: string;
+    practicalInfo: string;
+    address: string;
+    phone: string;
+    specialties: string;
+    about: string;
+    noBiography: string;
+    education: string;
+    noEducation: string;
+  };
   auth: {
     login: string;
     loginDescription: string;

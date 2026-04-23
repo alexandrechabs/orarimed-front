@@ -170,6 +170,18 @@ const fr: TranslationKey = {
       },
     },
   },
+  doctor: {
+    takeAppointment: 'Prendre rendez-vous',
+    openingHours: "Horaires d'ouverture",
+    practicalInfo: 'Informations pratiques',
+    address: 'Adresse',
+    phone: 'Téléphone',
+    specialties: 'Spécialités',
+    about: 'À propos',
+    noBiography: " n'a pas encore rédigé sa biographie.",
+    education: 'Formation et expérience',
+    noEducation: 'Les informations de formation ne sont pas disponibles.',
+  },
   professionalsPage: {
     badge: 'Pour les professionnels de santé',
     hero: {

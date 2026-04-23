@@ -171,6 +171,18 @@ const sq: TranslationKey = {
       },
     },
   },
+  doctor: {
+    takeAppointment: 'Rezervo takim',
+    openingHours: 'Orari i hapjes',
+    practicalInfo: 'Informacionet praktike',
+    address: 'Adresa',
+    phone: 'Telefoni',
+    specialties: 'Specializimet',
+    about: 'Rreth më',
+    noBiography: " nuk ka shkruar ende një biografi.",
+    education: 'Edukimi dhe përvoja',
+    noEducation: 'Informacioni i edukimit nuk është i disponueshëm.',
+  },
   professionalsPage: {
     badge: 'Për profesionistët shëndetësorë',
     hero: {
