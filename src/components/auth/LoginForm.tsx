@@ -5,7 +5,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/services/auth/useAuth';
 
@@ -19,6 +19,7 @@ export function LoginForm() {
   const { login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -31,7 +32,14 @@ export function LoginForm() {
   async function onSubmit(values) {
     try {
       await login(values.email, values.password);
-      navigate('/dashboard');
+
+      // Récupérer la page de redirection et l'état supplémentaire
+      const from = location.state?.from || '/dashboard';
+      const additionalState = { ...location.state };
+      delete additionalState.from; // Supprimer 'from' pour éviter les conflits
+      
+      // Rediriger vers la page d'origine avec l'état préservé
+      navigate(from, { state: additionalState, replace: true });
     } catch (error) {
       toast({
         title: 'Erreur de connexion',

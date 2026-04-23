@@ -132,7 +132,18 @@ export function DoctorPage() {
                 <Button
                   className="w-full"
                   onClick={() => {
-                    /* Logique de prise de rendez-vous */
+                    navigate('/appointment', {
+                      state: {
+                        doctor: {
+                          id: doctor.id,
+                          fullName: `${doctor.firstname} ${doctor.lastname}`,
+                          speciality: doctor.speciality.translations.find(
+                            (translation) => translation.locale === language,
+                          )?.name,
+                        },
+                        slot: null,
+                      },
+                    });
                   }}
                 >
                   Prendre rendez-vous

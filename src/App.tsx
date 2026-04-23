@@ -150,7 +150,13 @@ const ProtectedRouteByRole = ({
 
   if (!user) {
     // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Préserver l'état existant s'il y en a un, sinon ajouter la page d'origine
+    const existingState = location.state || {};
+    const navigationState = {
+      ...existingState,
+      from: location.pathname,
+    };
+    return <Navigate to="/login" state={navigationState} replace />;
   }
 
   // Vérifier si l'utilisateur a l'ID autorisé
@@ -204,8 +210,10 @@ const App = () => (
               </ProtectedAuthRoute>
             }
           />
-          <Route path="/appointment" element={<AppointmentPage />} />
-          <Route path="/confirmation" element={<ConfirmationPage />} />
+          <Route path="/appointment" element={
+            <ProtectedRouteByRole allowedRoles={[1]}><AppointmentPage /></ProtectedRouteByRole>} />
+          <Route path="/confirmation" element={
+            <ProtectedRouteByRole allowedRoles={[1]}><ConfirmationPage /></ProtectedRouteByRole>} />
 
           <Route
             path="/verify-email"

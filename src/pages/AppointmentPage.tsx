@@ -53,7 +53,6 @@ export default function AppointmentPage() {
   // Quand le ref est prêt et qu'il y a une durée en attente, charger les créneaux
   useEffect(() => {
     if (slotsRef.current && pendingDuration !== null && currentStep === 2) {
-      console.log('ploppppp');
       slotsRef.current.load(pendingDuration);
       setPendingDuration(null);
     }
@@ -67,20 +66,27 @@ export default function AppointmentPage() {
         15;
       setPendingDuration(duration);
 
-      const checkResult: { valid: boolean } = await checkValidSelection(
-        doctor.id,
-        selectedType,
-        slot,
-      );
-
-      if (checkResult.valid) {
-        setCurrentStep(3); // Aller directement à la confirmation si valide
-      } else {
-        // Si la sélection n'est pas valide, passer à l'étape de sélection de créneau (étape 2)
+      if (!slot) {
         setSelectedSlot(null);
         setCurrentStep(2);
         setIsLoadingSlots(true);
         setIsLoadingSlots(false);
+      } else {
+        const checkResult: { valid: boolean } = await checkValidSelection(
+          doctor.id,
+          selectedType,
+          slot,
+        );
+
+        if (checkResult.valid) {
+          setCurrentStep(3); // Aller directement à la confirmation si valide
+        } else {
+          // Si la sélection n'est pas valide, passer à l'étape de sélection de créneau (étape 2)
+          setSelectedSlot(null);
+          setCurrentStep(2);
+          setIsLoadingSlots(true);
+          setIsLoadingSlots(false);
+        }
       }
     } else if (currentStep === 2) {
       // Après avoir sélectionné un créneau, passer à la confirmation (étape 3)

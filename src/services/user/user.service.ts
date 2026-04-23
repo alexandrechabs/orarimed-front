@@ -122,17 +122,10 @@ export const userService = {
   },
 
   async getDoctor(doctorIdentifier: string) {
-    const token = localStorage.getItem('auth_token');
-
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
     const res = await fetch(`${API_URL}/doctor/${doctorIdentifier}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -415,17 +408,10 @@ export const userService = {
   },
 
   async getReasonsClient(userId: string): Promise<ConsultationReason[]> {
-    const token = localStorage.getItem('auth_token');
-
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
     const response = await fetch(`${API_URL}/doctor/${userId}/reasons`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     });
 
