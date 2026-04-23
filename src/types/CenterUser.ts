@@ -1,3 +1,4 @@
+import { Center } from './center';
 import { DoctorProfile } from './doctor';
 
 export type CenterUser = {
@@ -6,4 +7,5 @@ export type CenterUser = {
   userId: string;
   isAdmin: boolean;
   user?: DoctorProfile;
+  center?: Center;
 };

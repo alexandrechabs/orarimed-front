@@ -173,6 +173,7 @@ export type TranslationKey = {
     address: string;
     phone: string;
     specialties: string;
+    centers: string;
     about: string;
     noBiography: string;
     education: string;

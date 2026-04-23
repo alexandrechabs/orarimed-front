@@ -219,13 +219,11 @@ export function DoctorPage() {
                   </div>
                   <div className="space-y-2">
                     {/* Carte OpenStreetMap */}
-                    <div className="mt-4">
                       <Map
                         address={doctor.address || ''}
                         city={doctor.city || ''}
                         className="rounded-lg border"
                       />
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -247,6 +245,55 @@ export function DoctorPage() {
                         (t) => t.locale === language,
                       )?.name || speciality.subSpeciality?.slug}
                     </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>{t.doctor.centers}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {doctor.centerUsers?.map((centerUser) => (
+                    <Card
+                      key={centerUser.id}
+                      className="flex items-center hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        navigate(
+                          `/center/${centerUser.center.speciality.slug}/${centerUser.center.centerIdentifier}`,
+                        );
+                      }}
+                    >
+                      <div className="flex h-10 w-10 m-4 rounded-full bg-gray-200 overflow-hidden">
+                        <img
+                          src={
+                            centerUser.center.avatar
+                              ? `${API_URL}/center/${centerUser.center.id}/avatar/${centerUser.center.avatar}`
+                              : '/hopital.png'
+                          }
+                          alt={centerUser.center.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/hopital.png';
+                          }}
+                        />
+                      </div>
+                      <div className="grid mr-4">
+                        <span className="truncate text-sm">
+                          {centerUser.center.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {
+                            centerUser.center.speciality!.translations?.find(
+                              (t) => t.locale === language,
+                            )?.name
+                          }
+                        </span>
+                      </div>
+                    </Card>
                   ))}
                 </div>
               </CardContent>

@@ -178,6 +178,7 @@ const sq: TranslationKey = {
     address: 'Adresa',
     phone: 'Telefoni',
     specialties: 'Specializimet',
+    centers: 'Klinikat',
     about: 'Rreth më',
     noBiography: " nuk ka shkruar ende një biografi.",
     education: 'Edukimi dhe përvoja',

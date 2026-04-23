@@ -176,6 +176,7 @@ const en: TranslationKey = {
     address: 'Address',
     phone: 'Phone',
     specialties: 'Specialties',
+    centers: 'Clinics',
     about: 'About',
     noBiography: " hasn't written a biography yet.",
     education: 'Education and experience',

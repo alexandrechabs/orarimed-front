@@ -1,3 +1,4 @@
+import { CenterUser } from './CenterUser';
 import { OpeningHour } from './openingHour';
 
 export type DoctorProfile = {
@@ -77,4 +78,5 @@ export type DoctorProfile = {
     createdAt: string;
   }>;
   openingHours?: OpeningHour[];
+  centerUsers?: CenterUser[];
 };
