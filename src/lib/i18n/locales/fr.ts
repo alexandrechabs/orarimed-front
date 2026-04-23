@@ -182,6 +182,16 @@ const fr: TranslationKey = {
     education: 'Formation et expérience',
     noEducation: 'Les informations de formation ne sont pas disponibles.',
   },
+  center: {
+    takeAppointment: 'Prendre rendez-vous',
+    openingHours: "Horaires d'ouverture",
+    practicalInfo: 'Informations pratiques',
+    address: 'Adresse',
+    phone: 'Téléphone',
+    doctor: 'Docteurs',
+    about: 'À propos',
+    noBiography: " n'a pas encore de description.",
+  },
   professionalsPage: {
     badge: 'Pour les professionnels de santé',
     hero: {

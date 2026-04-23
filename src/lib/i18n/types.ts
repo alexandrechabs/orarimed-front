@@ -178,6 +178,16 @@ export type TranslationKey = {
     education: string;
     noEducation: string;
   };
+  center:{
+    takeAppointment: string;
+    openingHours: string;
+    practicalInfo: string;
+    address: string;
+    phone: string;
+    doctor: string;
+    about: string;
+    noBiography: string
+  }
   auth: {
     login: string;
     loginDescription: string;

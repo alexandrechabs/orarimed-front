@@ -134,7 +134,7 @@ export function CenterPage() {
                     /* Logique de prise de rendez-vous */
                   }}
                 >
-                  Prendre rendez-vous
+                  {t.center.takeAppointment}
                 </Button>
               </CardContent>
             </Card>
@@ -143,7 +143,7 @@ export function CenterPage() {
             {center.openingHours && center.openingHours.length > 0 && (
               <Card className="mt-4">
                 <CardHeader>
-                  <CardTitle>Horaires d'ouverture</CardTitle>
+                  <CardTitle>{t.center.openingHours}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -185,18 +185,18 @@ export function CenterPage() {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Informations pratiques</CardTitle>
+                <CardTitle>{t.center.practicalInfo}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div>
-                      <p className="font-medium">Adresse :</p>
+                      <p className="font-medium">{t.center.address} :</p>
                       <p className="text-accent">{center.address}</p>
                     </div>
 
                     <div>
-                      <p className="font-medium">Téléphone :</p>
+                      <p className="font-medium">{t.center.phone} :</p>
                       <a
                         href={`tel:${center.phoneNumber.replace(/\s/g, '')}`}
                         className="text-accent"
@@ -220,7 +220,7 @@ export function CenterPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Docteurs</CardTitle>
+                <CardTitle>{t.center.doctor}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
@@ -274,12 +274,12 @@ export function CenterPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>À propos</CardTitle>
+                <CardTitle>{t.center.about}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
                   {center.description ||
-                    `${center.name} n'a pas encore de description.`}
+                    `${center.name} ${t.center.noBiography}`}
                 </p>
               </CardContent>
             </Card>

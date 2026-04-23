@@ -181,6 +181,16 @@ const en: TranslationKey = {
     education: 'Education and experience',
     noEducation: 'Education information is not available.',
   },
+  center: {
+    takeAppointment: 'Take appointment',
+    openingHours: 'Opening hours',
+    practicalInfo: 'Practical information',
+    address: 'Address',
+    phone: 'Phone',
+    doctor: 'Doctors',
+    about: 'About',
+    noBiography: " hasn't written a description yet.",
+  },
   professionalsPage: {
     badge: 'For healthcare professionals',
     hero: {

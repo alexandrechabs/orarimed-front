@@ -183,6 +183,16 @@ const sq: TranslationKey = {
     education: 'Edukimi dhe përvoja',
     noEducation: 'Informacioni i edukimit nuk është i disponueshëm.',
   },
+  center: {
+    takeAppointment: 'Rezervo takim',
+    openingHours: 'Orari i hapjes',
+    practicalInfo: 'Informacionet praktike',
+    address: 'Adresa',
+    phone: 'Telefoni',
+    doctor: 'Doktorët',
+    about: 'Rreth më',
+    noBiography: " nuk ka shkruar ende një përshkrim.",
+  },
   professionalsPage: {
     badge: 'Për profesionistët shëndetësorë',
     hero: {
