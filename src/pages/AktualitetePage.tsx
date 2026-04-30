@@ -4,44 +4,7 @@ import Footer from '@/components/Footer';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const articles = [
-  {
-    id: 1,
-    category: 'Shëndeti në Shqipëri',
-    title: 'Kujdesi parandalues – pse është i rëndësishëm?',
-    excerpt:
-      'Kontrollet e rregullta mjekësore ndihmojnë në zbulimin e hershëm të sëmundjeve dhe përmirësojnë cilësinë e jetës.',
-    date: '15 Dhjetor 2024',
-    slug: 'kujdesi-parandalues',
-  },
-  {
-    id: 2,
-    category: 'Të rejat nga OrariMed',
-    title: 'OrariMed lançohet në Tiranë',
-    excerpt:
-      'OrariMed nis zyrtarisht shërbimin e tij në Tiranë, duke lidhur pacientët me profesionistë shëndetësorë në mënyrë digjitale.',
-    date: '10 Dhjetor 2024',
-    slug: 'orarimed-lancohet',
-  },
-  {
-    id: 3,
-    category: 'Shëndeti në Shqipëri',
-    title: 'Rëndësia e vaksinimit në moshë të re',
-    excerpt:
-      'Vaksinimi mbron fëmijët nga sëmundje të rrezikshme dhe ndihmon në krijimin e imunitetit kolektiv.',
-    date: '5 Dhjetor 2024',
-    slug: 'rendessia-vaksinimit',
-  },
-  {
-    id: 4,
-    category: 'Të rejat nga OrariMed',
-    title: 'Funksionalitete të reja në platformë',
-    excerpt:
-      'Zbuloni funksionalitetet e reja që do të lehtësojnë rezervimin e takimeve tuaja mjekësore.',
-    date: '1 Dhjetor 2024',
-    slug: 'funksionalitete-reja',
-  },
-];
+const articles = [];
 
 const AktualitetePage = () => {
   return (
