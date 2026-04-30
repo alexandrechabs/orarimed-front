@@ -61,21 +61,21 @@ const DashboardPage = () => {
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Bienvenue */}
-          <Card className="col-span-full">
+          <Card className="col-span-full bg-accent">
             <CardHeader>
-              <CardTitle>
-                {t.dashboard.welcome}, {user?.firstname} !
+              <CardTitle className='text-white'>
+                {t.dashboard.welcome}, <span className='text-gray-200'>{user?.firstname}</span> !
               </CardTitle>
             </CardHeader>
             <CardContent>
               {user.roleId === 1 && (
-                <p className="text-gray-600">{t.dashboard.welcomeClient}</p>
+                <p className="text-gray-100">{t.dashboard.welcomeClient}</p>
               )}
               {user.roleId === 2 && (
-                <p className="text-gray-600">{t.dashboard.welcomeDoctor}</p>
+                <p className="text-gray-100">{t.dashboard.welcomeDoctor}</p>
               )}
               {user.roleId === 3 && (
-                <p className="text-gray-600">{t.dashboard.welcomeSecretary}</p>
+                <p className="text-gray-100">{t.dashboard.welcomeSecretary}</p>
               )}
             </CardContent>
           </Card>

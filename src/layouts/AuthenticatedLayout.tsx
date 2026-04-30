@@ -245,6 +245,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-700">
+                        {user.roleId === 2 && 'Dr. '}
                         {user.firstname}
                       </p>
                       <p className="text-sm font-medium text-gray-700">
