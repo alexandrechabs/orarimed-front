@@ -1,10 +1,10 @@
 // src/components/AddressAutocomplete.tsx
 import {
   Autocomplete as GoogleAutocomplete,
-  useJsApiLoader,
 } from '@react-google-maps/api';
 import { useRef, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useGoogleMapsLoader } from '@/lib/GoogleMapsLoader';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface AddressAutocompleteProps {
@@ -27,7 +27,6 @@ export default function AddressAutocomplete({
   className = '',
 }: AddressAutocompleteProps) {
   const { language } = useLanguage();
-
   const autocompleteRef =
     useRef<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,8 +40,9 @@ export default function AddressAutocomplete({
     return langMap[lang] || 'en';
   };
 
-  // ✅ Chargement propre du script Google
-  const { isLoaded } = useJsApiLoader({
+  // ✅ Chargement singleton du script Google avec la langue actuelle
+  // Le singleton empêche les rechargements multiples quand la langue change
+  const { isLoaded } = useGoogleMapsLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: ['places'],
     language: getGoogleLanguageCode(language),
