@@ -27,6 +27,8 @@ type AuthContextType = {
   getSpecialities: () => Promise<any>;
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
   logout: () => void;
+  sendResetCode: (email: string) => Promise<void>;
+  resetPassword: (email: string, code: string, password: string) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -116,13 +118,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSpecialities(data);
     return data;
   }
-  
+
   async function verifyEmail(code: string) {
     await authService.verifyEmail(code);
   }
-  
+
   async function resendVerificationEmail() {
     await authService.resendVerificationEmail();
+  }
+
+  async function sendResetCode(email: string) {
+    await authService.sendResetCode(email);
+  }
+
+  async function resetPassword(email: string, code: string, password: string) {
+    await authService.resetPassword(email, code, password);
   }
 
   return (
@@ -139,6 +149,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateUser,
         getSpecialities,
         saveSpecialities,
+        sendResetCode,
+        resetPassword,
         isLoading,
         isAuthenticated: !!user,
       }}

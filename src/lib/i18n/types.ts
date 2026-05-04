@@ -179,7 +179,7 @@ export type TranslationKey = {
     education: string;
     noEducation: string;
   };
-  center:{
+  center: {
     takeAppointment: string;
     openingHours: string;
     practicalInfo: string;
@@ -219,7 +219,39 @@ export type TranslationKey = {
     registrationSuccessMessage: string;
     registrationError: string;
     goBack: string;
+    leftTitle: string;
+    leftDescription: string;
   };
+  forgotPassword: {
+    title: string;
+    description: string;
+    backToLogin: string;
+    sending: string;
+    valid: string;
+    error: string;
+    success: string;
+    successDescription: string;
+    errorDescription: string;
+  }
+  resetPassword: {
+    title: string;
+    description: string;
+    resend: string;
+    codePlaceholder: string;
+    emailMissing: string;
+    emailError: string;
+    codeError: string;
+    passwordMinLength: string;
+    confirmPasswordRequired: string;
+    passwordsNotMatch: string;
+    newPassword: string;
+    confirmPassword: string;
+    sendButton: string;
+    sending: string;
+    success: string;
+    successDescription: string;
+    errorDescription: string;
+  }
   verifyEmail: {
     title: string;
     description: string;

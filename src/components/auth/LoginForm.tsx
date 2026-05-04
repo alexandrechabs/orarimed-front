@@ -37,7 +37,7 @@ export function LoginForm() {
       const from = location.state?.from || '/dashboard';
       const additionalState = { ...location.state };
       delete additionalState.from; // Supprimer 'from' pour éviter les conflits
-      
+
       // Rediriger vers la page d'origine avec l'état préservé
       navigate(from, { state: additionalState, replace: true });
     } catch (error) {
@@ -80,24 +80,11 @@ export function LoginForm() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <label
-            htmlFor="rememberMe"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {/* {t.auth.rememberMe} */}
-          </label>
-        </div>
         <Link
           to="/forgot-password"
           className="text-sm text-primary hover:underline"
         >
-          {t.auth.forgotPassword}?
+          {t.auth.forgotPassword}
         </Link>
       </div>
 

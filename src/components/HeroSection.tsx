@@ -4,9 +4,6 @@ import { MapPin, Search, UserPlus } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import heroImage from '@/assets/hero-doctor.jpg';
-import { Input } from './ui/input';
-import AddressAutocomplete from './Autocomplete';
-import { DoctorAutocomplete } from './DoctorAutocomplete';
 import { useState } from 'react';
 import { SearchDoctor } from './search';
 

@@ -39,13 +39,8 @@ export function SearchDoctor({
           <AddressAutocomplete
             type="(regions)"
             value={selectedCity.address}
-            onChange={(value) =>
-              setSelectedCity({
-                address: value,
-                lat: selectedCity.lat,
-                lng: selectedCity.lng,
-              })
-            }
+            onChange={(value) => {
+            }}
             placeholder={t.hero.cityPlaceholder || 'Ville'}
             className="pl-10 h-12 text-base rounded-md md:rounded-none my-2 md:my-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onPlaceSelected={(place) => {

@@ -29,6 +29,8 @@ import { ProfessionalRegisterPage } from './pages/auth/ProfessionalRegisterPage'
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { EmailConfirmationPage } from './pages/auth/EmailConfirmationPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboardingPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import DoctorPage from './pages/DoctorPage';
@@ -84,7 +86,7 @@ const ProtectedRoute = () => {
   if (!user.emailVerified) {
     return <Navigate to="/verify-email" replace />;
   }
-  
+
   if (
     user &&
     !user.birthDate &&
@@ -186,21 +188,37 @@ const App = () => (
           <Route path="/contact" element={<KontaktPage />} />
           <Route path="/professionals" element={<ProfessionalPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route 
-            path="/login" 
+          <Route
+            path="/login"
             element={
               <ProtectedAuthRoute>
                 <LoginPage />
               </ProtectedAuthRoute>
-            } 
+            }
           />
-          <Route 
-            path="/register" 
+          <Route
+            path="/register"
             element={
               <ProtectedAuthRoute>
                 <RegisterPage />
               </ProtectedAuthRoute>
-            } 
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <ProtectedAuthRoute>
+                <ForgotPasswordPage />
+              </ProtectedAuthRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <ProtectedAuthRoute>
+                <ResetPasswordPage />
+              </ProtectedAuthRoute>
+            }
           />
           <Route
             path="/register-professional"

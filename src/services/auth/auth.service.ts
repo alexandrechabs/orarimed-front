@@ -138,4 +138,39 @@ export const authService = {
 
     return response.json();
   },
+
+  async sendResetCode(email: string) {
+    const response = await fetch(`${API_URL}/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erreur lors de l\'envoi du code');
+    }
+
+    return response.json();
+  },
+
+  async resetPassword(email: string, code: string, password: string) {
+    const response = await fetch(`${API_URL}/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, code, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erreur lors de la réinitialisation du mot de passe');
+    }
+
+    return response.json();
+  },
+
 };
