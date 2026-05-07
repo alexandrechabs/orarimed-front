@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { ContactForm } from '@/components/ContactForm';
 
 const KontaktPage = () => {
   const { t } = useLanguage();
@@ -38,57 +39,7 @@ const KontaktPage = () => {
                 <h2 className="font-display text-2xl font-bold text-foreground mb-6">
                   {t.contact.form.title}
                 </h2>
-                <form className="space-y-5">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-foreground mb-2"
-                    >
-                      {t.contact.form.name}
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      placeholder={t.contact.form.name}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-foreground mb-2"
-                    >
-                      {t.contact.form.email}
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      placeholder="email@gmail.com"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="message"
-                      className="block text-sm font-medium text-foreground mb-2"
-                    >
-                      {t.contact.form.message}
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={5}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-                      placeholder={t.contact.form.messagePlaceholder}
-                      required
-                    ></textarea>
-                  </div>
-                  <Button size="lg" variant="hero" className="w-full">
-                    <Send className="w-5 h-5" />
-                    {t.contact.form.submit}
-                  </Button>
-                </form>
+                <ContactForm />
               </motion.div>
 
               {/* Informations de contact */}
@@ -109,7 +60,7 @@ const KontaktPage = () => {
                       <MapPin className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-1">
+                      <h3 className="font-semibold mb-1 text-accent">
                         {t.contact.info.address_label}
                       </h3>
                       <p className="text-muted-foreground">
@@ -120,10 +71,10 @@ const KontaktPage = () => {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-6 h-6" />
+                      <Phone className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h3 className="font-medium">
+                      <h3 className="font-medium text-accent">
                         {t.contact.info.phone_label}
                       </h3>
                       <p className="text-muted-foreground text-sm">
@@ -134,10 +85,10 @@ const KontaktPage = () => {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6" />
+                      <Mail className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h3 className="font-medium">
+                      <h3 className="font-medium text-accent">
                         {t.contact.info.email_label}
                       </h3>
                       <p className="text-muted-foreground text-sm">
@@ -163,7 +114,7 @@ const KontaktPage = () => {
         </section>
       </main>
       <Footer />
-    </div>
+    </div >
   );
 };
 

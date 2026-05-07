@@ -141,14 +141,21 @@ export type TranslationKey = {
     form: {
       title: string;
       name: string;
+      nameRequired: string;
       email: string;
+      emailRequired: string;
+      phone: string;
+      phoneRequired: string;
       subject: string;
       message: string;
+      messageRequired: string;
       messagePlaceholder: string;
       submit: string;
       sending: string;
       success: string;
+      successDescription: string;
       error: string;
+      errorDescription: string;
     };
     info: {
       title: string;

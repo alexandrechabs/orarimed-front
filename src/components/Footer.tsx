@@ -15,13 +15,13 @@ const Footer = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
               <img
-              src={logoIcon}
-              alt="OrariMed"
-              className="w-10 h-10 rounded-xl"
-            />
-            <span className="font-display font-bold text-xl">
-              Orari<span>Med</span>
-            </span>
+                src={logoIcon}
+                alt="OrariMed"
+                className="w-10 h-10 rounded-xl"
+              />
+              <span className="font-display font-bold text-xl">
+                Orari<span>Med</span>
+              </span>
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
               {t.footer.description}
@@ -84,7 +84,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-sm text-primary-foreground/70">
                 <Mail className="w-4 h-4 text-accent" />
-                contact@orarimed.al
+                contact@orarimed.com
               </li>
               <li className="flex items-center gap-3 text-sm text-primary-foreground/70">
                 <Phone className="w-4 h-4 text-accent" />

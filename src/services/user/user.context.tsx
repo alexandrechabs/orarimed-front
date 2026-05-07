@@ -124,6 +124,12 @@ type UserContextType = {
     secretaryId: string,
     doctorId: Array<string>,
   ) => Promise<any>;
+  sendContactMessage: (values: {
+    name: string;
+    phone: string;
+    email: string;
+    message: string;
+  }) => Promise<any>;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -400,6 +406,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function sendContactMessage(values: {
+    name: string;
+    phone: string;
+    email: string;
+    message: string;
+  }) {
+    const data = await userService.sendContactMessage(values);
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -442,6 +458,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         savePhotoUser,
         getSecretaryDoctors,
         addDoctorsToSecretary,
+        sendContactMessage,
       }}
     >
       {children}

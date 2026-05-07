@@ -197,8 +197,7 @@ export const userService = {
     numberOfDays?: number,
   ) {
     const res = await fetch(
-      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}${
-        duration ? `&duration=${duration}` : ''
+      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}${duration ? `&duration=${duration}` : ''
       }${numberOfDays ? `&numberOfDays=${numberOfDays}` : ''}`,
       {
         method: 'GET',
@@ -775,6 +774,27 @@ export const userService = {
 
     if (!response.ok) {
       throw new Error('Failed to get secretary doctors');
+    }
+
+    return response.json();
+  },
+
+  async sendContactMessage(values: {
+    name: string;
+    phone: string;
+    email: string;
+    message: string;
+  }) {
+    const response = await fetch(`${API_URL}/form`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to send contact message');
     }
 
     return response.json();
