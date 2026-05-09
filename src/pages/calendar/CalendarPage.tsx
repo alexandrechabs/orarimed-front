@@ -9,6 +9,7 @@ import {
   createViewWeek,
 } from '@schedule-x/calendar'
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
+import { translations, mergeLocales } from '@schedule-x/translations'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
 import 'temporal-polyfill/global'
 import '@schedule-x/theme-default/dist/index.css'
@@ -85,6 +86,7 @@ const CalendarPage = () => {
     timezone: 'Europe/Paris',
     views: [createViewDay(), createViewWeekAgenda(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
     weekOptions: {
+      gridHeight: 1200,
       gridStep: 15,
       eventWidth: 90,
     },
@@ -108,6 +110,24 @@ const CalendarPage = () => {
         return []
       },
     },
+    translations: mergeLocales(translations, {
+      'sq-AL': {
+        Mon: 'Hën',
+        Tue: 'Mar',
+        Wed: 'Mër',
+        Thu: 'Enj',
+        Fri: 'Pre',
+        Sat: 'Sht',
+        Sun: 'Die',
+        Monday: 'E hënë',
+        Tuesday: 'E martë',
+        Wednesday: 'E mërkurë',
+        Thursday: 'E enjte',
+        Friday: 'E premte',
+        Saturday: 'E shtunë',
+        Sunday: 'E diel',
+      }
+    })
   })
   const [selectedDoctor, setSelectedDoctor] = useState<
     DoctorProfile | User | null
