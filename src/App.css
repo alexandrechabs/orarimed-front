@@ -4,9 +4,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -15,6 +17,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -55,19 +58,23 @@
   background-color: hsl(var(--accent)) !important;
   border-color: white !important;
 }
+
 .fc .fc-button-primary {
-    box-shadow: rgba(76, 91, 106, 0.5) 0px 0px 0px 0rem !important;
+  box-shadow: rgba(76, 91, 106, 0.5) 0px 0px 0px 0rem !important;
 }
-.fc .fc-daygrid-day.fc-day-today, .fc .fc-timegrid-col.fc-day-today {
-    background-color: hsl(var(--accent)/0.1) !important;
+
+.fc .fc-daygrid-day.fc-day-today,
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: hsl(var(--accent)/0.1) !important;
 }
+
 .fc-v-event {
-    background-color: hsl(var(--primary)/0.5);
-    overflow: hidden;
+  background-color: hsl(var(--primary)/0.5);
+  overflow: hidden;
 }
 
 /* Réduire l'espacement global */
-.fc-timegrid-slots > tbody > tr {
+.fc-timegrid-slots>tbody>tr {
   height: 18px !important;
 }
 
@@ -87,7 +94,8 @@
   padding: 0 2px !important;
   margin: 0 !important;
   margin-top: 3px !important;
-  transform: translateY(-4px); /* Ajustez cette valeur selon vos besoins */
+  transform: translateY(-4px);
+  /* Ajustez cette valeur selon vos besoins */
 }
 
 /* Réduire l'espacement entre les lignes */
@@ -104,10 +112,10 @@
 
 /* css pour mobile */
 @media (max-width: 768px) {
-    .fc-header-toolbar {
-        display: block !important;
-        text-align: center;
-    }
+  .fc-header-toolbar {
+    display: block !important;
+    text-align: center;
+  }
 }
 
 /* react-day-picker caption dropdown fix */
@@ -120,6 +128,7 @@
 .rdp-caption_label {
   display: none;
 }
+
 .rdp-caption_dropdowns div {
   border: none;
 }
@@ -148,7 +157,7 @@
   font-size: 0.875rem;
 }
 
-.PhoneInputInput{
+.PhoneInputInput {
   background-color: hsl(var(--background));
 }
 
@@ -166,4 +175,12 @@
 
 .fc .fc-event {
   margin-right: 10px !important;
+}
+
+.sx__calendar-header {
+  display: none !important;
+}
+
+.sx__week-header {
+  z-index: 10;
 }

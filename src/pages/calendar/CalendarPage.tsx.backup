@@ -1,0 +1,787 @@
+import { useState, useCallback, useEffect, useRef } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react'
+import {
+  createViewDay,
+  createViewWeekAgenda,
+  createViewMonthAgenda,
+  createViewMonthGrid,
+  createViewWeek,
+} from '@schedule-x/calendar'
+import { createEventsServicePlugin } from '@schedule-x/events-service'
+import 'temporal-polyfill/global'
+import '@schedule-x/theme-default/dist/index.css'
+import allLocales from '@fullcalendar/core/locales-all';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
+import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
+import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/services/auth/useAuth';
+import { EventChangeArg, EventInput } from '@fullcalendar/core/index.js';
+import CreateAppointmentModal from '@/components/calendar/CreateAppointmentModal';
+import { useUser } from '@/services/user/useUser';
+import { useToast } from '@/hooks/use-toast';
+import { CalendarEvent } from '@/types/CalendarEvent';
+import * as LucideIcons from 'lucide-react';
+import { DoctorProfile } from '@/types/doctor';
+import { User } from '@/types/user';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+
+const CalendarPage = () => {
+  const { user } = useAuth();
+  const {
+    events,
+    createEvent,
+    getEvents,
+    updateEvent,
+    openingHour,
+    getOpeningHours,
+    getSecretaryDoctors,
+  } = useUser();
+  const { t, language } = useLanguage();
+  const dateLocale = useDateLocale();
+  const { toast } = useToast();
+  const eventsService = useState(() => createEventsServicePlugin())[0]
+  const [selectedDoctor, setSelectedDoctor] = useState<
+    DoctorProfile | User | null
+  >(null);
+  const [accessDoctors, setAccessDoctors] = useState<DoctorProfile[] | null>(
+    null,
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  const [slotMinTime, setSlotMinTime] = useState('08:00:00');
+  const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
+  const calendarRef = useRef<FullCalendar>(null);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // États pour la popup de confirmation
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingEventMove, setPendingEventMove] = useState<{
+    event: any;
+    changeInfo: EventChangeArg;
+    formattedDate: string;
+    formattedTime: string;
+  } | null>(null);
+
+  useEffect(() => {
+    setSelectedDoctor(user);
+    if (user.roleId === 3) {
+      (async () => {
+        const doctors = await getSecretaryDoctors(user.id);
+        setAccessDoctors(doctors);
+        // get userId in url
+        let userId = new URLSearchParams(window.location.search).get('userId');
+        if (userId) {
+          const doctor = doctors.find((d) => d.id === userId);
+          if (doctor) {
+            setSelectedDoctor(doctor);
+            getOpeningHour(doctor.id);
+          } else {
+            if (doctors.length > 0) {
+              setSelectedDoctor(doctors[0]);
+              getOpeningHour(doctors[0].id);
+            }
+          }
+        } else {
+          if (doctors.length > 0) {
+            setSelectedDoctor(doctors[0]);
+            getOpeningHour(doctors[0].id);
+          }
+        }
+      })();
+    } else {
+      getOpeningHour();
+    }
+  }, []);
+
+  useEffect(() => {
+    // Créer un intervalle qui se répète toutes les 1 minutes
+    const intervalId = setInterval(() => {
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        const view = calendarApi.view;
+
+        const dateRange = {
+          start: view.currentStart.toISOString(),
+          end: view.currentEnd.toISOString(),
+        };
+        getEvents(dateRange, selectedDoctor?.id);
+      }
+    }, 60 * 1000); // 1 minute
+
+    // Nettoyer l'intervalle lors du démontage du composant
+    return () => clearInterval(intervalId);
+  }, [selectedDoctor]); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
+
+  useEffect(() => {
+    const btn = document.querySelector('.fc-toggleVisibility-button');
+
+    if (!btn) return;
+
+    btn.innerHTML = isVisible
+      ? `
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      `
+      : `
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M1 1l22 22"/>
+        </svg>
+      `;
+  }, [isVisible]);
+
+  const getOpeningHour = async (doctorId?: string) => {
+    getOpeningHours(doctorId || selectedDoctor?.id || user?.id).then(
+      (hours) => {
+        // récupère le min de hours.openTime et le max de hours.closeTime
+        const minTime = hours.reduce((min, hour) => {
+          return hour.openTime < min ? hour.openTime : min;
+        }, hours[0].openTime);
+        const maxTime = hours.reduce((max, hour) => {
+          return hour.closeTime > max ? hour.closeTime : max;
+        }, hours[0].closeTime);
+        // enlève 1 heure au min et ajouter 1 heure au max
+
+        const formatTimeForCalendar = (timeStr: string, diff: number) => {
+          let [hours, minutes] = timeStr.split(':').map(Number);
+          hours = hours + diff;
+
+          return `${hours.toString().padStart(2, '0')}:${minutes
+            .toString()
+            .padStart(2, '0')}:00`;
+        };
+
+        setSlotMinTime(formatTimeForCalendar(minTime, -1));
+        setSlotMaxTime(formatTimeForCalendar(maxTime, 1));
+      },
+    );
+  };
+  // const localeMap: Record<string, string> = {
+  //   sq: 'sq',
+  //   en: 'en',
+  //   fr: 'fr',
+  // };
+  const localeMap: Record<string, string> = {
+    sq: 'sq-AL',
+    en: 'en-US',
+    fr: 'fr-FR',
+  };
+
+  const handleDatesSet = useCallback(
+    (arg: { start: Date; end: Date }) => {
+      const dateRange = {
+        start: arg.start.toISOString(),
+        end: arg.end.toISOString(),
+      };
+      getEvents(dateRange, selectedDoctor?.id);
+    },
+    [getEvents, selectedDoctor],
+  );
+
+  const handleEventCreated = useCallback(async (newEvent: EventInput) => {
+    try {
+      await createEvent(newEvent);
+
+      // Rafraîchir les événements après création
+      const dateRange = {
+        start: new Date().toISOString(),
+        end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours
+      };
+      await getEvents(dateRange, selectedDoctor?.id);
+
+      toast({
+        title: 'Le rendez-vous a été créé avec succès',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création du rendez-vous:', error);
+      toast({
+        title: 'Erreur lors de la création du rendez-vous',
+        description: '',
+        variant: 'destructive',
+      });
+    }
+  }, [getEvents, selectedDoctor]);
+
+  const handleEventUpdated = useCallback(async (updatedEvent: EventInput) => {
+    try {
+      await updateEvent(updatedEvent);
+
+      // Rafraîchir les événements après modification
+      const dateRange = {
+        start: new Date().toISOString(),
+        end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours
+      };
+      await getEvents(dateRange, selectedDoctor?.id);
+
+      toast({
+        title: 'Le rendez-vous a été modifié avec succès',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Erreur lors du déplacement du rendez-vous:', error);
+      toast({
+        title: 'Erreur lors de la modification du rendez-vous',
+        description: '',
+        variant: 'destructive',
+      });
+    }
+  }, [getEvents, selectedDoctor]);
+
+  const handleEventClick = (info: any) => {
+    const event = info.event;
+
+    const eventData: CalendarEvent = {
+      id: event.id,
+      title: event.title,
+      description: event.extendedProps?.description || '',
+      allDay: event.allDay || false,
+      // Propriétés de base
+      start: event.start,
+      end: event.end,
+      color: event.backgroundColor,
+      // Propriétés de récurrence
+      daysOfWeek: event.extendedProps?.daysOfWeek || event.daysOfWeek,
+      startRecur: event.extendedProps?.startRecur || event.startRecur,
+      endRecur: event.extendedProps?.endRecur || event.endRecur,
+      startTime: event.extendedProps?.startTime || event.startTime,
+      endTime: event.extendedProps?.endTime || event.endTime,
+      // Propriétés personnalisées
+      patient: event.extendedProps?.patient,
+      practitionerId: event.extendedProps?.practitionerId || user?.id, // Utiliser l'ID de l'utilisateur connecté
+      // Propriétés étendues
+      type: event.extendedProps?.type || 'appointment',
+      status: event.extendedProps?.status,
+    };
+
+    setEditingEvent(eventData);
+    setIsModalOpen(true);
+  };
+
+  const handleDateClick = (arg: DateClickArg) => {
+    setSelectedDate(arg.date);
+    setEditingEvent(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEventDrop = async (changeInfo: EventChangeArg) => {
+    const { event } = changeInfo;
+
+    // Formater les nouvelles dates pour l'affichage
+    const newStart = new Date(event.start);
+    const newEnd = new Date(event.end);
+    const formattedDate = format(newStart, 'eeee dd MMMM yyyy', {
+      locale: dateLocale,
+    });
+    const formattedTime = `${format(newStart, 'HH:mm', {
+      locale: dateLocale,
+    })} - ${format(newEnd, 'HH:mm', {
+      locale: dateLocale,
+    })}`;
+
+    // Stocker les informations du déplacement en attente et afficher la popup
+    setPendingEventMove({
+      event,
+      changeInfo,
+      formattedDate,
+      formattedTime,
+    });
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmMove = async () => {
+    if (!pendingEventMove) return;
+
+    const { event, changeInfo } = pendingEventMove;
+    let newEvent = events.find((e) => e.id === event.id);
+
+    if (newEvent.endTime) {
+      // endTime = 'hh:mm'
+      newEvent.endTime = new Date(event.end).toTimeString().slice(0, 5);
+      newEvent.startTime = new Date(event.start).toTimeString().slice(0, 5);
+    } else {
+      newEvent.start = event.start;
+      newEvent.end = event.end;
+    }
+
+    try {
+      await updateEvent(newEvent);
+
+      // Rafraîchir les événements après déplacement
+      const dateRange = {
+        start: new Date().toISOString(),
+        end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours
+      };
+      await getEvents(dateRange, selectedDoctor?.id);
+
+      toast({
+        title: 'Le rendez-vous a été déplacé avec succès',
+        description: `Nouveau créneau : ${pendingEventMove.formattedDate} de ${pendingEventMove.formattedTime}`,
+      });
+    } catch (error) {
+      console.error('Erreur lors du déplacement du rendez-vous:', error);
+      toast({
+        title: 'Erreur lors du déplacement du rendez-vous',
+        description: '',
+        variant: 'destructive',
+      });
+    } finally {
+      setConfirmDialogOpen(false);
+      setPendingEventMove(null);
+    }
+  };
+
+  const handleCancelMove = () => {
+    setConfirmDialogOpen(false);
+    setPendingEventMove(null);
+  };
+
+  const formatTime = (date: Date) => {
+    return new Date(date).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const renderEventContent = (eventInfo: any) => {
+    const event = eventInfo.event;
+    let abort = false;
+    let Icon;
+    if (event.extendedProps.status === 'waiting') {
+      Icon = LucideIcons['Armchair'];
+    } else if (event.extendedProps.status === 'consultation') {
+      Icon = LucideIcons['Stethoscope'];
+    } else if (event.extendedProps.status === 'finished') {
+      Icon = LucideIcons['Check'];
+    } else if (event.extendedProps.status === 'abortExcused') {
+      Icon = LucideIcons['CalendarOff'];
+      abort = true;
+    } else if (event.extendedProps.status === 'abort') {
+      Icon = LucideIcons['Ban'];
+      abort = true;
+    }
+
+    return (
+      <div className="">
+        <div className="font-normal whitespace-normal break-words">
+          {event.extendedProps?.type === 'absence' ? (
+            formatTime(event.start) + ' - ' + event.title
+          ) : (
+            <>
+              <span
+                className={`flex items-center gap-2 ${abort ? 'line-through' : ''}`}
+              >
+                {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                {formatTime(event.start)} -{' '}
+                {isVisible
+                  ? event.extendedProps?.patient?.firstname
+                  : '******'}{' '}
+                {isVisible
+                  ? event.extendedProps?.patient?.lastname
+                  : '******'}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const getOpenHours = () => {
+    if (!openingHour) return [];
+
+    return openingHour.map((hour) => ({
+      daysOfWeek: [hour.dayOfWeek],
+      startTime: hour.openTime,
+      endTime: hour.closeTime,
+    }));
+  };
+
+  const calendar = useCalendarApp({
+    locale: localeMap[language] || 'en',
+    views: [createViewDay(), createViewWeekAgenda(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
+    dayBoundaries: {
+      start: '06:00',
+      end: '18:00',
+    },
+    weekOptions: {
+      gridStep: 15,
+      eventWidth: 90,
+    },
+    plugins: [eventsService],
+    callbacks: {
+      onEventClick(calendarEvent, e: UIEvent) {
+      },
+      async fetchEvents(range) {
+        console.log(range);
+
+        const dateRange = {
+          start: range.start.toString(),
+          end: range.end.toString(),
+        };
+        getEvents(dateRange, selectedDoctor?.id);
+        return [];
+      },
+    },
+  })
+  Icon = LucideIcons['Stethoscope'];
+} else if (event.extendedProps.status === 'finished') {
+  Icon = LucideIcons['Check'];
+} else if (event.extendedProps.status === 'abortExcused') {
+  Icon = LucideIcons['CalendarOff'];
+  abort = true;
+} else if (event.extendedProps.status === 'abort') {
+  Icon = LucideIcons['Ban'];
+  abort = true;
+}
+
+return (
+  <div className="">
+    <div className="font-normal whitespace-normal break-words">
+      {event.extendedProps?.type === 'absence' ? (
+        formatTime(event.start) + ' - ' + event.title
+      ) : (
+        <>
+          <span
+            className={`flex items-center gap-2 ${abort ? 'line-through' : ''}`}
+          >
+            {Icon && <Icon className="h-4 w-4 shrink-0" />}
+            {formatTime(event.start)} -{' '}
+            {isVisible
+              ? event.extendedProps?.patient?.firstname
+              : '******'}{' '}
+            {isVisible
+              ? event.extendedProps?.patient?.lastname
+              : '******'}
+          </span>
+        </>
+      )}
+    </div>
+  </div>
+);
+};
+
+const getOpenHours = () => {
+  if (!openingHour) return [];
+
+  return openingHour.map((hour) => ({
+    daysOfWeek: [hour.dayOfWeek],
+    startTime: hour.openTime,
+    endTime: hour.closeTime,
+  }));
+};
+
+const calendar = useCalendarApp({
+  locale: localeMap[language] || 'en',
+  views: [createViewDay(), createViewWeekAgenda(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
+  dayBoundaries: {
+    start: '06:00',
+    end: '18:00',
+  },
+  weekOptions: {
+    gridStep: 15,
+    eventWidth: 90,
+  },
+  plugins: [eventsService],
+  callbacks: {
+    onEventClick(calendarEvent, e: UIEvent) {
+    },
+    async fetchEvents(range) {
+      console.log(range);
+
+      const dateRange = {
+        start: range.start.toString(),
+        end: range.end.toString(),
+      };
+      getEvents(dateRange, selectedDoctor?.id);
+      return [];
+    },
+  },
+})
+
+return (
+  <div className="min-h-screen bg-background">
+    <main className="pb-16">
+      {accessDoctors && accessDoctors.length > 0 && (
+        <div className="mx-auto px-4 lg:px-8 mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="bg-card rounded-2xl border border-border p-4 shadow-sm"
+          >
+            <div className="flex items-center space-x-2">
+              <Label className="text-sm font-medium">Médecin:</Label>
+              <Select
+                value={selectedDoctor?.id || ''}
+                onValueChange={(value) => {
+                  const doctor = accessDoctors.find((d) => d.id === value);
+                  if (doctor) {
+                    setSelectedDoctor(doctor);
+                    getOpeningHour(doctor.id);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-[250px]">
+                  <SelectValue placeholder="Sélectionner un médecin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accessDoctors.map((doctor) => (
+                    <SelectItem key={doctor.id} value={doctor.id}>
+                      {doctor.firstname} {doctor.lastname}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      <div className="mx-auto px-4 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-card rounded-2xl border border-border p-4 md:p-6 shadow-sm"
+        >
+          <ScheduleXCalendar calendarApp={calendar} />
+          {/* <FullCalendar
+              ref={calendarRef}
+              plugins={[
+                dayGridPlugin,
+                timeGridPlugin,
+                listPlugin,
+                interactionPlugin,
+              ]}
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right:
+                  window.innerWidth < 768
+                    ? 'toggleVisibility timeGridDay,listWeek'
+                    : 'toggleVisibility dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+              }}
+              customButtons={{
+                toggleVisibility: {
+                  text: '',
+                  click: () => {
+                    setIsVisible((prev) => !prev);
+                  },
+                },
+              }}
+              views={{
+                dayGridMonth: {
+                  dayMaxEventRows: 4,
+                },
+                timeGridWeek: {
+                  dayMaxEventRows: 6,
+                },
+                timeGridDay: {
+                  dayMaxEventRows: 6,
+                },
+              }}
+              titleFormat={(arg) => {
+                // get number of days diff into start and end
+                const diff = Math.abs(
+                  new Date(arg.end.marker).getTime() -
+                  new Date(arg.start.marker).getTime(),
+                );
+                let nbdays = Math.round(diff / (1000 * 60 * 60 * 24));
+
+                if (nbdays === 7) {
+                  return (
+                    format(arg.start.marker, 'dd MMMM', {
+                      locale: dateLocale,
+                    }) +
+                    ' - ' +
+                    format(arg.end.marker, 'dd MMMM yyyy', {
+                      locale: dateLocale,
+                    })
+                  );
+                } else if (nbdays > 7) {
+                  return format(arg.start.marker, 'MMMM yyyy', {
+                    locale: dateLocale,
+                  });
+                }
+                return format(arg.end.marker, 'dd MMMM yyyy', {
+                  locale: dateLocale,
+                });
+              }}
+              dayHeaderContent={(arg) => {
+                if (arg.view.type === 'timeGridDay') {
+                  return format(arg.date, 'eeee', {
+                    locale: dateLocale,
+                  });
+                } else if (arg.view.type === 'listWeek') {
+                  return format(arg.date, 'eeee dd MMMM', {
+                    locale: dateLocale,
+                  });
+                } else if (arg.view.type === 'timeGridWeek') {
+                  return format(arg.date, 'eee dd/MM', {
+                    locale: dateLocale,
+                  });
+                } else if (arg.view.type === 'dayGridMonth') {
+                  return format(arg.date, 'eee', {
+                    locale: dateLocale,
+                  });
+                } else {
+                  return;
+                }
+              }}
+              eventDisplay="block"
+              eventTimeFormat={{
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                meridiem: false,
+              }}
+              locales={allLocales}
+              locale={localeMap[language] || 'en'}
+              key={'sq'}
+              dateClick={handleDateClick}
+              events={events}
+              editable={true}
+              selectable={true}
+              selectMirror={true}
+              dayMaxEvents={true}
+              weekends={true}
+              allDaySlot={false}
+              height="auto"
+              handleWindowResize={true}
+              nowIndicator={true}
+              datesSet={handleDatesSet}
+              initialView={
+                window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek'
+              }
+              windowResize={(view) => {
+                const calendar = view.view.calendar;
+                if (!calendar) return;
+
+                const isMobile = window.innerWidth < 768;
+
+                calendar.setOption('headerToolbar', {
+                  left: 'prev,next today',
+                  center: 'title',
+                  right: isMobile
+                    ? 'timeGridDay,listWeek'
+                    : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                });
+
+                if (isMobile && view.view.type === 'dayGridMonth') {
+                  calendar.changeView('timeGridDay');
+                } else if (!isMobile && view.view.type === 'timeGridDay') {
+                  calendar.changeView('timeGridWeek');
+                }
+              }}
+              businessHours={getOpenHours()}
+              firstDay={1}
+              slotMinTime={slotMinTime}
+              slotMaxTime={slotMaxTime}
+              slotDuration="00:15:00"
+              slotLabelFormat={{
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                omitZeroMinute: true,
+              }}
+              slotLabelInterval="01:00"
+              eventClick={handleEventClick}
+              eventDrop={handleEventDrop}
+              eventContent={renderEventContent}
+              eventDataTransform={(event) => {
+                // S'assurer que les propriétés personnalisées sont bien transmises
+                return {
+                  ...event,
+                  extendedProps: {
+                    ...event.extendedProps,
+                    // Si daysOfWeek est défini au niveau racine, le déplacer dans extendedProps
+                    daysOfWeek:
+                      event.daysOfWeek || event.extendedProps?.daysOfWeek,
+                    // Faire de même pour les autres propriétés de récurrence
+                    startRecur:
+                      event.startRecur || event.extendedProps?.startRecur,
+                    endRecur: event.endRecur || event.extendedProps?.endRecur,
+                    startTime:
+                      event.startTime || event.extendedProps?.startTime,
+                    endTime: event.endTime || event.extendedProps?.endTime,
+                  },
+                };
+              }}
+            /> */}
+        </motion.div>
+      </div>
+    </main>
+    <CreateAppointmentModal
+      open={isModalOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          setEditingEvent(null);
+        }
+        setIsModalOpen(open);
+      }}
+      initialDate={selectedDate || new Date()}
+      eventToEdit={editingEvent || undefined}
+      selectedDoctor={selectedDoctor}
+      onEventCreated={handleEventCreated}
+      onEventUpdated={handleEventUpdated}
+    />
+
+    {/* Dialog de confirmation pour déplacement de rendez-vous */}
+    <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t.agenda.mooveTitle}</DialogTitle>
+          <DialogDescription>
+            {t.agenda.mooveDescription}
+          </DialogDescription>
+        </DialogHeader>
+        {pendingEventMove && (
+          <div className="py-4">
+            <p className="text-sm font-medium">{t.agenda.mooveSlot} :</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {pendingEventMove.formattedDate}
+            </p>
+            <p className="text-sm text-gray-600">
+              {pendingEventMove.formattedTime}
+            </p>
+          </div>
+        )}
+        <DialogFooter>
+          <Button variant="outline" onClick={handleCancelMove}>
+            {t.common.cancel}
+          </Button>
+          <Button onClick={handleConfirmMove}>{t.common.confirm}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>
+);
+  };
+
+export default CalendarPage;

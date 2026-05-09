@@ -1,5 +1,17 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import FullCalendar from '@fullcalendar/react';
+import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react'
+import {
+  createViewDay,
+  createViewWeekAgenda,
+  createViewMonthAgenda,
+  createViewMonthGrid,
+  createViewWeek,
+} from '@schedule-x/calendar'
+import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
+import { createEventsServicePlugin } from '@schedule-x/events-service'
+import 'temporal-polyfill/global'
+import '@schedule-x/theme-default/dist/index.css'
 import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -49,6 +61,54 @@ const CalendarPage = () => {
   const { t, language } = useLanguage();
   const dateLocale = useDateLocale();
   const { toast } = useToast();
+  const eventsControl = useMemo(
+    () => createCalendarControlsPlugin(),
+    []
+  )
+
+  const eventsService = useMemo(
+    () => createEventsServicePlugin(),
+    []
+  )
+  // const localeMap: Record<string, string> = {
+  //   sq: 'sq',
+  //   en: 'en',
+  //   fr: 'fr',
+  // };
+  const localeMap: Record<string, string> = {
+    sq: 'sq-AL',
+    en: 'en-US',
+    fr: 'fr-FR',
+  };
+  const calendar = useCalendarApp({
+    locale: localeMap[language] || 'en',
+    timezone: 'Europe/Paris',
+    views: [createViewDay(), createViewWeekAgenda(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
+    weekOptions: {
+      gridStep: 15,
+      eventWidth: 90,
+    },
+    plugins: [eventsControl, eventsService],
+    callbacks: {
+      onEventClick(calendarEvent, e: UIEvent) {
+        handleEventClick({ event: calendarEvent });
+      },
+      onClickDateTime(dateTime: Temporal.ZonedDateTime, e?: UIEvent) {
+        const ms = 1000 * 60 * 15 // 15 minutes
+        setSelectedDate(new Date(Math.floor(dateTime.epochMilliseconds / ms) * ms));
+        setEditingEvent(null);
+        setIsModalOpen(true);
+      },
+      async fetchEvents(range) {
+        const dateRange = {
+          start: range.start.toString(),
+          end: range.end.toString(),
+        };
+        getEvents(dateRange, selectedDoctor?.id);
+        return []
+      },
+    },
+  })
   const [selectedDoctor, setSelectedDoctor] = useState<
     DoctorProfile | User | null
   >(null);
@@ -58,10 +118,10 @@ const CalendarPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
-  const [slotMinTime, setSlotMinTime] = useState('08:00:00');
-  const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
   const calendarRef = useRef<FullCalendar>(null);
+  const [range, setRange] = useState<any>(null);
   const [isVisible, setIsVisible] = useState(true);
+  const [calendarTitle, setCalendarTitle] = useState<string>('');
 
   // États pour la popup de confirmation
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -123,29 +183,135 @@ const CalendarPage = () => {
   }, [selectedDoctor]); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
 
   useEffect(() => {
-    const btn = document.querySelector('.fc-toggleVisibility-button');
+    eventsService.set(events.map((event: CalendarEvent) => {
+      // Déterminer si c'est un événement journée complète ou avec horaires
+      const isFullDay = event.allDay;
+      console.log('isFullDay', isFullDay);
 
-    if (!btn) return;
+      if (isFullDay) {
+        // Événement journée complète - utiliser PlainDate
+        return {
+          id: event.id || '',
+          title: event.title,
+          start: event.start ? Temporal.PlainDate.from(new Date(event.start).toISOString().split('T')[0]) : Temporal.Now.plainDateISO(),
+          end: event.end ? Temporal.PlainDate.from(new Date(event.end).toISOString().split('T')[0]) : Temporal.Now.plainDateISO(),
+          calendar: event.type === 'absence' ? 'absences' : 'appointments',
+          color: event.color || '#3b82f6',
+          extendedProps: {
+            ...event,
+            patient: event.patient,
+            status: event.status,
+            type: event.type,
+          },
+        };
+      } else {
+        // Événement avec horaires en utc - utiliser ZonedDateTime
+        const startDate = event.start ? Temporal.Instant
+          .from(event.start as string)
+          .toZonedDateTimeISO("Europe/Paris") : new Date();
+        const endDate = event.end ? Temporal.Instant
+          .from(event.end as string)
+          .toZonedDateTimeISO("Europe/Paris") : new Date();
 
-    btn.innerHTML = isVisible
-      ? `
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      `
-      : `
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M1 1l22 22"/>
-        </svg>
-      `;
-  }, [isVisible]);
+        return {
+          id: event.id || '',
+          title: setTitleEvent(event),
+          start: Temporal.ZonedDateTime.from(startDate.toString()),
+          end: Temporal.ZonedDateTime.from(endDate.toString()),
+          calendar: event.type === 'absence' ? 'absences' : 'appointments',
+          color: event.color || '#3b82f6',
+          extendedProps: {
+            ...event,
+            patient: event.patient,
+            status: event.status,
+            type: event.type,
+          },
+        };
+      }
+    }))
+  }, [events, isVisible]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!eventsControl?.getRange) return
+
+      setRange(eventsControl.getRange())
+    }, 300)
+
+    return () => clearInterval(interval)
+  }, [eventsControl])
+
+  useEffect(() => {
+    const diffInMs = new Date(eventsControl.getRange().end.epochMilliseconds).getTime() - new Date(eventsControl.getRange().start.epochMilliseconds).getTime();
+    const nbDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+    console.log(nbDays);
+
+    if (nbDays === 7) {
+      setCalendarTitle(
+        format(new Date(eventsControl.getRange().start.epochMilliseconds).getTime(), 'dd MMMM', {
+          locale: dateLocale,
+        }) +
+        ' - ' +
+        format(new Date(eventsControl.getRange().end.epochMilliseconds).getTime(), 'dd MMMM yyyy', {
+          locale: dateLocale,
+        })
+      );
+    } else if (nbDays > 7) {
+      setCalendarTitle(format(new Date(eventsControl.getRange().start.epochMilliseconds).getTime(), 'MMMM yyyy', {
+        locale: dateLocale,
+      }));
+    } else {
+      setCalendarTitle(format(new Date(eventsControl.getRange().end.epochMilliseconds).getTime(), 'dd MMMM yyyy', {
+        locale: dateLocale,
+      }));
+    }
+  }, [range]);
+
+  const setTitleEvent = (event: any) => {
+    let abort = false;
+    let Icon;
+    if (event.status === 'waiting') {
+      Icon = LucideIcons['Armchair'];
+    } else if (event.status === 'consultation') {
+      Icon = LucideIcons['Stethoscope'];
+    } else if (event.status === 'finished') {
+      Icon = LucideIcons['Check'];
+    } else if (event.status === 'abortExcused') {
+      Icon = LucideIcons['CalendarOff'];
+      abort = true;
+    } else if (event.status === 'abort') {
+      Icon = LucideIcons['Ban'];
+      abort = true;
+    }
+
+    // return (
+    //   <div className="">
+    //     <div className="font-normal whitespace-normal break-words">
+    //       {event.extendedProps?.type === 'absence' ? (
+    //         formatTime(event.start) + ' - ' + event.title
+    //       ) : (
+    //         <>
+    //           <span
+    //             className={`flex items-center gap-2 ${abort ? 'line-through' : ''}`}
+    //           >
+    //             {Icon && <Icon className="h-4 w-4 shrink-0" />}
+    //             {formatTime(event.start)} -{' '}
+    //             {isVisible
+    //               ? event.extendedProps?.patient?.firstname
+    //               : '******'}{' '}
+    //             {isVisible
+    //               ? event.extendedProps?.patient?.lastname
+    //               : '******'}
+    //           </span>
+    //         </>
+    //       )}
+    //     </div>
+    //   </div>
+    // );
+    return isVisible ? event.patient.firstname + ' ' + event.patient.lastname : '****** ******';
+  };
 
   const getOpeningHour = async (doctorId?: string) => {
-    console.log(selectedDoctor);
-
     getOpeningHours(doctorId || selectedDoctor?.id || user?.id).then(
       (hours) => {
         // récupère le min de hours.openTime et le max de hours.closeTime
@@ -163,18 +329,15 @@ const CalendarPage = () => {
 
           return `${hours.toString().padStart(2, '0')}:${minutes
             .toString()
-            .padStart(2, '0')}:00`;
+            .padStart(2, '0')}`;
         };
 
-        setSlotMinTime(formatTimeForCalendar(minTime, -1));
-        setSlotMaxTime(formatTimeForCalendar(maxTime, 1));
+        eventsControl.setDayBoundaries({
+          start: formatTimeForCalendar(minTime, -1),
+          end: formatTimeForCalendar(maxTime, 1),
+        });
       },
     );
-  };
-  const localeMap: Record<string, string> = {
-    sq: 'sq',
-    en: 'en',
-    fr: 'fr',
   };
 
   const handleDatesSet = useCallback(
@@ -222,9 +385,7 @@ const CalendarPage = () => {
     }
   }, []);
 
-  const handleEventClick = (info: any) => {
-    const event = info.event;
-
+  const handleEventClick = (event: any) => {
     const eventData: CalendarEvent = {
       id: event.id,
       title: event.title,
@@ -446,7 +607,241 @@ const CalendarPage = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="bg-card rounded-2xl border border-border p-4 md:p-6 shadow-sm"
           >
-            <FullCalendar
+            {/* Boutons custom pour ScheduleX */}
+            <div className="px-3 py-2 mb-4 border rounded-xl bg-card shadow-sm">
+              {/* Desktop: horizontal layout */}
+              <div className="hidden md:flex items-center justify-between">
+
+                {/* LEFT: navigation */}
+                <div className="flex items-center gap-1">
+                  <button
+                    className="px-2 py-1 rounded hover:bg-muted"
+                    onClick={() => {
+                      const diffInMs = new Date(eventsControl.getRange().end.epochMilliseconds).getTime() - new Date(eventsControl.getRange().start.epochMilliseconds).getTime();
+                      const nbDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+                      const currentDate = eventsControl.getDate();
+                      if (nbDays > 7) {
+                        const previousDate = currentDate.subtract({ months: 1 });
+                        eventsControl.setDate(previousDate);
+                      } else {
+                        const previousDate = currentDate.subtract({ days: nbDays });
+                        eventsControl.setDate(previousDate);
+                      }
+                    }}
+                  >
+                    ◀
+                  </button>
+
+                  <button
+                    className="px-3 py-1 rounded-md border hover:bg-muted text-sm font-medium"
+                    onClick={() => {
+                      const today = Temporal.Now.plainDateISO();
+                      eventsControl.setDate(today);
+                    }}
+                  >
+                    Aujourd'hui
+                  </button>
+
+                  <button className="px-2 py-1 rounded hover:bg-muted"
+                    onClick={() => {
+                      const diffInMs = new Date(eventsControl.getRange().end.epochMilliseconds).getTime() - new Date(eventsControl.getRange().start.epochMilliseconds).getTime();
+                      const nbDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+                      const currentDate = eventsControl.getDate();
+                      if (nbDays > 7) {
+                        const previousDate = currentDate.add({ months: 1 });
+                        eventsControl.setDate(previousDate);
+                      } else {
+                        const previousDate = currentDate.add({ days: nbDays });
+                        eventsControl.setDate(previousDate);
+                      }
+                    }}>
+                    ▶
+                  </button>
+                </div>
+
+                {/* CENTER: title (like Google Calendar) */}
+                <div className="text-sm font-semibold text-muted-foreground">
+                  {calendarTitle}
+                </div>
+
+                {/* RIGHT: views + actions */}
+                <div className="flex items-center gap-2">
+
+                  <div className="flex border rounded-lg overflow-hidden text-sm">
+                    <button
+                      className="px-3 py-1 hover:bg-muted"
+                      onClick={() => eventsControl.setView('day')}
+                    >
+                      Jour
+                    </button>
+                    <button
+                      className="px-3 py-1 hover:bg-muted border-x"
+                      onClick={() => eventsControl.setView('week')}
+                    >
+                      Semaine
+                    </button>
+                    <button
+                      className="px-3 py-1 hover:bg-muted"
+                      onClick={() => eventsControl.setView('month-grid')}
+                    >
+                      Mois
+                    </button>
+                  </div>
+
+                  {/* divider */}
+                  <div className="w-px h-6 bg-border mx-1" />
+
+                  <button
+                    className="px-2 py-1 rounded hover:bg-muted"
+                    onClick={() => setIsVisible(v => !v)}
+                    title="Masquer / afficher les patients"
+                  >
+                    {isVisible ?
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M1 1l22 22" />
+                      </svg>
+                      :
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    }
+                  </button>
+                </div>
+              </div>
+              {/* visibility */}
+              <div className="md:hidden flex flex-col items-center space-y-3">
+
+                {/* Navigation */}
+                <div className="flex items-center gap-2">
+                  <button
+                    className="px-2 py-1 rounded hover:bg-muted"
+                    onClick={() => {
+                      const diffInMs = new Date(eventsControl.getRange().end.epochMilliseconds).getTime() - new Date(eventsControl.getRange().start.epochMilliseconds).getTime();
+                      const nbDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+                      const currentDate = eventsControl.getDate();
+                      if (nbDays > 7) {
+                        const previousDate = currentDate.subtract({ months: 1 });
+                        eventsControl.setDate(previousDate);
+                      } else {
+                        const previousDate = currentDate.subtract({ days: nbDays });
+                        eventsControl.setDate(previousDate);
+                      }
+                    }}
+                  >
+                    ◀
+                  </button>
+
+                  <button
+                    className="px-3 py-1 rounded-md border hover:bg-muted text-sm font-medium"
+                    onClick={() => {
+                      const today = Temporal.Now.plainDateISO();
+                      eventsControl.setDate(today);
+                    }}
+                  >
+                    Aujourd'hui
+                  </button>
+
+                  <button className="px-2 py-1 rounded hover:bg-muted"
+                    onClick={() => {
+                      const diffInMs = new Date(eventsControl.getRange().end.epochMilliseconds).getTime() - new Date(eventsControl.getRange().start.epochMilliseconds).getTime();
+                      const nbDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+                      const currentDate = eventsControl.getDate();
+                      if (nbDays > 7) {
+                        const previousDate = currentDate.add({ months: 1 });
+                        eventsControl.setDate(previousDate);
+                      } else {
+                        const previousDate = currentDate.add({ days: nbDays });
+                        eventsControl.setDate(previousDate);
+                      }
+                    }}>
+                    ▶
+                  </button>
+                </div>
+
+                {/* Title */}
+                <div className="text-sm font-semibold text-muted-foreground text-center">
+                  {calendarTitle}
+                </div>
+
+                {/* Views and actions */}
+                <div className="flex flex-col items-center space-y-2">
+
+                  <div className="flex border rounded-lg overflow-hidden text-sm">
+                    <button
+                      className="px-3 py-1 hover:bg-muted"
+                      onClick={() => eventsControl.setView('day')}
+                    >
+                      Jour
+                    </button>
+                    <button
+                      className="px-3 py-1 hover:bg-muted border-x"
+                      onClick={() => eventsControl.setView('week')}
+                    >
+                      Semaine
+                    </button>
+                    <button
+                      className="px-3 py-1 hover:bg-muted"
+                      onClick={() => eventsControl.setView('month-grid')}
+                    >
+                      Mois
+                    </button>
+                  </div>
+
+                  <button
+                    className="px-2 py-1 rounded hover:bg-muted"
+                    onClick={() => setIsVisible(v => !v)}
+                    title="Masquer / afficher les patients"
+                  >
+                    {isVisible ?
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M1 1l22 22" />
+                      </svg>
+                      :
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <ScheduleXCalendar calendarApp={calendar} />
+            {/* <FullCalendar
               ref={calendarRef}
               plugins={[
                 dayGridPlugin,
@@ -485,7 +880,7 @@ const CalendarPage = () => {
                 // get number of days diff into start and end
                 const diff = Math.abs(
                   new Date(arg.end.marker).getTime() -
-                    new Date(arg.start.marker).getTime(),
+                  new Date(arg.start.marker).getTime(),
                 );
                 let nbdays = Math.round(diff / (1000 * 60 * 60 * 24));
 
@@ -608,7 +1003,7 @@ const CalendarPage = () => {
                   },
                 };
               }}
-            />
+            /> */}
           </motion.div>
         </div>
       </main>
