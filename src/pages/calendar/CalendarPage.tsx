@@ -510,21 +510,44 @@ const CalendarPage = () => {
               }}
               dayHeaderContent={(arg) => {
                 if (arg.view.type === 'timeGridDay') {
-                  return format(arg.date, 'eeee', {
+                  const dayName = format(arg.date, 'eeee', {
                     locale: dateLocale,
                   });
+                  const dayNumber = format(arg.date, 'dd', {
+                    locale: dateLocale,
+                  });
+                  return (
+                    <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
+                      <div style={{ fontSize: '0.9em', fontWeight: 'bold' }}>{dayName}</div>
+                      <div style={{ fontSize: '1.1em' }}>{dayNumber}</div>
+                    </div>
+                  );
                 } else if (arg.view.type === 'listWeek') {
                   return format(arg.date, 'eeee dd MMMM', {
                     locale: dateLocale,
                   });
                 } else if (arg.view.type === 'timeGridWeek') {
-                  return format(arg.date, 'eee dd/MM', {
+                  const dayName = format(arg.date, 'eee', {
                     locale: dateLocale,
                   });
+                  const dayNumber = format(arg.date, 'dd', {
+                    locale: dateLocale,
+                  });
+                  return (
+                    <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
+                      <div style={{ fontSize: '0.8em' }}>{dayName}</div>
+                      <div style={{ fontSize: '0.9em', fontWeight: 'bold' }}>{dayNumber}</div>
+                    </div>
+                  );
                 } else if (arg.view.type === 'dayGridMonth') {
-                  return format(arg.date, 'eee', {
+                  const dayName = format(arg.date, 'eee', {
                     locale: dateLocale,
                   });
+                  return (
+                    <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
+                      <div style={{ fontSize: '0.8em' }}>{dayName}</div>
+                    </div>
+                  );
                 } else {
                   return;
                 }
