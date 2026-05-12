@@ -485,7 +485,7 @@ const CalendarPage = () => {
                 // get number of days diff into start and end
                 const diff = Math.abs(
                   new Date(arg.end.marker).getTime() -
-                    new Date(arg.start.marker).getTime(),
+                  new Date(arg.start.marker).getTime(),
                 );
                 let nbdays = Math.round(diff / (1000 * 60 * 60 * 24));
 
@@ -630,6 +630,11 @@ const CalendarPage = () => {
                     endTime: event.endTime || event.extendedProps?.endTime,
                   },
                 };
+              }}
+              eventDidMount={(info) => {
+                const color = info.event.backgroundColor;
+
+                info.el.style.setProperty('--event-color', color);
               }}
             />
           </motion.div>
