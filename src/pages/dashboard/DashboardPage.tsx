@@ -6,6 +6,7 @@ import { Calendar, Clock } from 'lucide-react';
 import { useAuth } from '@/services/auth/useAuth';
 import { useUser } from '@/services/user/useUser';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import DashboardStats from '@/components/dashboard/DashboardStats';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -33,10 +34,16 @@ const DashboardPage = () => {
           ).toISOString(),
         };
       } else {
-        // end : end of day
+        // get event for all week (from monday to sunday)
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
         dateRange = {
-          start: new Date().toISOString(),
-          end: new Date(new Date().setHours(23, 59, 59, 999)).toISOString(),
+          start: monday.toISOString(),
+          end: sunday.toISOString(),
         };
       }
       getEvents(dateRange).then((events) => {
@@ -49,11 +56,6 @@ const DashboardPage = () => {
       });
     }
   }, [navigate]);
-
-  const redirectRdv = () => {
-    if (user.roleId === 1) navigate('/appointments');
-    if (user.roleId === 2) navigate('/calendar');
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -95,8 +97,14 @@ const DashboardPage = () => {
             </Card>
           )}
 
+          {user.roleId === 2 && (
+            <div className="md:col-span-full">
+              <DashboardStats />
+            </div>
+          )}
+
           {/* Prochains rendez-vous */}
-          {(user.roleId === 1 || user.roleId === 2) && (
+          {(user.roleId === 1) && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -106,7 +114,7 @@ const DashboardPage = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => redirectRdv()}
+                    onClick={() => navigate('/appointments')}
                   >
                     {t.dashboard.seeAll}
                   </Button>

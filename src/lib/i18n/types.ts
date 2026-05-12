@@ -375,6 +375,19 @@ export type TranslationKey = {
       cancelled: string;
     };
   };
+  stats: {
+    today: string;
+    waiting: string;
+    nextAppointments: string;
+    completed: string;
+    attendance: string;
+    attendanceRate: string;
+    absent: string;
+    week: string;
+    thisWeek: string;
+    average: string;
+    perDay: string;
+  };
   common: {
     success: string;
     error: string;

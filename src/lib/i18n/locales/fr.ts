@@ -373,6 +373,19 @@ const fr: TranslationKey = {
       cancelled: 'Annulés',
     },
   },
+  stats: {
+    today: 'Rendez-vous du jour',
+    waiting: 'Patients en attente',
+    nextAppointments: 'Prochains rendez-vous',
+    completed: 'terminés',
+    attendance: 'présence',
+    attendanceRate: 'Taux de présence',
+    absent: 'absents',
+    week: 'Semaine',
+    thisWeek: 'Cette semaine',
+    average: 'Moyenne',
+    perDay: 'par jour',
+  },
   // Common translations used across the app
   common: {
     success: 'Succès',

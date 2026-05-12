@@ -370,6 +370,19 @@ const en: TranslationKey = {
       cancelled: 'Cancelled',
     },
   },
+  stats: {
+    today: 'Today\'s appointments',
+    waiting: 'Waiting patients',
+    nextAppointments: 'Next appointments',
+    completed: 'completed',
+    attendance: 'attendance',
+    attendanceRate: 'attendance rate',
+    absent: 'absent',
+    week: 'week',
+    thisWeek: 'this week',
+    average: 'average',
+    perDay: 'per day',
+  },
 
   // Common translations used across the app
   common: {
