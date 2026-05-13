@@ -201,7 +201,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
             stats.nextAppointments.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between bg-gray-100 rounded-lg p-2 mb-2 last:mb-0"
+                className="flex items-center justify-between bg-gray-100 rounded-lg p-2 mb-2 last:mb-0 cursor-pointer"
                 style={{
                   borderLeft: `8px solid ${event.color}`,
                   backgroundColor: `${event.color}20`
