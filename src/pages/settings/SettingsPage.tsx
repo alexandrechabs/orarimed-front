@@ -220,92 +220,94 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="speciality">{t.params.speciality}</Label>
-                  <Select
-                    onValueChange={(value) => {
-                      handleInputChange(value, 'specialityId');
-                      handleInputChange('', 'subSpecialityIds');
-                    }}
-                    defaultValue={formData.specialityId}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t.params.selectSpeciality} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {specialities.map((speciality) => (
-                        <SelectItem
-                          key={speciality.id}
-                          value={speciality.id.toString()}
-                        >
-                          {
-                            speciality.translations.find(
-                              (t) => t.locale === language,
-                            )?.name
-                          }
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t.params.subSpeciality}</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {specialities
-                      .find((s) => s.id === Number(formData.specialityId))
-                      ?.subSpecialities.map((sub) => (
-                        <div
-                          key={sub.id}
-                          className="flex items-center space-x-2"
-                        >
-                          <input
-                            type="checkbox"
-                            id={`sub-${sub.id}`}
-                            value={sub.id}
-                            checked={
-                              formData.subSpecialityIds?.includes(sub.id) ||
-                              false
+              {user.roleId === 2 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="speciality">{t.params.speciality}</Label>
+                    <Select
+                      onValueChange={(value) => {
+                        handleInputChange(value, 'specialityId');
+                        handleInputChange('', 'subSpecialityIds');
+                      }}
+                      defaultValue={formData.specialityId}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t.params.selectSpeciality} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {specialities.map((speciality) => (
+                          <SelectItem
+                            key={speciality.id}
+                            value={speciality.id.toString()}
+                          >
+                            {
+                              speciality.translations.find(
+                                (t) => t.locale === language,
+                              )?.name
                             }
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  subSpecialityIds: [
-                                    ...(prev.subSpecialityIds || []),
-                                    sub.id,
-                                  ],
-                                }));
-                              } else {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  subSpecialityIds: (
-                                    prev.subSpecialityIds || []
-                                  ).filter((id) => id !== sub.id),
-                                }));
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t.params.subSpeciality}</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {specialities
+                        .find((s) => s.id === Number(formData.specialityId))
+                        ?.subSpecialities.map((sub) => (
+                          <div
+                            key={sub.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <input
+                              type="checkbox"
+                              id={`sub-${sub.id}`}
+                              value={sub.id}
+                              checked={
+                                formData.subSpecialityIds?.includes(sub.id) ||
+                                false
                               }
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    subSpecialityIds: [
+                                      ...(prev.subSpecialityIds || []),
+                                      sub.id,
+                                    ],
+                                  }));
+                                } else {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    subSpecialityIds: (
+                                      prev.subSpecialityIds || []
+                                    ).filter((id) => id !== sub.id),
+                                  }));
+                                }
 
-                              formData.subSpecialityIds = e.target.checked
-                                ? [...(formData.subSpecialityIds || []), sub.id]
-                                : (formData.subSpecialityIds || []).filter(
+                                formData.subSpecialityIds = e.target.checked
+                                  ? [...(formData.subSpecialityIds || []), sub.id]
+                                  : (formData.subSpecialityIds || []).filter(
                                     (id) => id !== sub.id,
                                   );
-                            }}
-                            className="h-4 w-4 rounded border-gray-300 ring-blue-600 focus:ring-blue-500"
-                          />
-                          <label
-                            htmlFor={`sub-${sub.id}`}
-                            className="text-sm font-medium text-gray-700"
-                          >
-                            {sub.translations?.find(
-                              (t) => t.locale === language,
-                            )?.name || sub.name}
-                          </label>
-                        </div>
-                      ))}
+                              }}
+                              className="h-4 w-4 rounded border-gray-300 ring-blue-600 focus:ring-blue-500"
+                            />
+                            <label
+                              htmlFor={`sub-${sub.id}`}
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              {sub.translations?.find(
+                                (t) => t.locale === language,
+                              )?.name || sub.name}
+                            </label>
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
               <div className="flex justify-center">
                 <Button onClick={handleSaveSettings}>{t.common.save}</Button>
               </div>
