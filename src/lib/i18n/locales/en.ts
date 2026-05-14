@@ -88,6 +88,13 @@ const en: TranslationKey = {
     growPatients: 'Grow your patient base',
     freeRegistration: 'Free registration',
   },
+  actualities: {
+    title: 'Health news',
+    subtitle:
+      'Up-to-date information on health in Albania and OrariMed updates.',
+    disclaimer:
+      'Articles are for informational purposes and do not replace professional medical advice.',
+  },
   footer: {
     description:
       'The online medical appointment platform in Albania. Book an appointment with verified doctors in just a few clicks.',

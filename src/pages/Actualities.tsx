@@ -3,10 +3,12 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const articles = [];
 
-const AktualitetePage = () => {
+const Actualities = () => {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -19,26 +21,12 @@ const AktualitetePage = () => {
               className="text-center mb-12"
             >
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Aktualitete shëndetësore
+                {t.actualities.title}
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Informacione të përditësuara mbi shëndetin në Shqipëri dhe
-                risitë në OrariMed.
+                {t.actualities.subtitle}
               </p>
             </motion.div>
-
-            {/* Categories */}
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <button className="px-5 py-2 rounded-full bg-primary text-primary-foreground font-medium text-sm">
-                Të gjitha
-              </button>
-              <button className="px-5 py-2 rounded-full bg-secondary text-secondary-foreground font-medium text-sm hover:bg-primary hover:text-primary-foreground transition-colors">
-                Shëndeti në Shqipëri
-              </button>
-              <button className="px-5 py-2 rounded-full bg-secondary text-secondary-foreground font-medium text-sm hover:bg-primary hover:text-primary-foreground transition-colors">
-                Të rejat nga OrariMed
-              </button>
-            </div>
 
             {/* Articles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
@@ -86,8 +74,7 @@ const AktualitetePage = () => {
               className="mt-16 max-w-3xl mx-auto text-center"
             >
               <p className="text-muted-foreground text-sm italic">
-                Artikujt janë informues dhe nuk zëvendësojnë këshillën mjekësore
-                profesionale.
+                {t.actualities.disclaimer}
               </p>
             </motion.div>
           </div>
@@ -98,4 +85,4 @@ const AktualitetePage = () => {
   );
 };
 
-export default AktualitetePage;
+export default Actualities;

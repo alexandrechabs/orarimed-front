@@ -66,6 +66,11 @@ export type TranslationKey = {
     growPatients: string;
     freeRegistration: string;
   };
+  actualities: {
+    title: string;
+    subtitle: string;
+    disclaimer: string;
+  };
 
   professionalsPage: {
     badge: string;

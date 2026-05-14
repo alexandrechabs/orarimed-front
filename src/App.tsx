@@ -15,7 +15,7 @@ import Index from './pages/Index';
 import SpecialitiesListPage from './pages/SpecialitiesListPage';
 import SpecialityPage from './pages/SpecialtyPage';
 
-import AktualitetePage from './pages/AktualitetePage';
+import Actualities from './pages/Actualities';
 import KontaktPage from './pages/KontaktPage';
 import NotFound from './pages/NotFound';
 import DashboardPage from './pages/dashboard/DashboardPage';
@@ -33,6 +33,7 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboardingPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import AdminArticlesPage from './pages/admin/ArticlePage';
 import DoctorPage from './pages/DoctorPage';
 import SearchPage from './pages/SearchPage';
 import DoctorSettingsPage from './pages/settings/DoctorSettingsPage';
@@ -184,7 +185,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/specialities" element={<SpecialitiesListPage />} />
           <Route path="/specialities/:slug" element={<SpecialityPage />} />
-          <Route path="/actualities" element={<AktualitetePage />} />
+          <Route path="/actualities" element={<Actualities />} />
           <Route path="/contact" element={<KontaktPage />} />
           <Route path="/professionals" element={<ProfessionalPage />} />
           <Route path="/search" element={<SearchPage />} />
@@ -319,6 +320,14 @@ const App = () => (
                 element={
                   <ProtectedRouteByRole allowedRoles={[4]}>
                     <AdminSettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-articles"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[4,2]}>
+                    <AdminArticlesPage />
                   </ProtectedRouteByRole>
                 }
               />
