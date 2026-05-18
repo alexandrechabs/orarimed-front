@@ -1,14 +1,45 @@
-import { motion } from 'framer-motion';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { Calendar, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { motion } from "framer-motion";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Calendar, ArrowRight } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useEffect, useState } from "react";
+import { ArticleTranslation } from "@/types/article";
 
-const articles = [];
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Actualities = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  // get locale in query ?locale=x
+  const [searchParams] = useSearchParams();
+  const locale = searchParams.get("locale");
+  const [articles, setArticles] = useState<ArticleTranslation[]>([]);
+
+  // get articles from API
+  useEffect(() => {
+    console.log(locale);
+
+    const loadArticles = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/articles?locale=${locale ? locale : language}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        if (!res.ok) throw new Error("Failed to fetch articles");
+        const result = await res.json();
+        setArticles(result.data);
+      } catch (err) {
+        console.error("Error loading articles:", err);
+      }
+    };
+    loadArticles();
+  }, [locale, language]);
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -40,7 +71,8 @@ const Actualities = () => {
                 >
                   <div className="p-6 lg:p-8">
                     <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium mb-4">
-                      {article.category}
+                      {/* {article.category} */}
+                      plop
                     </span>
                     <h2 className="font-display text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                       {article.title}
@@ -51,10 +83,14 @@ const Actualities = () => {
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2 text-muted-foreground text-xs">
                         <Calendar className="w-3 h-3" />
-                        {article.date}
+                        {article.article?.publishedAt
+                          ? new Date(
+                              article.article.publishedAt,
+                            ).toLocaleDateString()
+                          : "-"}
                       </span>
                       <Link
-                        to={`/actualities/${article.slug}`}
+                        to={`/actualities/${locale ? locale : language}/${article.slug}`}
                         className="flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all"
                       >
                         Lexo më shumë

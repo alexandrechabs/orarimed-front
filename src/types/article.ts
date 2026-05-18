@@ -6,11 +6,12 @@ export type ArticleTranslation = {
   slug: string;
   excerpt?: string;
   content: string;
-  seo_title?: string;
-  seo_description?: string;
-  canonical_url?: string;
-  reading_time?: number;
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalUrl?: string;
+  readingTime?: number;
   isPublished: boolean;
+  article?: Article;
   locale?: {
     id: number;
     code: string;
@@ -22,10 +23,10 @@ export type Article = {
   id?: string;
   author?: string;
   status: "draft" | "published" | "archived";
-  category_id?: string;
-  featured_image?: string;
-  published_at?: string;
-  created_at?: string;
-  updated_at?: string;
+  categoryId?: string;
+  featuredImage?: string;
+  publishedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
   translations?: ArticleTranslation[];
 };

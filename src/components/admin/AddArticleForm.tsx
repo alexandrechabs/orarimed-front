@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/select";
 import { Article, ArticleTranslation } from "@/types/article";
 import { useToast } from "@/components/ui/use-toast";
-
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { useImage } from "@/hooks/use-image";
 interface AddArticleFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -37,13 +38,22 @@ export default function AddArticleForm({
 }: AddArticleFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updateImage, setIsUpdatingImage] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState(1);
+  const [featuredImagePreview, setFeaturedImagePreview] = useState<
+    string | null
+  >(editingArticle?.featuredImage || null);
+  const image = useImage(
+    editingArticle?.id,
+    editingArticle?.featuredImage,
+    "article",
+  );
 
   const methods = useForm<Article>({
     defaultValues: editingArticle || {
       author: "",
       status: "draft",
-      featured_image: "",
+      featuredImage: "",
       translations: [
         { localeId: 1, title: "", slug: "", content: "", isPublished: false },
         { localeId: 2, title: "", slug: "", content: "", isPublished: false },
@@ -66,6 +76,7 @@ export default function AddArticleForm({
   // Reset form when editingArticle changes
   useEffect(() => {
     if (editingArticle) {
+      setFeaturedImagePreview(editingArticle.featuredImage || null);
       reset({
         ...editingArticle,
         translations: editingArticle.translations || [
@@ -93,6 +104,7 @@ export default function AddArticleForm({
         ],
       });
     } else {
+      setFeaturedImagePreview(null);
       reset({
         status: "draft",
         translations: [
@@ -121,6 +133,21 @@ export default function AddArticleForm({
       });
     }
   }, [editingArticle, reset]);
+
+  const handleFeaturedImageChange = (value: File | string | null) => {
+    if (value instanceof File) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        setFeaturedImagePreview(result);
+        setValue("featuredImage", result);
+      };
+      reader.readAsDataURL(value);
+    } else {
+      setFeaturedImagePreview(value || null);
+      setValue("featuredImage", value || "");
+    }
+  };
 
   const handleFormSubmit = async (data: Article) => {
     try {
@@ -191,7 +218,7 @@ export default function AddArticleForm({
               <div>
                 <label className="text-sm font-medium">Statut</label>
                 <Select
-                  defaultValue={watch("status") || "draft"}
+                  value={watch("status") || "draft"}
                   onValueChange={(value: any) => setValue("status", value)}
                 >
                   <SelectTrigger>
@@ -206,14 +233,39 @@ export default function AddArticleForm({
               </div>
 
               <div>
-                <label className="text-sm font-medium">
-                  Image vedette (URL)
+                <label className="text-sm font-medium justify-between flex items-center mb-2">
+                  Image vedette
+                  {editingArticle && editingArticle.featuredImage && (
+                    <Button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsUpdatingImage(!updateImage);
+                      }}
+                    >
+                      {updateImage ? "annuler" : "Mettre à jour l'image"}
+                    </Button>
+                  )}
                 </label>
-                <Input
-                  {...register("featured_image")}
-                  placeholder="https://..."
-                  type="url"
-                />
+                {editingArticle &&
+                  editingArticle.featuredImage &&
+                  !updateImage && (
+                    // display image with 100 width
+                    <img
+                      src={image}
+                      alt="Image"
+                      className="w-[400px] h-auto rounded-md mx-auto mb-2"
+                    />
+                  )}
+                {!editingArticle ||
+                  !editingArticle.featuredImage ||
+                  (updateImage && (
+                    <ImageUpload
+                      value={featuredImagePreview || undefined}
+                      onChange={handleFeaturedImageChange}
+                      label="Téléchargez l'image vedette"
+                      aspect={16 / 9}
+                    />
+                  ))}
               </div>
             </div>
 
@@ -293,10 +345,10 @@ export default function AddArticleForm({
                       Description SEO
                     </label>
                     <Input
-                      value={currentTranslation.seo_description || ""}
+                      value={currentTranslation.seoDescription || ""}
                       onChange={(e) =>
                         handleTranslationChange(
-                          "seo_description",
+                          "seoDescription",
                           e.target.value,
                         )
                       }

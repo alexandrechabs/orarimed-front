@@ -36,6 +36,25 @@ export const articleService = {
     return res.json() as Promise<Article>;
   },
 
+  async getArticleBySlug(locale: string, slug: string) {
+    // Try common slug endpoint; backend may expose /articles/slug/:slug
+    const res = await fetch(
+      `${API_URL}/articles/${locale}/${encodeURIComponent(slug)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch article by slug");
+    }
+    const result = await res.json();
+    return result.article as Promise<ArticleTranslation>;
+  },
+
   async createArticle(article: Article) {
     const token = localStorage.getItem("auth_token");
     if (!token) throw new Error("No authentication token found");

@@ -1,24 +1,24 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import LanguageSelector from './LanguageSelector';
-import logoIcon from '@/assets/logo-icon.png';
-import { useAuth } from '@/services/auth/useAuth';
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import LanguageSelector from "./LanguageSelector";
+import logoIcon from "@/assets/logo-icon.png";
+import { useAuth } from "@/services/auth/useAuth";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
 
   const navLinks = [
-    { href: '/', label: t.nav.home },
-    { href: '/specialities', label: t.nav.specialities },
-    { href: '/actualities', label: t.nav.news },
-    { href: '/contact', label: t.nav.contact },
+    { href: "/", label: t.nav.home },
+    { href: "/specialities", label: t.nav.specialities },
+    { href: "/actualities?locale=" + language, label: t.nav.news },
+    { href: "/contact", label: t.nav.contact },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -47,8 +47,8 @@ const Navigation = () => {
                 to={link.href}
                 className={`font-medium transition-colors duration-200 ${
                   isActive(link.href)
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {link.label}
@@ -89,7 +89,7 @@ const Navigation = () => {
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden overflow-hidden"
             >
@@ -101,8 +101,8 @@ const Navigation = () => {
                     onClick={() => setIsOpen(false)}
                     className={`block py-2 px-4 rounded-lg font-medium transition-colors ${
                       isActive(link.href)
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-secondary'
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-secondary"
                     }`}
                   >
                     {link.label}

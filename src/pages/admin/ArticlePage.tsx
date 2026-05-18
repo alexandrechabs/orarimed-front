@@ -135,7 +135,8 @@ export default function ArticlePage() {
             article.translations.length > 1 &&
             article.translations.map((translation) => (
               <span
-                className={`inline-block mr-2 px-2 py-1 rounded text-xs font-medium ${translation.isPublished ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                key={translation.id}
+                className={`inline-block mr-2 mb-2 px-2 py-1 rounded text-xs font-medium ${translation.isPublished ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
               >
                 {translation.locale.country}
               </span>
@@ -207,7 +208,7 @@ export default function ArticlePage() {
                   </TableCell>
                   <TableCell>{article.author || "-"}</TableCell>
                   <TableCell>{getStatusBadge(article)}</TableCell>
-                  <TableCell>{getArticleDate(article.created_at)}</TableCell>
+                  <TableCell>{getArticleDate(article.createdAt)}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
