@@ -1,12 +1,45 @@
-import { motion } from 'framer-motion';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { Calendar, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { motion } from "framer-motion";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Calendar, ArrowRight } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useEffect, useState } from "react";
+import { ArticleTranslation } from "@/types/article";
 
-const articles = [];
+const API_URL = import.meta.env.VITE_API_URL;
 
-const AktualitetePage = () => {
+const Actualities = () => {
+  const { t, language } = useLanguage();
+  // get locale in query ?locale=x
+  const [searchParams] = useSearchParams();
+  const locale = searchParams.get("locale");
+  const [articles, setArticles] = useState<ArticleTranslation[]>([]);
+
+  // get articles from API
+  useEffect(() => {
+    console.log(locale);
+
+    const loadArticles = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/articles?locale=${locale ? locale : language}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        if (!res.ok) throw new Error("Failed to fetch articles");
+        const result = await res.json();
+        setArticles(result.data);
+      } catch (err) {
+        console.error("Error loading articles:", err);
+      }
+    };
+    loadArticles();
+  }, [locale, language]);
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -19,26 +52,12 @@ const AktualitetePage = () => {
               className="text-center mb-12"
             >
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Aktualitete shëndetësore
+                {t.actualities.title}
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Informacione të përditësuara mbi shëndetin në Shqipëri dhe
-                risitë në OrariMed.
+                {t.actualities.subtitle}
               </p>
             </motion.div>
-
-            {/* Categories */}
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <button className="px-5 py-2 rounded-full bg-primary text-primary-foreground font-medium text-sm">
-                Të gjitha
-              </button>
-              <button className="px-5 py-2 rounded-full bg-secondary text-secondary-foreground font-medium text-sm hover:bg-primary hover:text-primary-foreground transition-colors">
-                Shëndeti në Shqipëri
-              </button>
-              <button className="px-5 py-2 rounded-full bg-secondary text-secondary-foreground font-medium text-sm hover:bg-primary hover:text-primary-foreground transition-colors">
-                Të rejat nga OrariMed
-              </button>
-            </div>
 
             {/* Articles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
@@ -52,7 +71,7 @@ const AktualitetePage = () => {
                 >
                   <div className="p-6 lg:p-8">
                     <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium mb-4">
-                      {article.category}
+                      {article.category.translations[0]?.name}
                     </span>
                     <h2 className="font-display text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                       {article.title}
@@ -63,10 +82,12 @@ const AktualitetePage = () => {
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2 text-muted-foreground text-xs">
                         <Calendar className="w-3 h-3" />
-                        {article.date}
+                        {article.publishedAt
+                          ? new Date(article.publishedAt).toLocaleDateString()
+                          : "-"}
                       </span>
                       <Link
-                        to={`/actualities/${article.slug}`}
+                        to={`/actualities/${locale ? locale : language}/${article.slug}`}
                         className="flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all"
                       >
                         Lexo më shumë
@@ -86,8 +107,7 @@ const AktualitetePage = () => {
               className="mt-16 max-w-3xl mx-auto text-center"
             >
               <p className="text-muted-foreground text-sm italic">
-                Artikujt janë informues dhe nuk zëvendësojnë këshillën mjekësore
-                profesionale.
+                {t.actualities.disclaimer}
               </p>
             </motion.div>
           </div>
@@ -98,4 +118,4 @@ const AktualitetePage = () => {
   );
 };
 
-export default AktualitetePage;
+export default Actualities;

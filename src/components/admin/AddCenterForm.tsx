@@ -1,53 +1,53 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/services/user/useUser';
-import { Camera, Loader2 } from 'lucide-react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/services/user/useUser";
+import { Camera, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import PhoneInput from 'react-phone-number-input';
-import { useAuth } from '@/services/auth/useAuth';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import AddressAutocomplete from '../Autocomplete';
-import type { CountryCode } from 'libphonenumber-js';
-import { Checkbox } from '../ui/checkbox';
-import { Center } from '@/types/center';
-import { useState } from 'react';
-import { Avatar, AvatarImage } from '../ui/avatar';
+} from "@/components/ui/select";
+import PhoneInput from "react-phone-number-input";
+import { useAuth } from "@/services/auth/useAuth";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import AddressAutocomplete from "../Autocomplete";
+import type { CountryCode } from "libphonenumber-js";
+import { Checkbox } from "../ui/checkbox";
+import { Center } from "@/types/center";
+import { useState } from "react";
+import { Avatar, AvatarImage } from "../ui/avatar";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import ImageUpload from '../ui/ImageUpload';
+} from "@/components/ui/dialog";
+import ImageUpload from "../ui/ImageUpload";
 
-const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
 // Fonction pour créer le schéma en fonction du mode (édition ou création)
 const createDoctorSchema = (isEditMode: boolean) => {
   return z.object({
-    email: z.string().email('Email invalide'),
-    name: z.string().min(2, 'Le nom est requis'),
+    email: z.string().email("Email invalide"),
+    name: z.string().min(2, "Le nom est requis"),
     address: z.string().min(5, "L'adresse est requise"),
-    city: z.string().min(2, 'La ville est requise'),
-    country: z.string().min(2, 'Le pays est requis'),
+    city: z.string().min(2, "La ville est requise"),
+    country: z.string().min(2, "Le pays est requis"),
     coordinate: z.object({
       x: z.number(),
       y: z.number(),
     }),
-    phoneNumber: z.string().min(10, 'Numéro de téléphone invalide'),
+    phoneNumber: z.string().min(10, "Numéro de téléphone invalide"),
     visible: z.boolean().default(false).optional(),
-    specialityId: z.number().min(1, 'La spécialité est requise'),
+    specialityId: z.number().min(1, "La spécialité est requise"),
     description: z.string().optional(),
   });
 };
@@ -106,13 +106,13 @@ export function AddCenterForm({
           description: center.description,
         }
       : {
-          email: '',
-          name: '',
-          address: '',
-          city: '',
-          country: '',
+          email: "",
+          name: "",
+          address: "",
+          city: "",
+          country: "",
           coordinate: { x: 0, y: 0 },
-          phoneNumber: '',
+          phoneNumber: "",
           visible: false,
           specialityId: 0,
         },
@@ -145,16 +145,16 @@ export function AddCenterForm({
         // Mise à jour du cabinet existant
         result = await updateCenter(center.id, userData);
         toast({
-          title: 'Succès',
+          title: "Succès",
           description:
-            'Les informations du cabinet ont été mises à jour avec succès',
+            "Les informations du cabinet ont été mises à jour avec succès",
         });
       } else {
         // Création d'un nouveau cabinet
         result = await createCenter(userData);
         toast({
-          title: 'Succès',
-          description: 'Le cabinet a été créé avec succès',
+          title: "Succès",
+          description: "Le cabinet a été créé avec succès",
         });
       }
 
@@ -162,9 +162,9 @@ export function AddCenterForm({
       onSuccess?.();
     } catch (error) {
       toast({
-        title: 'Erreur',
-        description: error.message || 'Une erreur est survenue',
-        variant: 'destructive',
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -189,11 +189,11 @@ export function AddCenterForm({
       // Convertir l'image recadrée en fichier
       const response = await fetch(croppedImage);
       const blob = await response.blob();
-      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+      const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
 
       // Créer FormData pour l'envoi
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       let image = await savePhotoCenter(formData, center.id);
 
@@ -212,7 +212,7 @@ export function AddCenterForm({
     <>
       <form
         onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log('Erreurs lors de la soumission:', errors);
+          console.log("Erreurs lors de la soumission:", errors);
         })}
         className="space-y-4"
       >
@@ -224,7 +224,7 @@ export function AddCenterForm({
                   src={
                     center?.avatar
                       ? `${API_URL}/center/${center.id}/avatar/${center.avatar}`
-                      : 'hopital.png'
+                      : "hopital.png"
                   }
                   alt={`${center?.name}`}
                 />
@@ -247,7 +247,7 @@ export function AddCenterForm({
         )}
         <div>
           <Label>Nom</Label>
-          <Input {...register('name')} />
+          <Input {...register("name")} />
           {errors.name && (
             <p className="text-sm text-destructive">{errors.name.message}</p>
           )}
@@ -255,14 +255,14 @@ export function AddCenterForm({
 
         <div>
           <Label>Email</Label>
-          <Input type="email" {...register('email')} autoComplete="new-email" />
+          <Input type="email" {...register("email")} autoComplete="new-email" />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
         <div>
           <Label>Description</Label>
-          <Input type="description" {...register('description')} />
+          <Input type="description" {...register("description")} />
           {errors.description && (
             <p className="text-sm text-destructive">
               {errors.description.message}
@@ -274,23 +274,23 @@ export function AddCenterForm({
           <Label>Adresse</Label>
           <AddressAutocomplete
             type="address"
-            value={watch('address')} // Use watch to get the current value
-            onChange={(value) => setValue('address', value)} // Use setValue to update the value
+            value={watch("address")} // Use watch to get the current value
+            onChange={(value) => setValue("address", value)} // Use setValue to update the value
             onPlaceSelected={(place) => {
-              setValue('address', place.formatted_address);
+              setValue("address", place.formatted_address);
               setValue(
-                'city',
+                "city",
                 place.address_components.find((component) =>
-                  component.types.includes('locality'),
-                )?.long_name || '',
+                  component.types.includes("locality"),
+                )?.long_name || "",
               );
               setValue(
-                'country',
+                "country",
                 place.address_components.find((component) =>
-                  component.types.includes('country'),
+                  component.types.includes("country"),
                 ).long_name,
               );
-              setValue('coordinate', {
+              setValue("coordinate", {
                 x: place.geometry.location.lat(),
                 y: place.geometry.location.lng(),
               });
@@ -309,8 +309,8 @@ export function AddCenterForm({
             international
             defaultCountry="AL"
             countries={allowedCountries}
-            value={watch('phoneNumber')}
-            onChange={(value) => setValue('phoneNumber', value)}
+            value={watch("phoneNumber")}
+            onChange={(value) => setValue("phoneNumber", value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-background"
             placeholder="+33 6 12 34 56 78"
             autoComplete="new-phone"
@@ -324,11 +324,11 @@ export function AddCenterForm({
         <div>
           <Label>Spécialité</Label>
           <Select
-            value={watch('specialityId')?.toString() || ''}
+            value={watch("specialityId")?.toString() || ""}
             onValueChange={(value) => {
               // Convertir la valeur en nombre car specialityId est un nombre
               const specialityId = parseInt(value, 10);
-              setValue('specialityId', specialityId, { shouldValidate: true });
+              setValue("specialityId", specialityId, { shouldValidate: true });
             }}
           >
             <SelectTrigger>
@@ -362,8 +362,8 @@ export function AddCenterForm({
           </Label>
           <Checkbox
             id="visible"
-            checked={watch('visible')}
-            onCheckedChange={(checked) => setValue('visible', Boolean(checked))}
+            checked={watch("visible")}
+            onCheckedChange={(checked) => setValue("visible", Boolean(checked))}
           />
         </div>
 
@@ -381,7 +381,7 @@ export function AddCenterForm({
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditMode ? 'Mettre à jour' : 'Créer le compte'}
+            {isEditMode ? "Mettre à jour" : "Créer le compte"}
           </Button>
         </div>
       </form>
@@ -393,17 +393,19 @@ export function AddCenterForm({
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">
               <ImageUpload
-                value={tempImage || ''}
+                value={tempImage || ""}
                 onChange={(value) => {
                   if (value === null) {
                     setTempImage(null);
-                  } else if (typeof value === 'string') {
+                  } else if (typeof value === "string") {
                     setTempImage(value);
                   } else if (value instanceof File) {
                     handleImageSelect(value);
                   }
                 }}
                 aspect={1}
+                maxWidth={2000}
+                maxHeight={2000}
               />
             </div>
           </div>
@@ -429,7 +431,7 @@ export function AddCenterForm({
                   Enregistrement...
                 </div>
               ) : (
-                'Enregistrer'
+                "Enregistrer"
               )}
             </Button>
           </div>

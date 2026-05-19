@@ -1,8 +1,8 @@
-import { useFormContext } from 'react-hook-form';
-import { useState } from 'react';
-import { ImageUpload } from '@/components/ui/ImageUpload';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { useFormContext } from "react-hook-form";
+import { useState } from "react";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 interface DoctorPhotoStepProps {
   onNext?: (data: any) => void;
@@ -18,7 +18,7 @@ export const DoctorPhotoStep = ({
   const { t } = useTranslation();
   const { setValue, watch, handleSubmit } = useFormContext();
 
-  const photoUrl = watch('photoUrl');
+  const photoUrl = watch("photoUrl");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const onSubmit = () => {
@@ -26,14 +26,14 @@ export const DoctorPhotoStep = ({
     if (photoFile) {
       const url = URL.createObjectURL(photoFile);
       // Mettre à jour la valeur dans le formulaire
-      setValue('photoUrl', url, { shouldValidate: true });
+      setValue("photoUrl", url, { shouldValidate: true });
       onNext({ photoUrl: url, photoFile });
     } else if (photoUrl) {
       // Si on a déjà une URL mais pas de fichier (cas où l'utilisateur ne change pas la photo)
       onNext({ photoUrl });
     } else {
       // Cas où il n'y a pas de photo
-      onNext({ photoUrl: '' });
+      onNext({ photoUrl: "" });
     }
   };
 
@@ -48,8 +48,8 @@ export const DoctorPhotoStep = ({
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             {t(
-              'onboarding.doctor.photo.title',
-              'Ajoutez votre photo de profil',
+              "onboarding.doctor.photo.title",
+              "Ajoutez votre photo de profil",
             )}
           </CardTitle>
         </CardHeader>
@@ -57,32 +57,34 @@ export const DoctorPhotoStep = ({
           <div className="space-y-6">
             <p className="text-muted-foreground text-center">
               {t(
-                'onboarding.doctor.photo.description',
-                'Une photo professionnelle aide les patients à vous reconnaître et à vous faire confiance.',
+                "onboarding.doctor.photo.description",
+                "Une photo professionnelle aide les patients à vous reconnaître et à vous faire confiance.",
               )}
             </p>
 
             <div className="flex justify-center">
               <div className="w-64">
                 <ImageUpload
-                  value={photoUrl || ''}
+                  value={photoUrl || ""}
                   onChange={(value) => {
                     if (value instanceof File) {
                       setPhotoFile(value);
                       const url = URL.createObjectURL(value);
-                      setValue('photoUrl', url, { shouldValidate: true });
+                      setValue("photoUrl", url, { shouldValidate: true });
                     } else if (value === null) {
                       setPhotoFile(null);
-                      setValue('photoUrl', '', { shouldValidate: true });
+                      setValue("photoUrl", "", { shouldValidate: true });
                     } else {
-                      setValue('photoUrl', value, { shouldValidate: true });
+                      setValue("photoUrl", value, { shouldValidate: true });
                     }
                   }}
                   label={t(
-                    'onboarding.doctor.photo.uploadLabel',
-                    'Télécharger une photo',
+                    "onboarding.doctor.photo.uploadLabel",
+                    "Télécharger une photo",
                   )}
                   aspect={1}
+                  maxWidth={2000}
+                  maxHeight={2000}
                 />
               </div>
             </div>

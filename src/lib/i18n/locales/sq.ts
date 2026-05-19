@@ -89,6 +89,13 @@ const sq: TranslationKey = {
     growPatients: 'Rrit numrin e pacientëve',
     freeRegistration: 'Regjistrim falas',
   },
+  actualities: {
+    title: 'Aktualitete shëndetësore',
+    subtitle:
+      'Informacione të përditësuara mbi shëndetin në Shqipëri dhe risitë në OrariMed.',
+    disclaimer:
+      'Artikujt janë informues dhe nuk zëvendësojnë këshillën mjekësore profesionale.',
+  },
   footer: {
     description:
       'Platforma e takimeve mjekësore online në Shqipëri. Rezervo një takim me mjekë të verifikuar në pak klikime.',

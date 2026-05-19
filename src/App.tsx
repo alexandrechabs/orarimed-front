@@ -1,8 +1,8 @@
 // Dans App.tsx
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as Sonner } from '@/components/ui/sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BrowserRouter,
   Routes,
@@ -10,38 +10,40 @@ import {
   Navigate,
   Outlet,
   useLocation,
-} from 'react-router-dom';
-import Index from './pages/Index';
-import SpecialitiesListPage from './pages/SpecialitiesListPage';
-import SpecialityPage from './pages/SpecialtyPage';
+} from "react-router-dom";
+import Index from "./pages/Index";
+import SpecialitiesListPage from "./pages/SpecialitiesListPage";
+import SpecialityPage from "./pages/SpecialtyPage";
 
-import AktualitetePage from './pages/AktualitetePage';
-import KontaktPage from './pages/KontaktPage';
-import NotFound from './pages/NotFound';
-import DashboardPage from './pages/dashboard/DashboardPage';
-import CalendarPage from './pages/calendar/CalendarPage';
-import AuthenticatedLayout from './layouts/AuthenticatedLayout';
-import OnboardingClientPage from './pages/onboarding/OnboardingClientPage';
-import SettingsPage from './pages/settings/SettingsPage';
-import { useAuth } from './services/auth/useAuth';
-import ProfessionalPage from './pages/ProfessionalPage';
-import { ProfessionalRegisterPage } from './pages/auth/ProfessionalRegisterPage';
-import { RegisterPage } from './pages/auth/RegisterPage';
-import { LoginPage } from './pages/auth/LoginPage';
-import { EmailConfirmationPage } from './pages/auth/EmailConfirmationPage';
-import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
-import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
-import { ProfessionalOnboardingPage } from './pages/onboarding/ProfessionalOnboardingPage';
-import AdminSettingsPage from './pages/admin/AdminSettingsPage';
-import DoctorPage from './pages/DoctorPage';
-import SearchPage from './pages/SearchPage';
-import DoctorSettingsPage from './pages/settings/DoctorSettingsPage';
-import AppointmentPage from './pages/AppointmentPage';
-import ConfirmationPage from './pages/ConfirmationPage';
-import AppointmentsPage from './pages/AppointmentsPage';
-import CenterPage from './pages/CenterPage';
-import CabinetSettingsPage from './pages/settings/CabinetSettingsPage';
-import ScrollToTop from './components/ScrollToTop';
+import Actualities from "./pages/Actualities";
+import ArticleDetail from "./pages/ArticleDetail";
+import KontaktPage from "./pages/KontaktPage";
+import NotFound from "./pages/NotFound";
+import DashboardPage from "./pages/dashboard/DashboardPage";
+import CalendarPage from "./pages/calendar/CalendarPage";
+import AuthenticatedLayout from "./layouts/AuthenticatedLayout";
+import OnboardingClientPage from "./pages/onboarding/OnboardingClientPage";
+import SettingsPage from "./pages/settings/SettingsPage";
+import { useAuth } from "./services/auth/useAuth";
+import ProfessionalPage from "./pages/ProfessionalPage";
+import { ProfessionalRegisterPage } from "./pages/auth/ProfessionalRegisterPage";
+import { RegisterPage } from "./pages/auth/RegisterPage";
+import { LoginPage } from "./pages/auth/LoginPage";
+import { EmailConfirmationPage } from "./pages/auth/EmailConfirmationPage";
+import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
+import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
+import { ProfessionalOnboardingPage } from "./pages/onboarding/ProfessionalOnboardingPage";
+import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
+import AdminArticlesPage from "./pages/admin/ArticlePage";
+import DoctorPage from "./pages/DoctorPage";
+import SearchPage from "./pages/SearchPage";
+import DoctorSettingsPage from "./pages/settings/DoctorSettingsPage";
+import AppointmentPage from "./pages/AppointmentPage";
+import ConfirmationPage from "./pages/ConfirmationPage";
+import AppointmentsPage from "./pages/AppointmentsPage";
+import CenterPage from "./pages/CenterPage";
+import CabinetSettingsPage from "./pages/settings/CabinetSettingsPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +61,7 @@ const ProtectedAuthRoute = ({ children }: { children: JSX.Element }) => {
   }
 
   if (user) {
-    const from = location.state?.from?.pathname || '/dashboard';
+    const from = location.state?.from?.pathname || "/dashboard";
     return <Navigate to={from} replace />;
   }
 
@@ -91,7 +93,7 @@ const ProtectedRoute = () => {
     user &&
     !user.birthDate &&
     user.roleId === 1 &&
-    !location.pathname.startsWith('/onboardingClient')
+    !location.pathname.startsWith("/onboardingClient")
   ) {
     return <Navigate to="/onboardingClient" replace />;
   }
@@ -99,7 +101,7 @@ const ProtectedRoute = () => {
     user &&
     !user.birthDate &&
     user.roleId === 2 &&
-    !location.pathname.startsWith('/onboardingDoctor')
+    !location.pathname.startsWith("/onboardingDoctor")
   ) {
     return <Navigate to="/onboardingDoctor" replace />;
   }
@@ -126,7 +128,7 @@ const ProtectedRouteOnboarding = ({
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  if (!user.emailVerified && !location.pathname.startsWith('/verify-email')) {
+  if (!user.emailVerified && !location.pathname.startsWith("/verify-email")) {
     return <Navigate to="/verify-email" replace />;
   }
 
@@ -184,7 +186,11 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/specialities" element={<SpecialitiesListPage />} />
           <Route path="/specialities/:slug" element={<SpecialityPage />} />
-          <Route path="/actualities" element={<AktualitetePage />} />
+          <Route path="/actualities" element={<Actualities />} />
+          <Route
+            path="/actualities/:locale/:slug"
+            element={<ArticleDetail />}
+          />
           <Route path="/contact" element={<KontaktPage />} />
           <Route path="/professionals" element={<ProfessionalPage />} />
           <Route path="/search" element={<SearchPage />} />
@@ -228,10 +234,22 @@ const App = () => (
               </ProtectedAuthRoute>
             }
           />
-          <Route path="/appointment" element={
-            <ProtectedRouteByRole allowedRoles={[1]}><AppointmentPage /></ProtectedRouteByRole>} />
-          <Route path="/confirmation" element={
-            <ProtectedRouteByRole allowedRoles={[1]}><ConfirmationPage /></ProtectedRouteByRole>} />
+          <Route
+            path="/appointment"
+            element={
+              <ProtectedRouteByRole allowedRoles={[1]}>
+                <AppointmentPage />
+              </ProtectedRouteByRole>
+            }
+          />
+          <Route
+            path="/confirmation"
+            element={
+              <ProtectedRouteByRole allowedRoles={[1]}>
+                <ConfirmationPage />
+              </ProtectedRouteByRole>
+            }
+          />
 
           <Route
             path="/verify-email"
@@ -319,6 +337,14 @@ const App = () => (
                 element={
                   <ProtectedRouteByRole allowedRoles={[4]}>
                     <AdminSettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-articles"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[4, 2]}>
+                    <AdminArticlesPage />
                   </ProtectedRouteByRole>
                 }
               />

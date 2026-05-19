@@ -89,6 +89,13 @@ const fr: TranslationKey = {
     growPatients: 'Augmenter le nombre de patients',
     freeRegistration: 'Inscription gratuite',
   },
+  actualities: {
+    title: 'Actualités santé',
+    subtitle:
+      "Informations à jour sur la santé en Albanie et les nouveautés d'OrariMed.",
+    disclaimer:
+      'Les articles sont informatifs et ne remplacent pas un conseil médical professionnel.',
+  },
   footer: {
     description:
       'La plateforme de rendez-vous médicaux en ligne en Albanie. Prenez rendez-vous avec des médecins vérifiés en quelques clics.',
