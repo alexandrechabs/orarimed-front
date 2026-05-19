@@ -1,18 +1,19 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ConsultationReasons from '@/components/admin/ConsultationReasons';
-import OpeningHoursForm from '@/components/admin/OpeningHoursForm';
-import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/services/auth/useAuth';
-import { OpeningHour } from '@/types/openingHour';
-import { Button } from '@/components/ui/button';
-import { FormProvider } from 'react-hook-form';
-import { useSearchParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUser } from '@/services/user/useUser';
-import { ConsultationReason } from '@/types/consultationReason';
-import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ConsultationReasons from "@/components/admin/ConsultationReasons";
+import OpeningHoursForm from "@/components/admin/OpeningHoursForm";
+import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/services/auth/useAuth";
+import { OpeningHour } from "@/types/openingHour";
+import { Button } from "@/components/ui/button";
+import { FormProvider } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUser } from "@/services/user/useUser";
+import { ConsultationReason } from "@/types/consultationReason";
+import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { Eye } from "lucide-react";
 
 export default function DoctorSettingsPage() {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ export default function DoctorSettingsPage() {
     },
   });
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'opening-hours';
+  const defaultTab = searchParams.get("tab") || "opening-hours";
   const { handleSubmit, setValue, watch, reset } = methods;
   const {
     handleSubmit: consultationReasonsHandleSubmit,
@@ -108,7 +109,7 @@ export default function DoctorSettingsPage() {
               <CardHeader>
                 <CardTitle>{t.doctorParams.openingHours}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-2">
                 <FormProvider {...methods}>
                   <form
                     id="onboarding-form-1"
@@ -160,6 +161,10 @@ export default function DoctorSettingsPage() {
                 </FormProvider>
               </CardContent>
             </Card>
+            <p className="flex italic text-sm text-gray-600 mt-2 items-center gap-1">
+              * <Eye className="h-4 w-4 mt-1 mr-2" />{" "}
+              {t.doctorParams.reasonInformation}
+            </p>
           </TabsContent>
         )}
       </Tabs>

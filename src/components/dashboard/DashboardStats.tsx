@@ -157,7 +157,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
       {/* Carte: Rendez-vous du jour */}
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -252,7 +252,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
 
       {/* Carte: Prochain rendez-vous */}
       <Card
-        className="hover:shadow-lg transition-shadow lg:col-span-2"
+        className="hover:shadow-lg transition-shadow col-span-2"
         onClick={() => navigate("/calendar")}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

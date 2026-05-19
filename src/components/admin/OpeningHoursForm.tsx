@@ -1,35 +1,35 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+} from "@/components/ui/select";
+import { Plus, Trash2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { useFormContext, useFieldArray } from 'react-hook-form';
-import { OpeningHour } from '@/types/openingHour';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+} from "@/components/ui/dialog";
+import { useFormContext, useFieldArray } from "react-hook-form";
+import { OpeningHour } from "@/types/openingHour";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
-type PeriodType = 'morning' | 'afternoon';
+type PeriodType = "morning" | "afternoon";
 
 interface OpeningHoursFormProps {
   name?: string;
 }
 
 export default function OpeningHoursForm({
-  name = 'openingHours',
+  name = "openingHours",
 }: OpeningHoursFormProps) {
   const { control, watch } = useFormContext();
   const { t } = useLanguage();
@@ -49,18 +49,18 @@ export default function OpeningHoursForm({
   ];
 
   const PERIODS = [
-    { value: 'morning', label: t.doctorParams.openingForm.morning },
-    { value: 'afternoon', label: t.doctorParams.openingForm.afternoon },
+    { value: "morning", label: t.doctorParams.openingForm.morning },
+    { value: "afternoon", label: t.doctorParams.openingForm.afternoon },
   ];
 
   const openingHours = watch(name) || [];
 
-  const [newHour, setNewHour] = useState<Omit<OpeningHour, 'id'>>({
+  const [newHour, setNewHour] = useState<Omit<OpeningHour, "id">>({
     dayOfWeek: 1,
-    period: 'morning',
-    openTime: '09:00',
-    closeTime: '12:00',
-    userId: '',
+    period: "morning",
+    openTime: "09:00",
+    closeTime: "12:00",
+    userId: "",
   });
 
   const [errorDialog, setErrorDialog] = useState<{
@@ -69,8 +69,8 @@ export default function OpeningHoursForm({
     message: string;
   }>({
     open: false,
-    title: '',
-    message: '',
+    title: "",
+    message: "",
   });
 
   const isTimeSlotTaken = (
@@ -105,8 +105,8 @@ export default function OpeningHoursForm({
         open: true,
         title: t.doctorParams.hoursAlreadyExistTitle,
         message: t.doctorParams.hoursAlreadyExist
-          .replace('{day}', day || '')
-          .replace('{period}', period || ''),
+          .replace("{day}", day || "")
+          .replace("{period}", period || ""),
       });
       return;
     }
@@ -121,10 +121,10 @@ export default function OpeningHoursForm({
     // Réinitialiser avec le même jour mais en alternant la période
     setNewHour({
       dayOfWeek: newHour.dayOfWeek,
-      period: newHour.period === 'morning' ? 'afternoon' : 'morning',
-      openTime: '09:00',
-      closeTime: '12:00',
-      userId: '',
+      period: newHour.period === "morning" ? "afternoon" : "morning",
+      openTime: "09:00",
+      closeTime: "12:00",
+      userId: "",
     });
   };
 
@@ -169,11 +169,11 @@ export default function OpeningHoursForm({
           </AlertDescription>
         </Alert>
       )}
-      <div className="border rounded-lg p-4 space-y-4">
+      <div className="border rounded-lg p-2 space-y-4">
         <h3 className="text-lg font-medium">
           {t.doctorParams.openingForm.title}
         </h3>
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="space-y-2">
             <Label>{t.doctorParams.openingForm.day}</Label>
             <Select
@@ -182,7 +182,7 @@ export default function OpeningHoursForm({
                 setNewHour({ ...newHour, dayOfWeek: parseInt(value, 10) })
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Sélectionner un jour" />
               </SelectTrigger>
               <SelectContent>
@@ -203,7 +203,7 @@ export default function OpeningHoursForm({
                 setNewHour({ ...newHour, period: value })
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={t.doctorParams.openingForm.selectTimeSlot}
                 />
@@ -226,7 +226,7 @@ export default function OpeningHoursForm({
               onChange={(e) =>
                 setNewHour({ ...newHour, openTime: e.target.value })
               }
-              className="w-[120px]"
+              className="w-full"
             />
           </div>
 
@@ -238,10 +238,11 @@ export default function OpeningHoursForm({
               onChange={(e) =>
                 setNewHour({ ...newHour, closeTime: e.target.value })
               }
-              className="w-[120px]"
+              className="w-full"
             />
           </div>
-
+        </div>
+        <div className="flex justify-center">
           <Button type="button" onClick={handleAddHour} className="mb-1">
             <Plus className="mr-2 h-4 w-4" /> {t.common.add}
           </Button>
@@ -276,7 +277,7 @@ export default function OpeningHoursForm({
                       }
                     </p>
                     <p className="text-sm text-gray-600">
-                      {hour.period === 'morning'
+                      {hour.period === "morning"
                         ? t.doctorParams.openingForm.morning
                         : t.doctorParams.openingForm.afternoon}
                       : {hour.openTime} - {hour.closeTime}

@@ -721,6 +721,8 @@ const en: TranslationKey = {
     minutes: "minutes",
     saveOpeningHour: "Opening hours saved successfully",
     saveReason: "Consultation reasons saved successfully",
+    reasonInformation:
+      "You can disable a consultation reason from online appointment booking, it will only be visible to create your appointments from your calendar.",
   },
   cabinetParams: {
     title: "Cabinet Settings",

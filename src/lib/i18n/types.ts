@@ -589,6 +589,7 @@ export type TranslationKey = {
     minutes: string;
     saveOpeningHour: string;
     saveReason: string;
+    reasonInformation: string;
   };
   cabinetParams: {
     title: string;

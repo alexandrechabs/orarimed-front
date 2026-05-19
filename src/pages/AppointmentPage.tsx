@@ -1,12 +1,12 @@
-import { useEffect, useState, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { useUser } from '@/services/user/useUser';
-import { Slots } from '@/components/doctors/Slots';
-import { ConsultationReason } from '@/types/consultationReason';
+import { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useDateLocale, useLanguage } from "@/lib/i18n/LanguageContext";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useUser } from "@/services/user/useUser";
+import { Slots } from "@/components/doctors/Slots";
+import { ConsultationReason } from "@/types/consultationReason";
 
 interface LocationState {
   doctor: {
@@ -100,7 +100,7 @@ export default function AppointmentPage() {
       const appointmentTypeData = appointmentType.find(
         (t) => t.id === selectedType,
       );
-      navigate('/confirmation', {
+      navigate("/confirmation", {
         state: {
           doctor,
           appointmentType: appointmentTypeData,
@@ -137,15 +137,15 @@ export default function AppointmentPage() {
             onClick={() => setSelectedType(type.id)}
             className={`p-4 border rounded-lg text-left transition-all ${
               selectedType === type.id
-                ? 'border-primary bg-primary/10'
-                : 'border-gray-200 hover:border-primary/50'
+                ? "border-primary bg-primary/10"
+                : "border-gray-200 hover:border-primary/50"
             }`}
           >
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-medium">{type.name}</h3>
                 <p className="text-sm text-gray-500">
-                  {t.createRdv.appointmentPage.duration} : {type.duration}{' '}
+                  {t.createRdv.appointmentPage.duration} : {type.duration}{" "}
                   {t.createRdv.appointmentPage.minute}
                 </p>
               </div>
@@ -215,8 +215,8 @@ export default function AppointmentPage() {
             {appointmentType.find((t) => t.id === selectedType)?.name}
           </p>
           <p className="text-gray-600">
-            {t.createRdv.appointmentPage.duration} :{' '}
-            {appointmentType.find((t) => t.id === selectedType)?.duration}{' '}
+            {t.createRdv.appointmentPage.duration} :{" "}
+            {appointmentType.find((t) => t.id === selectedType)?.duration}{" "}
             {t.createRdv.appointmentPage.minute}
           </p>
         </div>
@@ -226,13 +226,13 @@ export default function AppointmentPage() {
             {t.createRdv.appointmentPage.time}
           </h3>
           <p className="text-lg">
-            {format(new Date(selectedSlot || slot), 'EEEE d MMMM yyyy', {
+            {format(new Date(selectedSlot || slot), "EEEE d MMMM yyyy", {
               locale: dateLocale,
             })}
           </p>
           <p className="text-lg">{`${format(
             new Date(selectedSlot || slot),
-            'HH:mm',
+            "HH:mm",
             {
               locale: dateLocale,
             },
@@ -273,12 +273,14 @@ export default function AppointmentPage() {
         <div className="flex justify-between items-center mb-8">
           <div
             className={`flex-1 flex items-center ${
-              currentStep === 1 ? 'text-primary' : 'text-gray-400'
+              currentStep === 1
+                ? "text-primary"
+                : "text-gray-400 text-xs md:text-base"
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${
-                currentStep === 1 ? 'bg-primary text-white' : 'bg-gray-100'
+                currentStep === 1 ? "bg-primary text-white" : "bg-gray-100"
               }`}
             >
               1
@@ -288,19 +290,21 @@ export default function AppointmentPage() {
           <div className="flex-1 h-1 mx-2 bg-gray-200">
             <div
               className={`h-full ${
-                currentStep >= 2 ? 'bg-primary' : 'bg-gray-200'
+                currentStep >= 2 ? "bg-primary" : "bg-gray-200"
               }`}
-              style={{ width: currentStep >= 2 ? '100%' : '0%' }}
+              style={{ width: currentStep >= 2 ? "100%" : "0%" }}
             ></div>
           </div>
           <div
             className={`flex-1 flex items-center ${
-              currentStep === 2 ? 'text-primary' : 'text-gray-400'
+              currentStep === 2
+                ? "text-primary"
+                : "text-gray-400 text-xs md:text-base"
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${
-                currentStep === 2 ? 'bg-primary text-white' : 'bg-gray-100'
+                currentStep === 2 ? "bg-primary text-white" : "bg-gray-100"
               }`}
             >
               2
@@ -310,19 +314,21 @@ export default function AppointmentPage() {
           <div className="flex-1 h-1 mx-2 bg-gray-200">
             <div
               className={`h-full ${
-                currentStep >= 3 ? 'bg-primary' : 'bg-gray-200'
+                currentStep >= 3 ? "bg-primary" : "bg-gray-200"
               }`}
-              style={{ width: currentStep >= 3 ? '100%' : '0%' }}
+              style={{ width: currentStep >= 3 ? "100%" : "0%" }}
             ></div>
           </div>
           <div
             className={`flex-1 flex items-center ${
-              currentStep === 3 ? 'text-primary' : 'text-gray-400'
+              currentStep === 3
+                ? "text-primary"
+                : "text-gray-400 text-xs md:text-base"
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${
-                currentStep === 3 ? 'bg-primary text-white' : 'bg-gray-100'
+                currentStep === 3 ? "bg-primary text-white" : "bg-gray-100"
               }`}
             >
               3

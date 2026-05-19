@@ -729,6 +729,8 @@ const fr: TranslationKey = {
     minutes: "minutes",
     saveOpeningHour: "Les heures d'ouverture ont été enregistrées avec succès.",
     saveReason: "Les motifs de consultation ont été enregistrés avec succès.",
+    reasonInformation:
+      "Vous pouvez désactiver un motif de consulation de la prise de rendez-vous en ligne, il ne sera visible que pour créer vos rendez-vous depuis votre agenda.",
   },
   cabinetParams: {
     title: "Paramètres du Cabinet",

@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Clock } from 'lucide-react';
-import { useAuth } from '@/services/auth/useAuth';
-import { useUser } from '@/services/user/useUser';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import DashboardStats from '@/components/dashboard/DashboardStats';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, Clock } from "lucide-react";
+import { useAuth } from "@/services/auth/useAuth";
+import { useUser } from "@/services/user/useUser";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import DashboardStats from "@/components/dashboard/DashboardStats";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,7 +20,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     if (user.roleId === 1 || user.roleId === 2) {
@@ -38,7 +38,9 @@ const DashboardPage = () => {
         const today = new Date();
         const dayOfWeek = today.getDay();
         const monday = new Date(today);
-        monday.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+        monday.setDate(
+          today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1),
+        );
         const sunday = new Date(monday);
         sunday.setDate(monday.getDate() + 6);
         dateRange = {
@@ -60,13 +62,14 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto px-4 pb-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Bienvenue */}
           <Card className="col-span-full bg-accent">
             <CardHeader>
-              <CardTitle className='text-white'>
-                {t.dashboard.welcome}, <span className='text-gray-200'>{user?.firstname}</span> !
+              <CardTitle className="text-white">
+                {t.dashboard.welcome},{" "}
+                <span className="text-gray-200">{user?.firstname}</span> !
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -89,7 +92,7 @@ const DashboardPage = () => {
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => navigate('/search')}
+                  onClick={() => navigate("/search")}
                 >
                   {t.dashboard.takeAnAppointment}
                 </Button>
@@ -104,7 +107,7 @@ const DashboardPage = () => {
           )}
 
           {/* Prochains rendez-vous */}
-          {(user.roleId === 1) && (
+          {user.roleId === 1 && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -114,7 +117,7 @@ const DashboardPage = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => navigate('/appointments')}
+                    onClick={() => navigate("/appointments")}
                   >
                     {t.dashboard.seeAll}
                   </Button>
@@ -140,14 +143,14 @@ const DashboardPage = () => {
                               <Clock className="h-4 w-4 mr-1" />
                               <span>
                                 {new Date(event.start).toLocaleDateString(
-                                  user?.language || 'en-EN',
+                                  user?.language || "en-EN",
                                   {
-                                    weekday: 'long',
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   },
                                 )}
                               </span>
@@ -189,13 +192,13 @@ const DashboardPage = () => {
                           src={
                             doctor.avatar
                               ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
-                              : '/default-avatar.png'
+                              : "/default-avatar.png"
                           }
                           alt={doctor.firstname}
                           className="h-full w-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = '/default-avatar.png';
+                            target.src = "/default-avatar.png";
                           }}
                         />
                       </div>

@@ -725,6 +725,8 @@ const sq: TranslationKey = {
     minutes: "minuta",
     saveOpeningHour: "Oraret e hapjes u ruajtën me sukses",
     saveReason: "Arsyet e takimit u ruajtën me sukses",
+    reasonInformation:
+      "Arsyet e takimit janë të rëndësishme për të informuar pacientët tuaj për llojet e shërbimeve që ofroni dhe për të menaxhuar më mirë oraret tuaja.",
   },
   cabinetParams: {
     title: "Parametrat e Kabinetit",

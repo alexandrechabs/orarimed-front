@@ -1,29 +1,29 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import allLocales from '@fullcalendar/core/locales-all';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
-import { motion } from 'framer-motion';
-import { useAuth } from '@/services/auth/useAuth';
-import { EventChangeArg, EventInput } from '@fullcalendar/core/index.js';
-import CreateAppointmentModal from '@/components/calendar/CreateAppointmentModal';
-import { useUser } from '@/services/user/useUser';
-import { useToast } from '@/hooks/use-toast';
-import { CalendarEvent } from '@/types/CalendarEvent';
-import * as LucideIcons from 'lucide-react';
-import { DoctorProfile } from '@/types/doctor';
-import { User } from '@/types/user';
+import { useState, useCallback, useEffect, useRef } from "react";
+import FullCalendar from "@fullcalendar/react";
+import allLocales from "@fullcalendar/core/locales-all";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import listPlugin from "@fullcalendar/list";
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
+import { useDateLocale, useLanguage } from "@/lib/i18n/LanguageContext";
+import { motion } from "framer-motion";
+import { useAuth } from "@/services/auth/useAuth";
+import { EventChangeArg, EventInput } from "@fullcalendar/core/index.js";
+import CreateAppointmentModal from "@/components/calendar/CreateAppointmentModal";
+import { useUser } from "@/services/user/useUser";
+import { useToast } from "@/hooks/use-toast";
+import { CalendarEvent } from "@/types/CalendarEvent";
+import * as LucideIcons from "lucide-react";
+import { DoctorProfile } from "@/types/doctor";
+import { User } from "@/types/user";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -31,9 +31,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 const CalendarPage = () => {
   const { user } = useAuth();
@@ -58,8 +58,8 @@ const CalendarPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
-  const [slotMinTime, setSlotMinTime] = useState('08:00:00');
-  const [slotMaxTime, setSlotMaxTime] = useState('21:00:00');
+  const [slotMinTime, setSlotMinTime] = useState("08:00:00");
+  const [slotMaxTime, setSlotMaxTime] = useState("21:00:00");
   const calendarRef = useRef<FullCalendar>(null);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -79,7 +79,7 @@ const CalendarPage = () => {
         const doctors = await getSecretaryDoctors(user.id);
         setAccessDoctors(doctors);
         // get userId in url
-        let userId = new URLSearchParams(window.location.search).get('userId');
+        let userId = new URLSearchParams(window.location.search).get("userId");
         if (userId) {
           const doctor = doctors.find((d) => d.id === userId);
           if (doctor) {
@@ -123,7 +123,7 @@ const CalendarPage = () => {
   }, [selectedDoctor]); // Le tableau vide signifie que cet effet ne s'exécute qu'au montage/démontage
 
   useEffect(() => {
-    const btn = document.querySelector('.fc-toggleVisibility-button');
+    const btn = document.querySelector(".fc-toggleVisibility-button");
 
     if (!btn) return;
 
@@ -158,12 +158,12 @@ const CalendarPage = () => {
         // enlève 1 heure au min et ajouter 1 heure au max
 
         const formatTimeForCalendar = (timeStr: string, diff: number) => {
-          let [hours, minutes] = timeStr.split(':').map(Number);
+          let [hours, minutes] = timeStr.split(":").map(Number);
           hours = hours + diff;
 
-          return `${hours.toString().padStart(2, '0')}:${minutes
+          return `${hours.toString().padStart(2, "0")}:${minutes
             .toString()
-            .padStart(2, '0')}:00`;
+            .padStart(2, "0")}:00`;
         };
 
         setSlotMinTime(formatTimeForCalendar(minTime, -1));
@@ -172,9 +172,9 @@ const CalendarPage = () => {
     );
   };
   const localeMap: Record<string, string> = {
-    sq: 'sq',
-    en: 'en',
-    fr: 'fr',
+    sq: "sq",
+    en: "en",
+    fr: "fr",
   };
 
   const handleDatesSet = useCallback(
@@ -192,15 +192,15 @@ const CalendarPage = () => {
     try {
       await createEvent(newEvent);
       toast({
-        title: 'Le rendez-vous a été créé avec succès',
-        description: '',
+        title: "Le rendez-vous a été créé avec succès",
+        description: "",
       });
     } catch (error) {
-      console.error('Erreur lors de la création du rendez-vous:', error);
+      console.error("Erreur lors de la création du rendez-vous:", error);
       toast({
-        title: 'Erreur lors de la création du rendez-vous',
-        description: '',
-        variant: 'destructive',
+        title: "Erreur lors de la création du rendez-vous",
+        description: "",
+        variant: "destructive",
       });
     }
   }, []);
@@ -209,15 +209,15 @@ const CalendarPage = () => {
     try {
       await updateEvent(updatedEvent);
       toast({
-        title: 'Le rendez-vous a été modifié avec succès',
-        description: '',
+        title: "Le rendez-vous a été modifié avec succès",
+        description: "",
       });
     } catch (error) {
-      console.error('Erreur lors du déplacement du rendez-vous:', error);
+      console.error("Erreur lors du déplacement du rendez-vous:", error);
       toast({
-        title: 'Erreur lors de la modification du rendez-vous',
-        description: '',
-        variant: 'destructive',
+        title: "Erreur lors de la modification du rendez-vous",
+        description: "",
+        variant: "destructive",
       });
     }
   }, []);
@@ -228,7 +228,7 @@ const CalendarPage = () => {
     const eventData: CalendarEvent = {
       id: event.id,
       title: event.title,
-      description: event.extendedProps?.description || '',
+      description: event.extendedProps?.description || "",
       allDay: event.allDay || false,
       // Propriétés de base
       start: event.start,
@@ -244,7 +244,7 @@ const CalendarPage = () => {
       patient: event.extendedProps?.patient,
       practitionerId: event.extendedProps?.practitionerId || user?.id, // Utiliser l'ID de l'utilisateur connecté
       // Propriétés étendues
-      type: event.extendedProps?.type || 'appointment',
+      type: event.extendedProps?.type || "appointment",
       status: event.extendedProps?.status,
     };
 
@@ -264,12 +264,12 @@ const CalendarPage = () => {
     // Formater les nouvelles dates pour l'affichage
     const newStart = new Date(event.start);
     const newEnd = new Date(event.end);
-    const formattedDate = format(newStart, 'eeee dd MMMM yyyy', {
+    const formattedDate = format(newStart, "eeee dd MMMM yyyy", {
       locale: dateLocale,
     });
-    const formattedTime = `${format(newStart, 'HH:mm', {
+    const formattedTime = `${format(newStart, "HH:mm", {
       locale: dateLocale,
-    })} - ${format(newEnd, 'HH:mm', {
+    })} - ${format(newEnd, "HH:mm", {
       locale: dateLocale,
     })}`;
 
@@ -301,15 +301,15 @@ const CalendarPage = () => {
     try {
       await updateEvent(newEvent);
       toast({
-        title: 'Le rendez-vous a été déplacé avec succès',
-        description: '',
+        title: "Le rendez-vous a été déplacé avec succès",
+        description: "",
       });
     } catch (error) {
-      console.error('Erreur lors du déplacement du rendez-vous:', error);
+      console.error("Erreur lors du déplacement du rendez-vous:", error);
       toast({
-        title: 'Erreur lors du déplacement du rendez-vous',
-        description: '',
-        variant: 'destructive',
+        title: "Erreur lors du déplacement du rendez-vous",
+        description: "",
+        variant: "destructive",
       });
     }
 
@@ -340,8 +340,8 @@ const CalendarPage = () => {
   // Fonction pour formater l'heure
   const formatTime = (date: Date) => {
     return new Date(date).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -350,38 +350,34 @@ const CalendarPage = () => {
     const event = eventInfo.event;
     let abort = false;
     let Icon;
-    if (event.extendedProps.status === 'waiting') {
-      Icon = LucideIcons['Armchair'];
-    } else if (event.extendedProps.status === 'consultation') {
-      Icon = LucideIcons['Stethoscope'];
-    } else if (event.extendedProps.status === 'finished') {
-      Icon = LucideIcons['Check'];
-    } else if (event.extendedProps.status === 'abortExcused') {
-      Icon = LucideIcons['CalendarOff'];
+    if (event.extendedProps.status === "waiting") {
+      Icon = LucideIcons["Armchair"];
+    } else if (event.extendedProps.status === "consultation") {
+      Icon = LucideIcons["Stethoscope"];
+    } else if (event.extendedProps.status === "finished") {
+      Icon = LucideIcons["Check"];
+    } else if (event.extendedProps.status === "abortExcused") {
+      Icon = LucideIcons["CalendarOff"];
       abort = true;
-    } else if (event.extendedProps.status === 'abort') {
-      Icon = LucideIcons['Ban'];
+    } else if (event.extendedProps.status === "abort") {
+      Icon = LucideIcons["Ban"];
       abort = true;
     }
 
     return (
       <div className="">
         <div className="font-normal whitespace-normal break-words">
-          {event.extendedProps?.type === 'absence' ? (
-            formatTime(event.start) + ' - ' + event.title
+          {event.extendedProps?.type === "absence" ? (
+            formatTime(event.start) + " - " + event.title
           ) : (
             <>
               <span
-                className={`flex items-center gap-2 ${abort ? 'line-through' : ''}`}
+                className={`flex items-center gap-2 ${abort ? "line-through" : ""}`}
               >
                 {Icon && <Icon className="h-4 w-4 shrink-0" />}
-                {formatTime(event.start)} -{' '}
-                {isVisible
-                  ? event.extendedProps?.patient?.firstname
-                  : '******'}{' '}
-                {isVisible
-                  ? event.extendedProps?.patient?.lastname
-                  : '******'}
+                {formatTime(event.start)} -{" "}
+                {isVisible ? event.extendedProps?.patient?.firstname : "******"}{" "}
+                {isVisible ? event.extendedProps?.patient?.lastname : "******"}
               </span>
             </>
           )}
@@ -414,7 +410,7 @@ const CalendarPage = () => {
               <div className="flex items-center space-x-2">
                 <Label className="text-sm font-medium">Médecin:</Label>
                 <Select
-                  value={selectedDoctor?.id || ''}
+                  value={selectedDoctor?.id || ""}
                   onValueChange={(value) => {
                     const doctor = accessDoctors.find((d) => d.id === value);
                     if (doctor) {
@@ -455,16 +451,16 @@ const CalendarPage = () => {
                 interactionPlugin,
               ]}
               headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
+                left: "prev,today,next",
+                center: "title",
                 right:
                   window.innerWidth < 768
-                    ? 'toggleVisibility timeGridDay,listWeek'
-                    : 'toggleVisibility dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                    ? "toggleVisibility timeGridDay,listWeek"
+                    : "toggleVisibility dayGridMonth,timeGridWeek,timeGridDay,listWeek",
               }}
               customButtons={{
                 toggleVisibility: {
-                  text: '',
+                  text: "",
                   click: () => {
                     setIsVisible((prev) => !prev);
                   },
@@ -485,67 +481,71 @@ const CalendarPage = () => {
                 // get number of days diff into start and end
                 const diff = Math.abs(
                   new Date(arg.end.marker).getTime() -
-                  new Date(arg.start.marker).getTime(),
+                    new Date(arg.start.marker).getTime(),
                 );
                 let nbdays = Math.round(diff / (1000 * 60 * 60 * 24));
 
                 if (nbdays === 7) {
                   return (
-                    format(arg.start.marker, 'dd MMMM', {
+                    format(arg.start.marker, "dd MMMM", {
                       locale: dateLocale,
                     }) +
-                    ' - ' +
-                    format(arg.end.marker, 'dd MMMM yyyy', {
+                    " - " +
+                    format(arg.end.marker, "dd MMMM yyyy", {
                       locale: dateLocale,
                     })
                   );
                 } else if (nbdays > 7) {
-                  return format(arg.start.marker, 'MMMM yyyy', {
+                  return format(arg.start.marker, "MMMM yyyy", {
                     locale: dateLocale,
                   });
                 }
-                return format(arg.end.marker, 'dd MMMM yyyy', {
+                return format(arg.end.marker, "dd MMMM yyyy", {
                   locale: dateLocale,
                 });
               }}
               dayHeaderContent={(arg) => {
-                if (arg.view.type === 'timeGridDay') {
-                  const dayName = format(arg.date, 'eeee', {
+                if (arg.view.type === "timeGridDay") {
+                  const dayName = format(arg.date, "eeee", {
                     locale: dateLocale,
                   });
-                  const dayNumber = format(arg.date, 'dd', {
+                  const dayNumber = format(arg.date, "dd", {
                     locale: dateLocale,
                   });
                   return (
-                    <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
-                      <div style={{ fontSize: '0.9em', fontWeight: 'bold' }}>{dayName}</div>
-                      <div style={{ fontSize: '1.1em' }}>{dayNumber}</div>
+                    <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                      <div style={{ fontSize: "0.9em", fontWeight: "bold" }}>
+                        {dayName}
+                      </div>
+                      <div style={{ fontSize: "1.1em" }}>{dayNumber}</div>
                     </div>
                   );
-                } else if (arg.view.type === 'listWeek') {
-                  return format(arg.date, 'eeee dd MMMM', {
+                } else if (arg.view.type === "listWeek") {
+                  return format(arg.date, "eeee dd MMMM", {
                     locale: dateLocale,
                   });
-                } else if (arg.view.type === 'timeGridWeek') {
-                  const dayName = format(arg.date, 'eee', {
+                } else if (arg.view.type === "timeGridWeek") {
+                  const dayName = format(arg.date, "eee", {
                     locale: dateLocale,
                   });
-                  const dayNumber = format(arg.date, 'dd', {
+                  const dayNumber = format(arg.date, "dd", {
                     locale: dateLocale,
                   });
                   return (
-                    <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
-                      <div style={{ fontSize: '0.8em' }}>{dayName}</div>
-                      <div style={{ fontSize: '0.9em', fontWeight: 'bold' }}>{dayNumber}</div>
+                    <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                      <div style={{ fontSize: "0.8em" }}>{dayName}</div>
+                      <div style={{ fontSize: "0.9em", fontWeight: "bold" }}>
+                        {dayNumber}
+                      </div>
                     </div>
                   );
-                } else if (arg.view.type === 'dayGridMonth') {
-                  const dayName = format(arg.date, 'eee', {
+                } else if (arg.view.type === "dayGridMonth") {
+                  const dayName = format(arg.date, "eee", {
                     locale: dateLocale,
                   });
                   return (
-                    <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
-                      <div style={{ fontSize: '0.8em' }}>{dayName}</div>
+                    <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                      <div style={{ fontSize: "0.8em" }}>{dayName}</div>
                     </div>
                   );
                 } else {
@@ -554,14 +554,14 @@ const CalendarPage = () => {
               }}
               eventDisplay="block"
               eventTimeFormat={{
-                hour: '2-digit',
-                minute: '2-digit',
+                hour: "2-digit",
+                minute: "2-digit",
                 hour12: false,
                 meridiem: false,
               }}
               locales={allLocales}
-              locale={localeMap[language] || 'en'}
-              key={'sq'}
+              locale={localeMap[language] || "en"}
+              key={"sq"}
               dateClick={handleDateClick}
               events={events}
               editable={true}
@@ -575,7 +575,7 @@ const CalendarPage = () => {
               nowIndicator={true}
               datesSet={handleDatesSet}
               initialView={
-                window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek'
+                window.innerWidth < 768 ? "timeGridDay" : "timeGridWeek"
               }
               windowResize={(view) => {
                 const calendar = view.view.calendar;
@@ -583,18 +583,18 @@ const CalendarPage = () => {
 
                 const isMobile = window.innerWidth < 768;
 
-                calendar.setOption('headerToolbar', {
-                  left: 'prev,next today',
-                  center: 'title',
+                calendar.setOption("headerToolbar", {
+                  left: "prev,next today",
+                  center: "title",
                   right: isMobile
-                    ? 'timeGridDay,listWeek'
-                    : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                    ? "timeGridDay,listWeek"
+                    : "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
                 });
 
-                if (isMobile && view.view.type === 'dayGridMonth') {
-                  calendar.changeView('timeGridDay');
-                } else if (!isMobile && view.view.type === 'timeGridDay') {
-                  calendar.changeView('timeGridWeek');
+                if (isMobile && view.view.type === "dayGridMonth") {
+                  calendar.changeView("timeGridDay");
+                } else if (!isMobile && view.view.type === "timeGridDay") {
+                  calendar.changeView("timeGridWeek");
                 }
               }}
               businessHours={getOpenHours()}
@@ -603,8 +603,8 @@ const CalendarPage = () => {
               slotMaxTime={slotMaxTime}
               slotDuration="00:15:00"
               slotLabelFormat={{
-                hour: '2-digit',
-                minute: '2-digit',
+                hour: "2-digit",
+                minute: "2-digit",
                 hour12: false,
                 omitZeroMinute: true,
               }}
@@ -634,7 +634,7 @@ const CalendarPage = () => {
               eventDidMount={(info) => {
                 const color = info.event.backgroundColor;
 
-                info.el.style.setProperty('--event-color', color);
+                info.el.style.setProperty("--event-color", color);
               }}
             />
           </motion.div>
@@ -660,9 +660,7 @@ const CalendarPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t.agenda.mooveTitle}</DialogTitle>
-            <DialogDescription>
-              {t.agenda.mooveDescription}
-            </DialogDescription>
+            <DialogDescription>{t.agenda.mooveDescription}</DialogDescription>
           </DialogHeader>
           {pendingEventMove && (
             <div className="py-4">
