@@ -71,8 +71,7 @@ const Actualities = () => {
                 >
                   <div className="p-6 lg:p-8">
                     <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium mb-4">
-                      {/* {article.category} */}
-                      plop
+                      {article.category.translations[0]?.name}
                     </span>
                     <h2 className="font-display text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                       {article.title}
@@ -83,10 +82,8 @@ const Actualities = () => {
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2 text-muted-foreground text-xs">
                         <Calendar className="w-3 h-3" />
-                        {article.article?.publishedAt
-                          ? new Date(
-                              article.article.publishedAt,
-                            ).toLocaleDateString()
+                        {article.publishedAt
+                          ? new Date(article.publishedAt).toLocaleDateString()
                           : "-"}
                       </span>
                       <Link

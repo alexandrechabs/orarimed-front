@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { articleService } from "@/services/user/article.service";
-import { ArticleTranslation } from "@/types/article";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Article } from "@/types/article";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ArticleDetail() {
   const { locale, slug } = useParams();
-  const [article, setArticle] = useState<ArticleTranslation | null>(null);
+  const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,9 +73,9 @@ export default function ArticleDetail() {
       <main className="pt-24 lg:pt-28">
         <section className="py-12 lg:py-20">
           <div className="container mx-auto px-4 lg:px-8 max-w-3xl">
-            {article.article?.featuredImage && (
+            {article.featuredImage && (
               <img
-                src={`${API_URL}/articles/${article.article.id}/image/${article.article.featuredImage}`}
+                src={`${API_URL}/articles/${article.id}/image/${article.featuredImage}`}
                 alt={article.title || "Image article"}
                 className="w-full rounded-lg mb-6 object-cover"
               />
@@ -83,15 +83,13 @@ export default function ArticleDetail() {
 
             <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              {article.article?.author && (
-                <span>Par {article.article.author} · </span>
-              )}
-              {article.article?.publishedAt &&
-                new Date(article.article.publishedAt).toLocaleDateString()}
+              {article?.author && <span>Par {article.author} · </span>}
+              {article.publishedAt &&
+                new Date(article.publishedAt).toLocaleDateString()}
             </p>
 
             <article
-              className="prose max-w-none whitespace-pre-line"
+              className="max-w-none whitespace-pre-line"
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
             />
           </div>

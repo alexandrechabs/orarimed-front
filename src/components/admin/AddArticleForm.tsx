@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Article, ArticleTranslation } from "@/types/article";
+import { Article, ArticleCategory } from "@/types/article";
 import { useToast } from "@/components/ui/use-toast";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useImage } from "@/hooks/use-image";
@@ -28,6 +28,7 @@ interface AddArticleFormProps {
   onClose: () => void;
   onSubmit: (article: Article) => Promise<void>;
   editingArticle?: Article | null;
+  categories: ArticleCategory[];
 }
 
 export default function AddArticleForm({
@@ -35,6 +36,7 @@ export default function AddArticleForm({
   onClose,
   onSubmit,
   editingArticle,
+  categories,
 }: AddArticleFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,12 +55,17 @@ export default function AddArticleForm({
     defaultValues: editingArticle || {
       author: "",
       status: "draft",
+      categoryId: undefined,
       featuredImage: "",
-      translations: [
-        { localeId: 1, title: "", slug: "", content: "", isPublished: false },
-        { localeId: 2, title: "", slug: "", content: "", isPublished: false },
-        { localeId: 3, title: "", slug: "", content: "", isPublished: false },
-      ],
+      localeId: 1,
+      title: "",
+      slug: "",
+      excerpt: "",
+      content: "",
+      seoTitle: "",
+      seoDescription: "",
+      canonicalUrl: "",
+      readingTime: undefined,
     },
   });
 
@@ -70,66 +77,39 @@ export default function AddArticleForm({
     watch,
     formState: { errors },
   } = methods;
-  const translations = watch("translations") || [];
-  const currentTranslation = translations[selectedLocale - 1];
-
   // Reset form when editingArticle changes
   useEffect(() => {
     if (editingArticle) {
       setFeaturedImagePreview(editingArticle.featuredImage || null);
+      setSelectedLocale(editingArticle.localeId || 1);
       reset({
         ...editingArticle,
-        translations: editingArticle.translations || [
-          {
-            localeId: 1,
-            title: "",
-            slug: "",
-            content: "",
-            isPublished: false,
-          },
-          {
-            localeId: 2,
-            title: "",
-            slug: "",
-            content: "",
-            isPublished: false,
-          },
-          {
-            localeId: 3,
-            title: "",
-            slug: "",
-            content: "",
-            isPublished: false,
-          },
-        ],
+        categoryId: editingArticle.categoryId || undefined,
+        localeId: editingArticle.localeId || 1,
+        title: editingArticle.title || "",
+        slug: editingArticle.slug || "",
+        excerpt: editingArticle.excerpt || "",
+        content: editingArticle.content || "",
+        seoTitle: editingArticle.seoTitle || "",
+        seoDescription: editingArticle.seoDescription || "",
+        canonicalUrl: editingArticle.canonicalUrl || "",
+        readingTime: editingArticle.readingTime,
       });
     } else {
       setFeaturedImagePreview(null);
+      setSelectedLocale(1);
       reset({
         status: "draft",
-        translations: [
-          {
-            localeId: 1,
-            title: "",
-            slug: "",
-            content: "",
-            isPublished: false,
-          },
-          {
-            localeId: 2,
-            title: "",
-            slug: "",
-            content: "",
-            isPublished: false,
-          },
-          {
-            localeId: 3,
-            title: "",
-            slug: "",
-            content: "",
-            isPublished: false,
-          },
-        ],
+        categoryId: undefined,
+        localeId: 1,
+        title: "",
+        slug: "",
+        excerpt: "",
+        content: "",
+        seoTitle: "",
+        seoDescription: "",
+        canonicalUrl: "",
+        readingTime: undefined,
       });
     }
   }, [editingArticle, reset]);
@@ -152,7 +132,13 @@ export default function AddArticleForm({
   const handleFormSubmit = async (data: Article) => {
     try {
       setIsSubmitting(true);
-      await onSubmit(data);
+      const payload: Article = {
+        ...data,
+        categoryId: data.categoryId ? Number(data.categoryId) : undefined,
+        localeId: data.localeId ? Number(data.localeId) : undefined,
+        readingTime: data.readingTime ? Number(data.readingTime) : undefined,
+      };
+      await onSubmit(payload);
       reset();
       onClose();
       toast({
@@ -171,26 +157,7 @@ export default function AddArticleForm({
     }
   };
 
-  const handleTranslationChange = (
-    field: keyof ArticleTranslation,
-    value: any,
-  ) => {
-    const newTranslations = [...translations];
-    if (!newTranslations[selectedLocale - 1]) {
-      newTranslations[selectedLocale - 1] = {
-        localeId: selectedLocale,
-        title: "",
-        slug: "",
-        content: "",
-        isPublished: false,
-      };
-    }
-    newTranslations[selectedLocale - 1] = {
-      ...newTranslations[selectedLocale - 1],
-      [field]: value,
-    };
-    setValue("translations", newTranslations);
-  };
+  // handle field changes via react-hook-form `register` or `setValue`
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -213,6 +180,36 @@ export default function AddArticleForm({
               <div>
                 <label className="text-sm font-medium">Auteur</label>
                 <Input {...register("author")} placeholder="Nom de l'auteur" />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Catégorie</label>
+                <Select
+                  value={watch("categoryId")?.toString() || undefined}
+                  onValueChange={(value: any) => setValue("categoryId", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.length > 0 ? (
+                      categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          {category.translations.find(
+                            (t) => t.localeId === selectedLocale,
+                          )?.name ||
+                            category.translations[0]?.name ||
+                            "-"}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="">Aucune catégorie</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
@@ -256,16 +253,18 @@ export default function AddArticleForm({
                       className="w-[400px] h-auto rounded-md mx-auto mb-2"
                     />
                   )}
-                {!editingArticle ||
+                {(!editingArticle ||
                   !editingArticle.featuredImage ||
-                  (updateImage && (
-                    <ImageUpload
-                      value={featuredImagePreview || undefined}
-                      onChange={handleFeaturedImageChange}
-                      label="Téléchargez l'image vedette"
-                      aspect={16 / 9}
-                    />
-                  ))}
+                  updateImage) && (
+                  <ImageUpload
+                    value={featuredImagePreview || undefined}
+                    onChange={handleFeaturedImageChange}
+                    label="Téléchargez l'image vedette"
+                    aspect={null}
+                    maxWidth={2000}
+                    maxHeight={2000}
+                  />
+                )}
               </div>
             </div>
 
@@ -276,99 +275,67 @@ export default function AddArticleForm({
               <div>
                 <label className="text-sm font-medium">Langue</label>
                 <Select
-                  value={selectedLocale.toString()}
-                  onValueChange={(value) => setSelectedLocale(parseInt(value))}
+                  value={(watch("localeId") || selectedLocale).toString()}
+                  onValueChange={(value) => {
+                    const n = parseInt(value);
+                    setSelectedLocale(n);
+                    setValue("localeId", n);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Français</SelectItem>
-                    <SelectItem value="2">English</SelectItem>
-                    <SelectItem value="3">Shqip</SelectItem>
+                    <SelectItem value="1">Shqip</SelectItem>
+                    <SelectItem value="2">Français</SelectItem>
+                    <SelectItem value="3">English</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {currentTranslation && (
-                <>
-                  <div>
-                    <label className="text-sm font-medium">Titre *</label>
-                    <Input
-                      value={currentTranslation.title || ""}
-                      onChange={(e) =>
-                        handleTranslationChange("title", e.target.value)
-                      }
-                      placeholder="Titre de l'article"
-                      required
-                    />
-                  </div>
+              <div>
+                <label className="text-sm font-medium">Titre *</label>
+                <Input
+                  {...register("title")}
+                  placeholder="Titre de l'article"
+                  required
+                />
+              </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Slug *</label>
-                    <Input
-                      value={currentTranslation.slug || ""}
-                      onChange={(e) =>
-                        handleTranslationChange("slug", e.target.value)
-                      }
-                      placeholder="titre-de-larticle"
-                      required
-                    />
-                  </div>
+              <div>
+                <label className="text-sm font-medium">Slug *</label>
+                <Input
+                  {...register("slug")}
+                  placeholder="titre-de-larticle"
+                  required
+                />
+              </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Extrait</label>
-                    <Input
-                      value={currentTranslation.excerpt || ""}
-                      onChange={(e) =>
-                        handleTranslationChange("excerpt", e.target.value)
-                      }
-                      placeholder="Court résumé de l'article"
-                    />
-                  </div>
+              <div>
+                <label className="text-sm font-medium">Extrait</label>
+                <Input
+                  {...register("excerpt")}
+                  placeholder="Court résumé de l'article"
+                />
+              </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Contenu *</label>
-                    <textarea
-                      value={currentTranslation.content || ""}
-                      onChange={(e) =>
-                        handleTranslationChange("content", e.target.value)
-                      }
-                      placeholder="Contenu de l'article"
-                      className="w-full h-32 p-2 border rounded-md text-sm"
-                      required
-                    />
-                  </div>
+              <div>
+                <label className="text-sm font-medium">Contenu *</label>
+                <textarea
+                  {...register("content")}
+                  placeholder="Contenu de l'article"
+                  className="w-full h-32 p-2 border rounded-md text-sm"
+                  required
+                />
+              </div>
 
-                  <div>
-                    <label className="text-sm font-medium">
-                      Description SEO
-                    </label>
-                    <Input
-                      value={currentTranslation.seoDescription || ""}
-                      onChange={(e) =>
-                        handleTranslationChange(
-                          "seoDescription",
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Description pour les moteurs de recherche"
-                    />
-                  </div>
-
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentTranslation.isPublished || false}
-                      onChange={(e) =>
-                        handleTranslationChange("isPublished", e.target.checked)
-                      }
-                      className="rounded"
-                    />
-                    <span className="text-sm">Publié dans cette langue</span>
-                  </label>
-                </>
-              )}
+              <div>
+                <label className="text-sm font-medium">Description SEO</label>
+                <Input
+                  {...register("seoDescription")}
+                  placeholder="Description pour les moteurs de recherche"
+                />
+              </div>
             </div>
 
             <DialogFooter>

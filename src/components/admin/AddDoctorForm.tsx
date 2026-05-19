@@ -1,51 +1,51 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/services/user/useUser';
-import { UserRole } from '@/types/roles';
-import { Camera, Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/services/user/useUser";
+import { UserRole } from "@/types/roles";
+import { Camera, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import PhoneInput from 'react-phone-number-input';
-import { useAuth } from '@/services/auth/useAuth';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import AddressAutocomplete from '../Autocomplete';
-import type { CountryCode } from 'libphonenumber-js';
-import { Checkbox } from '../ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import ImageUpload from '../ui/ImageUpload';
+} from "@/components/ui/select";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import PhoneInput from "react-phone-number-input";
+import { useAuth } from "@/services/auth/useAuth";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import AddressAutocomplete from "../Autocomplete";
+import type { CountryCode } from "libphonenumber-js";
+import { Checkbox } from "../ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import ImageUpload from "../ui/ImageUpload";
 
-const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
 // Fonction pour créer le schéma en fonction du mode (édition ou création)
 const createDoctorSchema = (isEditMode: boolean) => {
   const baseSchema = {
-    email: z.string().email('Email invalide'),
-    firstname: z.string().min(2, 'Le prénom est requis'),
-    lastname: z.string().min(2, 'Le nom est requis'),
+    email: z.string().email("Email invalide"),
+    firstname: z.string().min(2, "Le prénom est requis"),
+    lastname: z.string().min(2, "Le nom est requis"),
     address: z.string().min(5, "L'adresse est requise"),
-    city: z.string().min(2, 'La ville est requise'),
-    country: z.string().min(2, 'Le pays est requis'),
+    city: z.string().min(2, "La ville est requise"),
+    country: z.string().min(2, "Le pays est requis"),
     coordinate: z.object({
       x: z.number(),
       y: z.number(),
     }),
-    phoneNumber: z.string().min(10, 'Numéro de téléphone invalide'),
+    phoneNumber: z.string().min(10, "Numéro de téléphone invalide"),
     visible: z.boolean().default(false).optional(),
-    specialityId: z.number().min(1, 'La spécialité est requise'),
+    specialityId: z.number().min(1, "La spécialité est requise"),
     subSpecialityId: z.array(z.number()).optional(), // Nouveau champ
-    language: z.string().min(2, 'La langue est requise'),
+    language: z.string().min(2, "La langue est requise"),
   };
 
   // En mode édition, le mot de passe est optionnel et ne doit être validé que s'il est fourni
@@ -56,15 +56,15 @@ const createDoctorSchema = (isEditMode: boolean) => {
             z.string().length(0), // Accepte une chaîne vide
             z
               .string()
-              .min(8, 'Le mot de passe doit faire au moins 8 caractères'),
+              .min(8, "Le mot de passe doit faire au moins 8 caractères"),
           ])
           .optional()
-          .transform((e) => (e === '' ? undefined : e)), // Transforme une chaîne vide en undefined
+          .transform((e) => (e === "" ? undefined : e)), // Transforme une chaîne vide en undefined
       }
     : {
         password: z
           .string()
-          .min(8, 'Le mot de passe doit faire au moins 8 caractères'),
+          .min(8, "Le mot de passe doit faire au moins 8 caractères"),
         acceptTerms: z.boolean().refine((val) => val, {
           message: "Vous devez accepter les conditions d'utilisation",
         }),
@@ -146,22 +146,22 @@ export function AddDoctorForm({
             y: user.coordinate.y,
           },
           phoneNumber: user.phoneNumber,
-          password: '', // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
+          password: "", // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
           visible: user.visible,
           specialityId: user.specialityId,
           subSpecialityId: user.subSpecialityId,
           language: user.language,
         }
       : {
-          email: '',
-          firstname: '',
-          lastname: '',
-          address: '',
-          city: '',
-          country: '',
+          email: "",
+          firstname: "",
+          lastname: "",
+          address: "",
+          city: "",
+          country: "",
           coordinate: { x: 0, y: 0 },
-          phoneNumber: '',
-          password: '',
+          phoneNumber: "",
+          password: "",
           visible: false,
           specialityId: 0,
           acceptTerms: false,
@@ -211,16 +211,16 @@ export function AddDoctorForm({
         // Mise à jour de l'utilisateur existant
         result = await updateUser(user.id, userData);
         toast({
-          title: 'Succès',
+          title: "Succès",
           description:
-            'Les informations du médecin ont été mises à jour avec succès',
+            "Les informations du médecin ont été mises à jour avec succès",
         });
       } else {
         // Création d'un nouvel utilisateur
         result = await createUser(userData);
         toast({
-          title: 'Succès',
-          description: 'Le compte docteur a été créé avec succès',
+          title: "Succès",
+          description: "Le compte docteur a été créé avec succès",
         });
       }
 
@@ -233,9 +233,9 @@ export function AddDoctorForm({
       onSuccess?.();
     } catch (error) {
       toast({
-        title: 'Erreur',
-        description: error.message || 'Une erreur est survenue',
-        variant: 'destructive',
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -260,11 +260,11 @@ export function AddDoctorForm({
       // Convertir l'image recadrée en fichier
       const response = await fetch(croppedImage);
       const blob = await response.blob();
-      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+      const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
 
       // Créer FormData pour l'envoi
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       let image = await savePhotoUser(formData, user.id);
       user.avatar = image.image;
@@ -281,7 +281,7 @@ export function AddDoctorForm({
     <>
       <form
         onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log('Erreurs lors de la soumission:', errors);
+          console.log("Erreurs lors de la soumission:", errors);
         })}
         className="space-y-4"
       >
@@ -293,7 +293,7 @@ export function AddDoctorForm({
                   src={
                     user?.avatar
                       ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
-                      : 'default-avatar.png'
+                      : "default-avatar.png"
                   }
                   alt={`${user?.firstname} ${user?.lastname}`}
                 />
@@ -320,7 +320,7 @@ export function AddDoctorForm({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Prénom</Label>
-            <Input {...register('firstname')} />
+            <Input {...register("firstname")} />
             {errors.firstname && (
               <p className="text-sm text-destructive">
                 {errors.firstname.message}
@@ -329,7 +329,7 @@ export function AddDoctorForm({
           </div>
           <div>
             <Label>Nom</Label>
-            <Input {...register('lastname')} />
+            <Input {...register("lastname")} />
             {errors.lastname && (
               <p className="text-sm text-destructive">
                 {errors.lastname.message}
@@ -340,7 +340,7 @@ export function AddDoctorForm({
 
         <div>
           <Label>Email</Label>
-          <Input type="email" {...register('email')} autoComplete="new-email" />
+          <Input type="email" {...register("email")} autoComplete="new-email" />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
@@ -350,23 +350,23 @@ export function AddDoctorForm({
           <Label>Adresse</Label>
           <AddressAutocomplete
             type="address"
-            value={watch('address')} // Use watch to get the current value
-            onChange={(value) => setValue('address', value)} // Use setValue to update the value
+            value={watch("address")} // Use watch to get the current value
+            onChange={(value) => setValue("address", value)} // Use setValue to update the value
             onPlaceSelected={(place) => {
-              setValue('address', place.formatted_address);
+              setValue("address", place.formatted_address);
               setValue(
-                'city',
+                "city",
                 place.address_components.find((component) =>
-                  component.types.includes('locality'),
-                )?.long_name || '',
+                  component.types.includes("locality"),
+                )?.long_name || "",
               );
               setValue(
-                'country',
+                "country",
                 place.address_components.find((component) =>
-                  component.types.includes('country'),
+                  component.types.includes("country"),
                 ).long_name,
               );
-              setValue('coordinate', {
+              setValue("coordinate", {
                 x: place.geometry.location.lat(),
                 y: place.geometry.location.lng(),
               });
@@ -385,8 +385,8 @@ export function AddDoctorForm({
             international
             defaultCountry="AL"
             countries={allowedCountries}
-            value={watch('phoneNumber')}
-            onChange={(value) => setValue('phoneNumber', value)}
+            value={watch("phoneNumber")}
+            onChange={(value) => setValue("phoneNumber", value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-background"
             placeholder="+33 6 12 34 56 78"
             autoComplete="new-phone"
@@ -404,7 +404,7 @@ export function AddDoctorForm({
               <Label>Mot de passe temporaire</Label>
               <Input
                 type="password"
-                {...register('password')}
+                {...register("password")}
                 autoComplete="new-password"
               />
               {errors.password && (
@@ -421,7 +421,7 @@ export function AddDoctorForm({
               </Label>
               <Input
                 type="password"
-                {...register('password')}
+                {...register("password")}
                 autoComplete="new-password"
                 placeholder="Nouveau mot de passe"
               />
@@ -436,11 +436,11 @@ export function AddDoctorForm({
         <div>
           <Label>Spécialité</Label>
           <Select
-            value={watch('specialityId')?.toString() || ''}
+            value={watch("specialityId")?.toString() || ""}
             onValueChange={(value) => {
               // Convertir la valeur en nombre car specialityId est un nombre
               const specialityId = parseInt(value, 10);
-              setValue('specialityId', specialityId, { shouldValidate: true });
+              setValue("specialityId", specialityId, { shouldValidate: true });
             }}
           >
             <SelectTrigger>
@@ -470,7 +470,7 @@ export function AddDoctorForm({
           <Label>Sous-spécialités (optionnel)</Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {specialities
-              .find((s) => s.id === Number(watch('specialityId')))
+              .find((s) => s.id === Number(watch("specialityId")))
               ?.subSpecialities.map((sub) => (
                 <div key={sub.id} className="flex items-center space-x-2">
                   <input
@@ -478,18 +478,18 @@ export function AddDoctorForm({
                     id={`sub-${sub.id}`}
                     value={sub.id}
                     checked={
-                      watch('subSpecialityId')?.includes(sub.id) || false
+                      watch("subSpecialityId")?.includes(sub.id) || false
                     }
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setValue('subSpecialityId', [
-                          ...(watch('subSpecialityId') || []),
+                        setValue("subSpecialityId", [
+                          ...(watch("subSpecialityId") || []),
                           sub.id,
                         ]);
                       } else {
                         setValue(
-                          'subSpecialityId',
-                          (watch('subSpecialityId') || []).filter(
+                          "subSpecialityId",
+                          (watch("subSpecialityId") || []).filter(
                             (id) => id !== sub.id,
                           ),
                         );
@@ -511,10 +511,10 @@ export function AddDoctorForm({
         <div className="space-y-2">
           <Label>Langue</Label>
           <Select
-            value={watch('language')?.toString() || ''}
+            value={watch("language")?.toString() || ""}
             onValueChange={(value) => {
               // Convertir la valeur en nombre car specialityId est un nombre
-              setValue('language', value, { shouldValidate: true });
+              setValue("language", value, { shouldValidate: true });
             }}
           >
             <SelectTrigger>
@@ -544,7 +544,7 @@ export function AddDoctorForm({
               <input
                 type="checkbox"
                 id="acceptTerms"
-                {...register('acceptTerms')}
+                {...register("acceptTerms")}
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
               <Label htmlFor="acceptTerms" className="text-sm font-medium">
@@ -566,8 +566,8 @@ export function AddDoctorForm({
           </Label>
           <Checkbox
             id="visible"
-            checked={watch('visible')}
-            onCheckedChange={(checked) => setValue('visible', Boolean(checked))}
+            checked={watch("visible")}
+            onCheckedChange={(checked) => setValue("visible", Boolean(checked))}
           />
         </div>
 
@@ -585,7 +585,7 @@ export function AddDoctorForm({
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditMode ? 'Mettre à jour' : 'Créer le compte'}
+            {isEditMode ? "Mettre à jour" : "Créer le compte"}
           </Button>
         </div>
       </form>
@@ -597,17 +597,19 @@ export function AddDoctorForm({
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">
               <ImageUpload
-                value={tempImage || ''}
+                value={tempImage || ""}
                 onChange={(value) => {
                   if (value === null) {
                     setTempImage(null);
-                  } else if (typeof value === 'string') {
+                  } else if (typeof value === "string") {
                     setTempImage(value);
                   } else if (value instanceof File) {
                     handleImageSelect(value);
                   }
                 }}
                 aspect={1}
+                maxWidth={2000}
+                maxHeight={2000}
               />
             </div>
           </div>
@@ -633,7 +635,7 @@ export function AddDoctorForm({
                   Enregistrement...
                 </div>
               ) : (
-                'Enregistrer'
+                "Enregistrer"
               )}
             </Button>
           </div>

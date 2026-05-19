@@ -1,38 +1,42 @@
-import { useCallback, useState, useRef } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { X, Loader2, Upload, Check } from 'lucide-react';
+import { useCallback, useState, useRef } from "react";
+import { useDropzone } from "react-dropzone";
+import { X, Loader2, Upload, Check } from "lucide-react";
 import ReactCrop, {
   Crop,
   PixelCrop,
   centerCrop,
   makeAspectCrop,
-} from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
-import { Button } from './button';
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { Button } from "./button";
 
 interface ImageUploadProps {
   value?: string;
   onChange: (value: File | string | null) => void;
   disabled?: boolean;
   label?: string;
-  aspect?: number;
+  aspect?: number | null;
   className?: string;
+  maxWidth?: number; // Maximum image width in pixels
+  maxHeight?: number; // Maximum image height in pixels
 }
 
 export const ImageUpload = ({
   value,
   onChange,
   disabled = false,
-  label = 'Télécharger une photo',
+  label = "Télécharger une photo",
   aspect = 1,
-  className = '',
+  className = "",
+  maxWidth = 4000,
+  maxHeight = 4000,
 }: ImageUploadProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
-  const [imgSrc, setImgSrc] = useState('');
+  const [imgSrc, setImgSrc] = useState("");
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -44,11 +48,25 @@ export const ImageUpload = ({
       const img = new Image();
       img.src = URL.createObjectURL(file);
       img.onload = () => {
-        setCrop(centerAspectCrop(img.width, img.height, aspect));
+        // Vérifier les dimensions de l'image
+        if (img.width > maxWidth || img.height > maxHeight) {
+          setError(
+            `La résolution de l'image ne doit pas dépasser ${maxWidth}x${maxHeight}px (actuelle: ${img.width}x${img.height}px)`,
+          );
+          return;
+        }
+        setError(null);
+        if (aspect === null) {
+          setCrop(getFreeCrop());
+        } else if (aspect) {
+          setCrop(centerAspectCrop(img.width, img.height, aspect));
+        } else {
+          setCrop(undefined);
+        }
       };
       const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        setImgSrc(reader.result?.toString() || '');
+      reader.addEventListener("load", () => {
+        setImgSrc(reader.result?.toString() || "");
         setPreview(reader.result?.toString() || null);
       });
       reader.readAsDataURL(file);
@@ -66,13 +84,13 @@ export const ImageUpload = ({
 
       // Vérifier la taille du fichier (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setError('La taille du fichier ne doit pas dépasser 5MB');
+        setError("La taille du fichier ne doit pas dépasser 5MB");
         return;
       }
 
       // Vérifier le type de fichier
-      if (!file.type.startsWith('image/')) {
-        setError('Veuillez télécharger une image valide');
+      if (!file.type.startsWith("image/")) {
+        setError("Veuillez télécharger une image valide");
         return;
       }
 
@@ -99,9 +117,9 @@ export const ImageUpload = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/jpeg': [],
-      'image/png': [],
-      'image/webp': [],
+      "image/jpeg": [],
+      "image/png": [],
+      "image/webp": [],
     },
     maxFiles: 1,
     disabled: disabled || isLoading,
@@ -110,7 +128,7 @@ export const ImageUpload = ({
   const removeImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPreview(null);
-    setImgSrc('');
+    setImgSrc("");
     setCrop(undefined);
     setCompletedCrop(undefined);
     if (onChange) {
@@ -126,7 +144,7 @@ export const ImageUpload = ({
     return centerCrop(
       makeAspectCrop(
         {
-          unit: '%',
+          unit: "%",
           width: 90,
         },
         aspect,
@@ -138,10 +156,24 @@ export const ImageUpload = ({
     );
   }
 
+  function getFreeCrop(): Crop {
+    return {
+      unit: "%" as const,
+      width: 90,
+      height: 90,
+      x: 5,
+      y: 5,
+    };
+  }
+
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
-    if (aspect) {
+    if (aspect === null) {
+      setCrop(getFreeCrop());
+    } else if (aspect && typeof aspect === "number") {
       const { width, height } = e.currentTarget;
       setCrop(centerAspectCrop(width, height, aspect));
+    } else {
+      setCrop(undefined);
     }
   }
 
@@ -150,7 +182,7 @@ export const ImageUpload = ({
   }
 
   function dataURLtoFile(dataurl: string, filename: string): File {
-    const arr = dataurl.split(',');
+    const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)![1];
     const bstr = atob(arr[1]);
     let n = bstr.length;
@@ -167,7 +199,7 @@ export const ImageUpload = ({
 
     if (!imgRef.current) return;
 
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
     const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
     const pixelRatio = window.devicePixelRatio || 1;
@@ -175,11 +207,11 @@ export const ImageUpload = ({
     canvas.width = crop.width * pixelRatio * scaleX;
     canvas.height = crop.height * pixelRatio * scaleY;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingQuality = "high";
 
     ctx.drawImage(
       imgRef.current,
@@ -196,8 +228,8 @@ export const ImageUpload = ({
     canvas.toBlob(
       (blob) => {
         if (!blob) return;
-        const file = new File([blob], 'cropped-image.jpg', {
-          type: 'image/jpeg',
+        const file = new File([blob], "cropped-image.jpg", {
+          type: "image/jpeg",
         });
 
         // Mettre à jour l'aperçu
@@ -210,7 +242,7 @@ export const ImageUpload = ({
         // Mettre à jour la valeur
         onChange(file);
       },
-      'image/jpeg',
+      "image/jpeg",
       1,
     );
   };
@@ -221,9 +253,9 @@ export const ImageUpload = ({
         {...getRootProps()}
         className={`relative group border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
           isDragActive
-            ? 'border-primary bg-primary/5'
-            : 'border-muted-foreground/25 hover:border-primary/50'
-        } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+            ? "border-primary bg-primary/5"
+            : "border-muted-foreground/25 hover:border-primary/50"
+        } ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
       >
         <input {...getInputProps()} />
 
@@ -247,7 +279,7 @@ export const ImageUpload = ({
                       crop={crop}
                       onChange={onCropChange}
                       onComplete={onCropComplete}
-                      aspect={aspect}
+                      aspect={aspect || undefined}
                       className="max-h-[70vh]"
                     >
                       <img
@@ -255,7 +287,7 @@ export const ImageUpload = ({
                         src={imgSrc}
                         onLoad={onImageLoad}
                         alt="Crop preview"
-                        style={{ maxHeight: '70vh', maxWidth: '100%' }}
+                        style={{ maxHeight: "70vh", maxWidth: "100%" }}
                       />
                     </ReactCrop>
                   </div>
@@ -274,24 +306,26 @@ export const ImageUpload = ({
 
                         if (!completedCrop && imgRef.current) {
                           const img = imgRef.current;
-                          const defaultCrop = centerAspectCrop(
-                            img.naturalWidth, // Utilisez naturalWidth au lieu de width
-                            img.naturalHeight, // Utilisez naturalHeight au lieu de height
-                            aspect || 1,
-                          );
+                          if (aspect === null) {
+                            onCropComplete(getFreeCrop() as PixelCrop);
+                          } else if (aspect && typeof aspect === "number") {
+                            const defaultCrop = centerAspectCrop(
+                              img.naturalWidth,
+                              img.naturalHeight,
+                              aspect,
+                            );
 
-                          // Convertissez le PercentCrop en PixelCrop
-                          const pixelCrop: PixelCrop = {
-                            ...defaultCrop,
+                            const pixelCrop: PixelCrop = {
+                              ...defaultCrop,
+                              height: 426.546875,
+                              width: 427,
+                              x: 111.5,
+                              y: 0,
+                              unit: "px" as const,
+                            };
 
-                            height: 426.546875,
-                            width: 427,
-                            x: 111.5,
-                            y: 0,
-                            unit: 'px' as const, // On force le type à 'px'
-                          };
-
-                          onCropComplete(pixelCrop);
+                            onCropComplete(pixelCrop);
+                          }
                         } else if (completedCrop) {
                           onCropComplete(completedCrop);
                         }
@@ -312,7 +346,7 @@ export const ImageUpload = ({
                   src={preview || imgSrc}
                   alt="Preview"
                   className="mx-auto max-h-64 w-auto rounded-lg object-cover"
-                  style={{ aspectRatio: aspect }}
+                  style={{ aspectRatio: aspect ? aspect : undefined }}
                 />
               </div>
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
@@ -322,9 +356,13 @@ export const ImageUpload = ({
                     e.stopPropagation();
                     const img = new Image();
                     img.onload = () => {
-                      setCrop(
-                        centerAspectCrop(img.width, img.height, aspect || 1),
-                      );
+                      if (aspect === null) {
+                        setCrop(getFreeCrop());
+                      } else if (aspect && typeof aspect === "number") {
+                        setCrop(
+                          centerAspectCrop(img.width, img.height, aspect),
+                        );
+                      }
                     };
                     img.src = preview || imgSrc;
                   }}
@@ -362,7 +400,7 @@ export const ImageUpload = ({
             <canvas
               ref={previewCanvasRef}
               style={{
-                display: 'none',
+                display: "none",
               }}
             />
           </div>
@@ -377,15 +415,15 @@ export const ImageUpload = ({
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium">
-                {isLoading ? 'Téléchargement...' : label}
+                {isLoading ? "Téléchargement..." : label}
               </p>
               <p className="text-xs text-muted-foreground">
                 {isDragActive
-                  ? 'Déposez la photo ici...'
-                  : 'Glissez-déposez une image, ou cliquez pour sélectionner'}
+                  ? "Déposez la photo ici..."
+                  : "Glissez-déposez une image, ou cliquez pour sélectionner"}
               </p>
               <p className="text-xs text-muted-foreground">
-                PNG, JPG, WEBP (max. 5MB)
+                PNG, JPG, WEBP (max. 5MB • {maxWidth}x{maxHeight}px)
               </p>
             </div>
           </div>

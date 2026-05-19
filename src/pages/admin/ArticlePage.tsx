@@ -25,17 +25,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Plus, MoreVertical, Eye } from "lucide-react";
+import { Pencil, Trash2, Plus, MoreVertical } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Article } from "@/types/article";
+import { Article, ArticleCategory } from "@/types/article";
 import { articleService } from "@/services/user/article.service";
+import { categoryService } from "@/services/user/category.service";
 import AddArticleForm from "@/components/admin/AddArticleForm";
+import ArticleCategoryManager from "@/components/admin/ArticleCategoryManager";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ArticlePage() {
   const { toast } = useToast();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
@@ -57,9 +61,26 @@ export default function ArticlePage() {
     }
   }, [toast]);
 
+  const loadCategories = useCallback(async () => {
+    try {
+      setIsCategoriesLoading(true);
+      const data = await categoryService.getCategories();
+      setCategories(data);
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les catégories",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCategoriesLoading(false);
+    }
+  }, [toast]);
+
   useEffect(() => {
+    loadCategories();
     loadArticles();
-  }, [loadArticles]);
+  }, [loadArticles, loadCategories]);
 
   const handleAddArticle = async (article: Article) => {
     try {
@@ -130,24 +151,8 @@ export default function ArticlePage() {
             {config.label}
           </span>
         </div>
-        <div>
-          {article.translations &&
-            article.translations.length > 1 &&
-            article.translations.map((translation) => (
-              <span
-                key={translation.id}
-                className={`inline-block mr-2 mb-2 px-2 py-1 rounded text-xs font-medium ${translation.isPublished ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
-              >
-                {translation.locale.country}
-              </span>
-            ))}
-        </div>
       </div>
     );
-  };
-
-  const getArticleTitle = (article: Article) => {
-    return article.translations?.[0]?.title || "Sans titre";
   };
 
   const getArticleDate = (date: string | undefined) => {
@@ -157,17 +162,25 @@ export default function ArticlePage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap gap-3 justify-between items-center">
         <h1 className="text-3xl font-bold">Articles</h1>
-        <Button
-          onClick={() => {
-            setEditingArticle(null);
-            setIsAddFormOpen(true);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Créer un article
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={() => {
+              setEditingArticle(null);
+              setIsAddFormOpen(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Créer un article
+          </Button>
+          {categories && (
+            <ArticleCategoryManager
+              categories={categories}
+              onCategoriesUpdated={setCategories}
+            />
+          )}
+        </div>
       </div>
 
       {/* Table */}
@@ -176,6 +189,7 @@ export default function ArticlePage() {
           <TableHeader>
             <TableRow>
               <TableHead>Titre</TableHead>
+              <TableHead>Catégorie</TableHead>
               <TableHead>Auteur</TableHead>
               <TableHead>Statut</TableHead>
               <TableHead>Créé le</TableHead>
@@ -186,7 +200,7 @@ export default function ArticlePage() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={5}>
+                  <TableCell colSpan={6}>
                     <Skeleton className="h-8 w-full" />
                   </TableCell>
                 </TableRow>
@@ -194,7 +208,7 @@ export default function ArticlePage() {
             ) : articles.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="text-center py-8 text-muted-foreground"
                 >
                   Aucun article pour le moment
@@ -203,8 +217,9 @@ export default function ArticlePage() {
             ) : (
               articles.map((article) => (
                 <TableRow key={article.id}>
-                  <TableCell className="font-medium">
-                    {getArticleTitle(article)}
+                  <TableCell className="font-medium">{article.title}</TableCell>
+                  <TableCell>
+                    {article.category?.translations[0].name || "-"}
                   </TableCell>
                   <TableCell>{article.author || "-"}</TableCell>
                   <TableCell>{getStatusBadge(article)}</TableCell>
@@ -244,12 +259,15 @@ export default function ArticlePage() {
       </div>
 
       {/* Add/Edit Form Modal */}
-      <AddArticleForm
-        isOpen={isAddFormOpen}
-        onClose={handleCloseForm}
-        onSubmit={editingArticle ? handleUpdateArticle : handleAddArticle}
-        editingArticle={editingArticle}
-      />
+      {categories && (
+        <AddArticleForm
+          isOpen={isAddFormOpen}
+          onClose={handleCloseForm}
+          onSubmit={editingArticle ? handleUpdateArticle : handleAddArticle}
+          editingArticle={editingArticle}
+          categories={categories}
+        />
+      )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog
@@ -261,8 +279,8 @@ export default function ArticlePage() {
             <AlertDialogTitle>Supprimer l'article</AlertDialogTitle>
             <AlertDialogDescription>
               Êtes-vous sûr de vouloir supprimer «{" "}
-              {articleToDelete && getArticleTitle(articleToDelete)} » ? Cette
-              action ne peut pas être annulée.
+              {articleToDelete && articleToDelete.title} » ? Cette action ne
+              peut pas être annulée.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
