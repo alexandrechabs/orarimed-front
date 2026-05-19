@@ -48,7 +48,7 @@ export const categoryService = {
     id: number,
     category: {
       translations: ArticleCategoryTranslation[];
-    }
+    },
   ) {
     const token = localStorage.getItem("auth_token");
     if (!token) throw new Error("No authentication token found");

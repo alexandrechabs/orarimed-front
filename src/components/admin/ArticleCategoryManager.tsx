@@ -144,10 +144,10 @@ export default function ArticleCategoryManager({
       };
       const result = await categoryService.updateCategory(
         editingCategoryId,
-        payload
+        payload,
       );
       const updatedCategories = categories.map((cat) =>
-        cat.id === editingCategoryId ? result : cat
+        cat.id === editingCategoryId ? result : cat,
       );
       onCategoriesUpdated(updatedCategories);
       setEditingCategoryId(null);
