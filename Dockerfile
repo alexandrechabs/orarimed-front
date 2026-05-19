@@ -20,6 +20,9 @@ RUN npm ci --silent
 # Générer les spécialités
 RUN API_URL=https://orarimed.com/api npm run generate:specialities
 
+# Générer le sitemap
+RUN API_URL=https://orarimed.com/api npm run generate:sitemap
+
 # Copier le reste des fichiers
 COPY . .
 

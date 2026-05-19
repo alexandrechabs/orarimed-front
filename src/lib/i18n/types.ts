@@ -199,8 +199,8 @@ export type TranslationKey = {
     phone: string;
     doctor: string;
     about: string;
-    noBiography: string
-  }
+    noBiography: string;
+  };
   auth: {
     login: string;
     loginDescription: string;
@@ -244,7 +244,7 @@ export type TranslationKey = {
     success: string;
     successDescription: string;
     errorDescription: string;
-  }
+  };
   resetPassword: {
     title: string;
     description: string;
@@ -263,7 +263,7 @@ export type TranslationKey = {
     success: string;
     successDescription: string;
     errorDescription: string;
-  }
+  };
   verifyEmail: {
     title: string;
     description: string;
@@ -329,6 +329,7 @@ export type TranslationKey = {
       viewLessSlots: string;
       noSlots: string;
       noSlotsShort: string;
+      results: string;
     };
     appointmentPage: {
       title: string;
@@ -636,4 +637,4 @@ export type TranslationKey = {
   };
 };
 
-export type LanguageCode = 'sq' | 'en' | 'fr' | 'de' | 'it' | 'el';
+export type LanguageCode = "sq" | "en" | "fr" | "de" | "it" | "el";

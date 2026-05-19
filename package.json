@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "generate:specialities": "npx tsx scripts/fetch-specialities.ts",
-    "prebuild": "npm run generate:specialities",
+    "generate:sitemap": "npx tsx scripts/generate-sitemap.ts",
+    "prebuild": "npm run generate:specialities && npm run generate:sitemap",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",

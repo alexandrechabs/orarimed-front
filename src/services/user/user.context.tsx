@@ -1,13 +1,13 @@
-import { createContext, useState, useCallback } from 'react';
-import { userService } from './user.service';
-import { Patient } from '../../types/patient';
-import { EventInput } from '@fullcalendar/core/index.js';
-import { DateRange } from '../../types/date';
-import { User } from '@/types/user';
-import { DoctorProfile } from '@/types/doctor';
-import { OpeningHour } from '@/types/openingHour';
-import { ConsultationReason } from '@/types/consultationReason';
-import { Center } from '@/types/center';
+import { createContext, useState, useCallback } from "react";
+import { userService } from "./user.service";
+import { Patient } from "../../types/patient";
+import { EventInput } from "@fullcalendar/core/index.js";
+import { DateRange } from "../../types/date";
+import { User } from "@/types/user";
+import { DoctorProfile } from "@/types/doctor";
+import { OpeningHour } from "@/types/openingHour";
+import { ConsultationReason } from "@/types/consultationReason";
+import { Center } from "@/types/center";
 
 type UserContextType = {
   events: EventInput[];
@@ -26,7 +26,16 @@ type UserContextType = {
     lng: string,
     locale: string,
     q: string,
-  ) => Promise<any[]>;
+    page?: number,
+  ) => Promise<{
+    meta: {
+      total: number;
+      currentPage: number;
+      firstPage: number;
+      lastPage: number;
+    };
+    data: DoctorProfile[];
+  }>;
   getUsersAdmin: (role: number, q?: string) => Promise<any[]>;
   searchDoctorAutocomplete: (query: string, locale: string) => Promise<any>;
   getAvailableSlots: (
@@ -180,7 +189,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
         return data;
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
         return [];
       } finally {
         setLoading(false);
@@ -224,8 +233,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     lng: string,
     locale: string,
     q: string,
-  ): Promise<any[]> {
-    const data = await userService.searchDoctors(address, lat, lng, locale, q);
+    page?: number,
+  ): Promise<{
+    meta: {
+      total: number;
+      currentPage: number;
+      firstPage: number;
+      lastPage: number;
+    };
+    data: DoctorProfile[];
+  }> {
+    const data = await userService.searchDoctors(
+      address,
+      lat,
+      lng,
+      locale,
+      q,
+      page,
+    );
     return data;
   }
 
@@ -258,7 +283,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function createUser(
-    userData: Parameters<UserContextType['createUser']>[0],
+    userData: Parameters<UserContextType["createUser"]>[0],
   ) {
     const data = await userService.createUser(userData);
     return data;
@@ -266,7 +291,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   async function updateUser(
     id: string,
-    userData: Parameters<UserContextType['updateUser']>[1],
+    userData: Parameters<UserContextType["updateUser"]>[1],
   ) {
     const data = await userService.updateUser(id, userData);
     return data;

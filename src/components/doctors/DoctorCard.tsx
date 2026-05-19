@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
-import { DoctorProfile } from '@/types/doctor';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { Slots } from './Slots';
+import { useState, useRef } from "react";
+import { DoctorProfile } from "@/types/doctor";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { Slots } from "./Slots";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,7 +20,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    navigate('/appointment', {
+    navigate("/appointment", {
       state: {
         doctor: {
           id: doctor.id,
@@ -75,15 +75,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
             </div>
           </div>
           {/* Section des créneaux par jour */}
-          {/* {doctor.slots && doctor.slots.length > 0 ? ( */}
           <Slots doctor={doctor} clickSlot={clickSlot} />
-          {/* ) : ( */}
-          {/* <div className="md:col-span-4 m-auto  "> */}
-          {/* <p className="text-sm text-muted-foreground"> */}
-          {/* {t.createRdv.searchPage.noSlots} */}
-          {/* </p> */}
-          {/* </div> */}
-          {/* )} */}
         </div>
       </CardContent>
     </Card>

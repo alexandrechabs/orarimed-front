@@ -1,57 +1,57 @@
-import { EventInput } from '@fullcalendar/core/index.js';
-import { DateRange } from '../../types/date';
-import { User } from '@/types/user';
-import { OpeningHour } from '@/types/openingHour';
-import { ConsultationReason } from '@/types/consultationReason';
-import { Center } from '@/types/center';
-import { StringDecoder } from 'node:string_decoder';
+import { EventInput } from "@fullcalendar/core/index.js";
+import { DateRange } from "../../types/date";
+import { User } from "@/types/user";
+import { OpeningHour } from "@/types/openingHour";
+import { ConsultationReason } from "@/types/consultationReason";
+import { Center } from "@/types/center";
+import { DoctorProfile } from "@/types/doctor";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const userService = {
   async searchPatient(firstName: string, lastName: string, birthDate: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const res = await fetch(`${API_URL}/patients/search`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ firstName, lastName, birthDate }),
     });
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
   async getPatient(id: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const res = await fetch(`${API_URL}/patients/${id}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
   async getEvents(dateRange?: DateRange, userId?: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     let url = `${API_URL}/events`;
@@ -66,70 +66,70 @@ export const userService = {
     }
 
     if (userId) {
-      url += `${url.includes('?') ? '&' : '?'}userId=${userId}`;
+      url += `${url.includes("?") ? "&" : "?"}userId=${userId}`;
     }
 
     const res = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
   async createEvent(event: EventInput) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const res = await fetch(`${API_URL}/events`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(event),
     });
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
   async updateEvent(event: EventInput) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const res = await fetch(`${API_URL}/events/${event.id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(event),
     });
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
   async getDoctor(doctorIdentifier: string) {
     const res = await fetch(`${API_URL}/doctor/${doctorIdentifier}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
@@ -139,54 +139,63 @@ export const userService = {
     lng: string,
     locale: string,
     q: string,
+    page?: number,
   ) {
     const res = await fetch(
-      `${API_URL}/doctor/search?address=${address}&lat=${lat}&lng=${lng}&q=${q}&locale=${locale}`,
+      `${API_URL}/doctor/search?address=${address}&lat=${lat}&lng=${lng}&q=${q}&locale=${locale}${page ? `&page=${page}` : ""}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       },
     );
 
-    if (!res.ok) throw new Error('Get user failed');
-    return res.json() as Promise<any>;
+    if (!res.ok) throw new Error("Get user failed");
+    return res.json() as Promise<{
+      meta: {
+        total: number;
+        currentPage: number;
+        firstPage: number;
+        lastPage: number;
+      };
+      data: DoctorProfile[];
+    }>;
   },
 
   async searchDoctorAutocomplete(query: string, locale: string) {
     const res = await fetch(
       `${API_URL}/doctor/search/autocomplete?q=${query}&locale=${locale}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       },
     );
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
   async getUsersAdmin(role: number, q?: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
     const res = await fetch(
-      `${API_URL}/admin/user?role=${role}${q ? `&q=${q}` : ''}`,
+      `${API_URL}/admin/user?role=${role}${q ? `&q=${q}` : ""}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       },
     );
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
@@ -197,17 +206,18 @@ export const userService = {
     numberOfDays?: number,
   ) {
     const res = await fetch(
-      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}${duration ? `&duration=${duration}` : ''
-      }${numberOfDays ? `&numberOfDays=${numberOfDays}` : ''}`,
+      `${API_URL}/doctor/${doctorId}/available-slots?date=${date}${
+        duration ? `&duration=${duration}` : ""
+      }${numberOfDays ? `&numberOfDays=${numberOfDays}` : ""}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       },
     );
 
-    if (!res.ok) throw new Error('Get user failed');
+    if (!res.ok) throw new Error("Get user failed");
     return res.json() as Promise<any>;
   },
 
@@ -229,15 +239,15 @@ export const userService = {
     specialityId?: number;
     acceptTerms: boolean;
   }): Promise<User> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
     const data = await fetch(`${API_URL}/admin/user`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(userData),
@@ -269,10 +279,10 @@ export const userService = {
       specialityId?: number;
     },
   ): Promise<User> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     // Ne pas envoyer le mot de passe s'il est vide
@@ -282,9 +292,9 @@ export const userService = {
     }
 
     const response = await fetch(`${API_URL}/admin/user/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(dataToSend),
@@ -292,25 +302,25 @@ export const userService = {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update user');
+      throw new Error(errorData.message || "Failed to update user");
     }
 
     return response.json();
   },
 
   async saveSubSpecialities(userId: string, subSpecialityId: number[]) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(
       `${API_URL}/user/${userId}/sub-specialities/`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ subSpecialityId }),
@@ -321,16 +331,16 @@ export const userService = {
   },
 
   async getOpeningHours(userId: string): Promise<OpeningHour[]> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/user/${userId}/opening-hours`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -339,18 +349,18 @@ export const userService = {
   },
 
   async getOpeningHoursCenter(centerId: string): Promise<OpeningHour[]> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(
       `${API_URL}/center/${centerId}/opening-hours`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       },
@@ -361,18 +371,18 @@ export const userService = {
 
   async saveOpeningHours(
     userId: string,
-    openingHours: Omit<OpeningHour, 'id'>[],
+    openingHours: Omit<OpeningHour, "id">[],
   ): Promise<OpeningHour[]> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/user/${userId}/opening-hours/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ openingHours }),
@@ -383,20 +393,20 @@ export const userService = {
 
   async saveOpeningHoursCenter(
     centerId: string,
-    openingHours: Omit<OpeningHour, 'id'>[],
+    openingHours: Omit<OpeningHour, "id">[],
   ): Promise<OpeningHour[]> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(
       `${API_URL}/center/${centerId}/opening-hours/`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ openingHours }),
@@ -408,9 +418,9 @@ export const userService = {
 
   async getReasonsClient(userId: string): Promise<ConsultationReason[]> {
     const response = await fetch(`${API_URL}/doctor/${userId}/reasons`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -418,16 +428,16 @@ export const userService = {
   },
 
   async getReasons(userId: string): Promise<ConsultationReason[]> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/user/${userId}/reasons`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -436,16 +446,16 @@ export const userService = {
   },
 
   async saveReasons(userId: string, reasons: ConsultationReason[]) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/user/${userId}/reasons/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ reasons }),
@@ -455,18 +465,18 @@ export const userService = {
   },
 
   async searchClient(search: string, userId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(
       `${API_URL}/patients/search?search=${search}&userId=${userId}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       },
@@ -476,18 +486,18 @@ export const userService = {
   },
 
   async checkValidSelection(id: string, reasonId: number, slot: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(
       `${API_URL}/doctor/${id}/check-valid-selection?reasonId=${reasonId}&slot=${slot}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       },
@@ -497,16 +507,16 @@ export const userService = {
   },
 
   async createRdv(doctorId: string, slot: string, reasonId: number) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/doctor/${doctorId}/events`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ slot, reasonId }),
@@ -516,16 +526,16 @@ export const userService = {
   },
 
   async getRdvHistoryDoctor(id: number) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/contact/${id}/events`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -534,16 +544,16 @@ export const userService = {
   },
 
   async getRdvNotificationsDoctor(eventId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/events/${eventId}/notifications`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -552,16 +562,16 @@ export const userService = {
   },
 
   async createCenter(centerData: Center) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/center`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(centerData),
@@ -571,16 +581,16 @@ export const userService = {
   },
 
   async getCenters() {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/center`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -589,16 +599,16 @@ export const userService = {
   },
 
   async getCenter(id: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/center/${id}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -607,16 +617,16 @@ export const userService = {
   },
 
   async updateCenter(id: string, centerData: Center) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/center/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(centerData),
@@ -629,79 +639,79 @@ export const userService = {
     centerId: string,
     doctors: Array<{ doctorId: string; isAdmin: boolean }>,
   ) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/center/${centerId}/doctors`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ doctors }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to add doctors to center');
+      throw new Error("Failed to add doctors to center");
     }
 
     return response.json();
   },
 
   async getCenterDoctors(centerId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
     const response = await fetch(`${API_URL}/center/${centerId}/doctors`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get center doctors');
+      throw new Error("Failed to get center doctors");
     }
 
     return response.json();
   },
 
   async getDoctorCenters(doctorId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
     const response = await fetch(`${API_URL}/doctor/${doctorId}/centers`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get center doctors');
+      throw new Error("Failed to get center doctors");
     }
 
     return response.json();
   },
 
   async savePhotoCenter(photo: FormData, centerId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/center/${centerId}/upload`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -712,14 +722,14 @@ export const userService = {
   },
 
   async savePhotoUser(photo: FormData, userId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/user/${userId}/upload`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -730,18 +740,18 @@ export const userService = {
   },
 
   async addDoctorsToSecretary(secretaryId: string, doctors: Array<string>) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(
       `${API_URL}/secretary/${secretaryId}/doctors`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ doctors }),
@@ -749,31 +759,31 @@ export const userService = {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to add doctors to secretary');
+      throw new Error("Failed to add doctors to secretary");
     }
 
     return response.json();
   },
 
   async getSecretaryDoctors(secretaryId: string) {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
     const response = await fetch(
       `${API_URL}/secretary/${secretaryId}/doctors`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       },
     );
 
     if (!response.ok) {
-      throw new Error('Failed to get secretary doctors');
+      throw new Error("Failed to get secretary doctors");
     }
 
     return response.json();
@@ -786,15 +796,15 @@ export const userService = {
     message: string;
   }) {
     const response = await fetch(`${API_URL}/form`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to send contact message');
+      throw new Error("Failed to send contact message");
     }
 
     return response.json();

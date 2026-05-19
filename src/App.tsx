@@ -237,7 +237,7 @@ const App = () => (
           <Route
             path="/appointment"
             element={
-              <ProtectedRouteByRole allowedRoles={[1]}>
+              <ProtectedRouteByRole allowedRoles={[1, 2, 3, 4]}>
                 <AppointmentPage />
               </ProtectedRouteByRole>
             }
@@ -245,7 +245,7 @@ const App = () => (
           <Route
             path="/confirmation"
             element={
-              <ProtectedRouteByRole allowedRoles={[1]}>
+              <ProtectedRouteByRole allowedRoles={[1, 2, 3, 4]}>
                 <ConfirmationPage />
               </ProtectedRouteByRole>
             }
