@@ -1,8 +1,8 @@
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
-import AddressAutocomplete from './Autocomplete';
-import { DoctorAutocomplete } from './DoctorAutocomplete';
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import AddressAutocomplete from "./Autocomplete";
+import { DoctorAutocomplete } from "./DoctorAutocomplete";
 
 interface MapProps {
   selectedCity: any;
@@ -31,7 +31,7 @@ export function SearchDoctor({
             onDoctorSelect={(doctor) => {
               setSelectedDoctor(doctor.name);
             }}
-            placeholder={t.hero.doctorPlaceholder || 'Nom, spécialité'}
+            placeholder={t.hero.doctorPlaceholder || "Nom, spécialité"}
             className="rounded-none rounded-l-md rounded-r-md md:rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
@@ -40,8 +40,9 @@ export function SearchDoctor({
             type="(regions)"
             value={selectedCity.address}
             onChange={(value) => {
+              setSelectedCity((prev: any) => ({ ...prev, address: value }));
             }}
-            placeholder={t.hero.cityPlaceholder || 'Ville'}
+            placeholder={t.hero.cityPlaceholder || "Ville"}
             className="pl-10 h-12 text-base rounded-md md:rounded-none my-2 md:my-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onPlaceSelected={(place) => {
               setSelectedCity({
