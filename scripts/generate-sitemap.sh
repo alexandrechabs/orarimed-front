@@ -2,7 +2,7 @@
 
 echo "Generating sitemap..."
 
-cd /app || exit
+cd /usr/share/nginx/html || exit
 
 API_URL=https://orarimed.com/api npm run generate:sitemap
 
