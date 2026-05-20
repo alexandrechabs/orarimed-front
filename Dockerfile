@@ -51,4 +51,4 @@ RUN echo " */5 * * * * /generate-sitemap.sh >> /var/log/cron.log 2>&1" > /etc/cr
 EXPOSE 80
 
 # Démarrer Nginx
-CMD ["cron", "&&","nginx", "-g", "daemon off;"]
+CMD ["crond", "&&","nginx", "-g", "daemon off;"]
