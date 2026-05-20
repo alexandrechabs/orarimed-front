@@ -20,9 +20,6 @@ RUN npm ci --silent
 # Générer les spécialités
 RUN API_URL=https://orarimed.com/api npm run generate:specialities
 
-# Générer le sitemap
-RUN API_URL=https://orarimed.com/api npm run generate:sitemap
-
 # Copier le reste des fichiers
 COPY . .
 
@@ -38,8 +35,20 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copier les fichiers construits depuis l'étape de construction
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# -----------------------------
+# SITEMAP SCRIPT
+# -----------------------------
+COPY scripts/generate-sitemap.sh /generate-sitemap.sh
+
+RUN chmod +x /generate-sitemap.sh
+
+# -----------------------------
+# CRON
+# -----------------------------
+RUN echo "0 */6 * * * /generate-sitemap.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
+
 # Exposer le port 80
 EXPOSE 80
 
 # Démarrer Nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["cron", "&&","nginx", "-g", "daemon off;"]
