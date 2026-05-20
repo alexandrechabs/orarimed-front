@@ -233,7 +233,6 @@ export const userService = {
       y: number;
     };
     phoneNumber: string;
-    password: string;
     roleId: number;
     visible?: boolean;
     specialityId?: number;

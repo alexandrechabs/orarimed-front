@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/services/user/useUser";
 import { UserRole } from "@/types/roles";
 import { Camera, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -25,6 +25,7 @@ import type { CountryCode } from "libphonenumber-js";
 import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import ImageUpload from "../ui/ImageUpload";
+import { a } from "node_modules/framer-motion/dist/types.d-DagZKalS";
 
 const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
@@ -46,33 +47,15 @@ const createDoctorSchema = (isEditMode: boolean) => {
     specialityId: z.number().min(1, "La spécialité est requise"),
     subSpecialityId: z.array(z.number()).optional(), // Nouveau champ
     language: z.string().min(2, "La langue est requise"),
-  };
-
-  // En mode édition, le mot de passe est optionnel et ne doit être validé que s'il est fourni
-  const passwordSchema = isEditMode
-    ? {
-        password: z
-          .union([
-            z.string().length(0), // Accepte une chaîne vide
-            z
-              .string()
-              .min(8, "Le mot de passe doit faire au moins 8 caractères"),
-          ])
-          .optional()
-          .transform((e) => (e === "" ? undefined : e)), // Transforme une chaîne vide en undefined
-      }
-    : {
-        password: z
-          .string()
-          .min(8, "Le mot de passe doit faire au moins 8 caractères"),
-        acceptTerms: z.boolean().refine((val) => val, {
+    acceptTerms: isEditMode
+      ? z.boolean()
+      : z.boolean().refine((val) => val === true, {
           message: "Vous devez accepter les conditions d'utilisation",
         }),
-      };
+  };
 
   return z.object({
     ...baseSchema,
-    ...passwordSchema,
   });
 };
 
@@ -146,7 +129,6 @@ export function AddDoctorForm({
             y: user.coordinate.y,
           },
           phoneNumber: user.phoneNumber,
-          password: "", // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
           visible: user.visible,
           specialityId: user.specialityId,
           subSpecialityId: user.subSpecialityId,
@@ -161,7 +143,6 @@ export function AddDoctorForm({
           country: "",
           coordinate: { x: 0, y: 0 },
           phoneNumber: "",
-          password: "",
           visible: false,
           specialityId: 0,
           acceptTerms: false,
@@ -186,8 +167,6 @@ export function AddDoctorForm({
           y: data.coordinate.y,
         },
         phoneNumber: data.phoneNumber,
-        // Ne pas envoyer le mot de passe s'il est vide (mode édition sans modification du mot de passe)
-        ...(data.password && { password: data.password }),
         roleId: UserRole.DOCTOR,
         visible: data.visible, // Conserver l'état actuel en mode édition
         active: user?.active,
@@ -395,42 +374,6 @@ export function AddDoctorForm({
             <p className="text-sm text-destructive">
               {errors.phoneNumber.message}
             </p>
-          )}
-        </div>
-
-        <div>
-          {!isEditMode && (
-            <>
-              <Label>Mot de passe temporaire</Label>
-              <Input
-                type="password"
-                {...register("password")}
-                autoComplete="new-password"
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-            </>
-          )}
-          {isEditMode && (
-            <div className="space-y-2">
-              <Label>
-                Changer le mot de passe (laisser vide pour ne pas modifier)
-              </Label>
-              <Input
-                type="password"
-                {...register("password")}
-                autoComplete="new-password"
-                placeholder="Nouveau mot de passe"
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
           )}
         </div>
         <div>

@@ -1,45 +1,80 @@
 // src/components/auth/ResetPasswordForm.tsx
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useState } from 'react';
-import { useAuth } from '@/services/auth/useAuth';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useState } from "react";
+import { useAuth } from "@/services/auth/useAuth";
 
 // Fonction pour créer le schéma dynamique avec les traductions
-const createResetPasswordSchema = (t: any) => z.object({
-  email: z.string().email(t.resetPassword.emailError),
-  code: z.string().min(6, t.resetPassword.codeError).max(6, t.resetPassword.codeError),
-  password: z.string().min(8, t.resetPassword.passwordMinLength || 'Le mot de passe doit contenir au moins 8 caractères'),
-  confirmPassword: z.string().min(1, t.resetPassword.confirmPasswordRequired || 'La confirmation du mot de passe est requise'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: t.resetPassword.passwordsNotMatch || 'Les mots de passe ne correspondent pas',
-  path: ['confirmPassword'],
-});
+const createResetPasswordSchema = (t: any) =>
+  z
+    .object({
+      email: z.string().email(t.resetPassword.emailError),
+      code: z
+        .string()
+        .min(6, t.resetPassword.codeError)
+        .max(6, t.resetPassword.codeError),
+      password: z
+        .string()
+        .min(
+          8,
+          t.resetPassword.passwordMinLength ||
+            "Le mot de passe doit contenir au moins 8 caractères",
+        ),
+      confirmPassword: z
+        .string()
+        .min(
+          1,
+          t.resetPassword.confirmPasswordRequired ||
+            "La confirmation du mot de passe est requise",
+        ),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message:
+        t.resetPassword.passwordsNotMatch ||
+        "Les mots de passe ne correspondent pas",
+      path: ["confirmPassword"],
+    });
 
-type ResetPasswordFormValues = z.infer<ReturnType<typeof createResetPasswordSchema>>;
+type ResetPasswordFormValues = z.infer<
+  ReturnType<typeof createResetPasswordSchema>
+>;
 
 export function ResetPasswordForm() {
-  const { t } = useLanguage();
+  const { t, setLanguage, languages } = useLanguage();
+  const [searchParams] = useSearchParams();
   const { resetPassword } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const email = location.state?.email || '';
+  const email =
+    location.state?.email ||
+    (searchParams.get("email")
+      ? decodeURIComponent(searchParams.get("email")!)
+      : "") ||
+    "";
+  const code = searchParams.get("token") || "";
+
+  if (searchParams.get("lang")) {
+    setLanguage(
+      languages.find((l) => l.code === searchParams.get("lang"))?.code || "sq",
+    );
+  }
 
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(createResetPasswordSchema(t)),
     defaultValues: {
       email: email,
-      code: '',
-      password: '',
-      confirmPassword: '',
+      code: code,
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -48,9 +83,9 @@ export function ResetPasswordForm() {
       toast({
         title: t.common.error,
         description: t.resetPassword.emailMissing,
-        variant: 'destructive',
+        variant: "destructive",
       });
-      navigate('/forgot-password');
+      navigate("/forgot-password");
       return;
     }
 
@@ -65,12 +100,12 @@ export function ResetPasswordForm() {
       });
 
       // Rediriger vers la page de connexion
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
       toast({
         title: t.common.error,
         description: t.resetPassword.errorDescription,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -84,7 +119,7 @@ export function ResetPasswordForm() {
           id="email"
           type="email"
           placeholder={t.auth.email}
-          {...form.register('email')}
+          {...form.register("email")}
         />
         {form.formState.errors.email && (
           <p className="text-sm text-red-500">
@@ -100,7 +135,7 @@ export function ResetPasswordForm() {
           placeholder={t.resetPassword.codePlaceholder}
           maxLength={6}
           autoComplete="off"
-          {...form.register('code')}
+          {...form.register("code")}
         />
         {form.formState.errors.code && (
           <p className="text-sm text-red-500">
@@ -115,7 +150,7 @@ export function ResetPasswordForm() {
           type="password"
           placeholder={t.resetPassword.newPassword}
           autoComplete="new-password"
-          {...form.register('password')}
+          {...form.register("password")}
         />
         {form.formState.errors.password && (
           <p className="text-sm text-red-500">
@@ -130,7 +165,7 @@ export function ResetPasswordForm() {
           type="password"
           placeholder={t.resetPassword.confirmPassword}
           autoComplete="new-password"
-          {...form.register('confirmPassword')}
+          {...form.register("confirmPassword")}
         />
         {form.formState.errors.confirmPassword && (
           <p className="text-sm text-red-500">
