@@ -1,15 +1,15 @@
-import { writeFileSync, mkdirSync } from 'fs';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { writeFileSync, mkdirSync } from "fs";
+import { resolve } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Configuration
-const API_URL = process.env.VITE_API_URL || 'http://localhost:3334'; // Remplacez par l'URL de votre API
-const OUTPUT_DIR = resolve(__dirname, '../public/data');
-const OUTPUT_FILE = resolve(OUTPUT_DIR, 'specialities.ts');
+const API_URL = process.env.VITE_API_URL || "http://localhost:3334"; // Remplacez par l'URL de votre API
+const OUTPUT_DIR = resolve(__dirname, "../public/data");
+const OUTPUT_FILE = resolve(OUTPUT_DIR, "specialities.ts");
 
 async function fetchSpecialities() {
   try {
@@ -57,10 +57,10 @@ export type Speciality = {
 };`;
 
     // Écrire le fichier
-    writeFileSync(OUTPUT_FILE, fileContent, 'utf8');
+    writeFileSync(OUTPUT_FILE, fileContent, "utf8");
     console.log(`✅ Fichier généré avec succès : ${OUTPUT_FILE}`);
   } catch (error) {
-    console.error('❌ Erreur lors de la génération des spécialités :', error);
+    console.error("❌ Erreur lors de la génération des spécialités :", error);
     process.exit(1);
   }
 }
