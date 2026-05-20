@@ -41,7 +41,7 @@ COPY scripts/generate-sitemap.sh /generate-sitemap.sh
 RUN chmod +x /generate-sitemap.sh
 
 # CRON
-RUN echo " */5 * * * * /generate-sitemap.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
+RUN echo "0 */6 * * * /generate-sitemap.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
 
 # Exposer le port 80
 EXPOSE 80
