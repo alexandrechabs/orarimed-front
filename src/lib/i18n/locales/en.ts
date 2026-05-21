@@ -272,19 +272,35 @@ const en: TranslationKey = {
       title: "Our rates",
       subtitle: "Starting is free and without obligation",
       recommended: "Recommended",
-      plan: {
-        name: "Professional Plan",
-        price: "Free",
-        period: "to start",
-        features: [
-          "Complete professional profile",
-          "24/7 online calendar",
-          "Automatic reminders for patients",
-          "Basic statistics",
-          "Priority support",
-          "No commission on bookings",
-        ],
-      },
+      plans: [
+        {
+          name: "Professional Plan",
+          price: "Free",
+          period: "to start",
+          recommended: true,
+          features: [
+            "Complete professional profile",
+            "24/7 online calendar",
+            "Automatic reminders for patients",
+            "Basic statistics",
+            "Priority support",
+            "No commission on bookings",
+          ],
+        },
+        {
+          name: "Premium Plan",
+          price: "$49 / month",
+          period: "per month",
+          features: [
+            "Advanced analytics",
+            "Multi-location management",
+            "Custom reminders and intake forms",
+            "Performance dashboard",
+            "Priority integrations",
+            "Access sercretary",
+          ],
+        },
+      ],
       cta: "Start free now",
     },
     faq: {

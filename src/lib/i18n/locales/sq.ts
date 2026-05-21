@@ -273,19 +273,35 @@ const sq: TranslationKey = {
       title: "Tarifat tona",
       subtitle: "Fillimi është falas dhe pa detyrim",
       recommended: "Rekomanduar",
-      plan: {
-        name: "Plan Profesional",
-        price: "Falas",
-        period: "për të filluar",
-        features: [
-          "Profil profesional i plotë",
-          "Kalendar online 24/7",
-          "Kujtesa automatike për pacientët",
-          "Statistika bazë",
-          "Suport prioritar",
-          "Pa komision për rezervimet",
-        ],
-      },
+      plans: [
+        {
+          name: "Plani Profesional",
+          price: "Falas",
+          period: "për të filluar",
+          recommended: true,
+          features: [
+            "Profil profesional i plotë",
+            "Kalendar online 24/7",
+            "Kujtesa automatike për pacientët",
+            "Statistika bazë",
+            "Suport prioritar",
+            "Pa komision për rezervimet",
+          ],
+        },
+        {
+          name: "Plani Premium",
+          price: "49 €/muaj",
+          period: "për muaj",
+          features: [
+            "Analitika të avancuara",
+            "Menaxhim multi-lokacion",
+            "Kujtesa dhe formularë të personalizuar",
+            "Panel performancash",
+            "Integrime prioritare",
+            "aksesi i sekretarit",
+          ],
+        },
+      ],
       cta: "Fillo falas tani",
     },
     faq: {

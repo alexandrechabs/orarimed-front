@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   UserPlus,
   Calendar,
@@ -14,11 +14,11 @@ import {
   Bell,
   CreditCard,
   HeartHandshake,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const ProfessionalPage = () => {
   const { t } = useLanguage();
@@ -58,22 +58,22 @@ const ProfessionalPage = () => {
 
   const steps = [
     {
-      number: '1',
+      number: "1",
       title: t.professionalsPage.steps.register.title,
       description: t.professionalsPage.steps.register.description,
     },
     {
-      number: '2',
+      number: "2",
       title: t.professionalsPage.steps.profile.title,
       description: t.professionalsPage.steps.profile.description,
     },
     {
-      number: '3',
+      number: "3",
       title: t.professionalsPage.steps.schedule.title,
       description: t.professionalsPage.steps.schedule.description,
     },
     {
-      number: '4',
+      number: "4",
       title: t.professionalsPage.steps.receive.title,
       description: t.professionalsPage.steps.receive.description,
     },
@@ -242,47 +242,54 @@ const ProfessionalPage = () => {
             </p>
           </motion.div>
 
-          <div className="max-w-lg mx-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="border-primary shadow-xl">
-                <CardContent className="p-8 text-center">
-                  <div className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                    {t.professionalsPage.pricing.recommended}
-                  </div>
-                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">
-                    {t.professionalsPage.pricing.plan.name}
-                  </h3>
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    {t.professionalsPage.pricing.plan.price}
-                  </div>
-                  <p className="text-muted-foreground mb-6">
-                    {t.professionalsPage.pricing.plan.period}
-                  </p>
+          <div className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
+            {t.professionalsPage.pricing.plans.map((plan, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="border-primary hover:shadow-xl transition-shadow">
+                  <CardContent className="p-8 text-center">
+                    {plan.recommended ? (
+                      <div className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+                        {t.professionalsPage.pricing.recommended}
+                      </div>
+                    ) : (
+                      <div className="h-11"></div>
+                    )}
 
-                  <ul className="space-y-3 text-left mb-8">
-                    {t.professionalsPage.pricing.plan.features.map(
-                      (feature, index) => (
-                        <li key={index} className="flex items-center gap-3">
+                    <h3 className="font-display text-2xl font-bold text-foreground mb-2">
+                      {plan.name}
+                    </h3>
+                    <div className="text-4xl font-bold text-primary mb-2">
+                      {plan.price}
+                    </div>
+                    <p className="text-muted-foreground mb-6">{plan.period}</p>
+
+                    <ul className="space-y-3 text-left mb-8">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li
+                          key={featureIndex}
+                          className="flex items-center gap-3"
+                        >
                           <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
                           <span className="text-foreground">{feature}</span>
                         </li>
-                      )
-                    )}
-                  </ul>
+                      ))}
+                    </ul>
 
-                  <Button size="xl" className="w-full" asChild>
-                    <Link to="/contact">
-                      <UserPlus className="w-5 h-5" />
-                      {t.professionalsPage.pricing.cta}
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+                    <Button size="lg" className="w-full" asChild>
+                      <Link to="/contact">
+                        <UserPlus className="w-5 h-5" />
+                        {t.professionalsPage.pricing.cta}
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

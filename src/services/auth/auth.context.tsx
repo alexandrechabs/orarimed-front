@@ -1,9 +1,8 @@
-import { createContext, useEffect, useState } from 'react';
-import { authService } from './auth.service';
-import { User } from '@/types/user';
-import { OpeningHour } from '@/types/openingHour';
-import { Speciality } from '@/types/specialty';
-import { ConsultationReason } from '@/types/consultationReason';
+import { createContext, useEffect, useState } from "react";
+import { authService } from "./auth.service";
+import { User } from "@/types/user";
+import { Speciality } from "@/types/specialty";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 type AuthContextType = {
   user: User | null;
@@ -28,15 +27,20 @@ type AuthContextType = {
   saveSpecialities: (specialities: any) => Promise<Speciality[]>;
   logout: () => void;
   sendResetCode: (email: string) => Promise<void>;
-  resetPassword: (email: string, code: string, password: string) => Promise<void>;
+  resetPassword: (
+    email: string,
+    code: string,
+    password: string,
+  ) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { language, setLanguage, languages } = useLanguage();
   const [token, setToken] = useState<String>(() => {
-    const saved = localStorage.getItem('auth_token');
-    return (saved as String) || '';
+    const saved = localStorage.getItem("auth_token");
+    return (saved as String) || "";
   });
   const [user, setUser] = useState<User | null>(null);
   const [specialities, setSpecialities] = useState<any[]>([]);
@@ -50,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         await getMyUser();
       } catch (error) {
-        console.error('Failed to load user', error);
+        console.error("Failed to load user", error);
       } finally {
         setIsLoading(false);
       }
@@ -61,9 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function login(email: string, password: string) {
     const data = await authService.login({ email, password });
-
     setToken(data.token.token);
-    localStorage.setItem('auth_token', data.token.token);
+    localStorage.setItem("auth_token", data.token.token);
     await getMyUser();
   }
 
@@ -88,17 +91,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(data.user);
     setToken(data.token.token);
-    localStorage.setItem('auth_token', data.token.token);
+    localStorage.setItem("auth_token", data.token.token);
   }
 
   async function getMyUser() {
     const data = await authService.getMyUser();
+    if (language !== data.language) {
+      setLanguage(
+        languages.find((l) => l.code === data.language)?.code || "sq",
+      );
+    }
     setUser(data);
     return;
   }
 
   async function updateUser(params: any) {
     const data = await authService.updateUser(user.id, params);
+    if (language !== data.language) {
+      setLanguage(
+        languages.find((l) => l.code === data.language)?.code || "sq",
+      );
+    }
     setUser(data);
   }
 

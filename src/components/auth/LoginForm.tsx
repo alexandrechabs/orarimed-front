@@ -1,17 +1,17 @@
 // src/components/auth/LoginForm.tsx
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useAuth } from '@/services/auth/useAuth';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useAuth } from "@/services/auth/useAuth";
 
 const loginSchema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(1, 'Le mot de passe est requis'),
+  email: z.string().email("Email invalide"),
+  password: z.string().min(1, "Le mot de passe est requis"),
 });
 
 export function LoginForm() {
@@ -24,8 +24,8 @@ export function LoginForm() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -34,7 +34,7 @@ export function LoginForm() {
       await login(values.email, values.password);
 
       // Récupérer la page de redirection et l'état supplémentaire
-      const from = location.state?.from || '/dashboard';
+      const from = location.state?.from || "/dashboard";
       const additionalState = { ...location.state };
       delete additionalState.from; // Supprimer 'from' pour éviter les conflits
 
@@ -42,9 +42,9 @@ export function LoginForm() {
       navigate(from, { state: additionalState, replace: true });
     } catch (error) {
       toast({
-        title: 'Erreur de connexion',
-        description: error.message || 'Identifiants invalides',
-        variant: 'destructive',
+        title: "Erreur de connexion",
+        description: error.message || "Identifiants invalides",
+        variant: "destructive",
       });
     }
   }
@@ -56,7 +56,7 @@ export function LoginForm() {
           id="email"
           type="email"
           placeholder={t.auth.email}
-          {...form.register('email')}
+          {...form.register("email")}
         />
         {form.formState.errors.email && (
           <p className="text-sm text-red-500">
@@ -70,7 +70,7 @@ export function LoginForm() {
           id="password"
           type="password"
           placeholder={t.auth.password}
-          {...form.register('password')}
+          {...form.register("password")}
         />
         {form.formState.errors.password && (
           <p className="text-sm text-red-500">
@@ -93,7 +93,7 @@ export function LoginForm() {
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        {t.auth.noAccount}{' '}
+        {t.auth.noAccount}{" "}
         <Link
           to="/register"
           className="font-medium text-primary hover:underline"

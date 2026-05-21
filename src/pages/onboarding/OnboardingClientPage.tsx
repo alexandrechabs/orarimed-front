@@ -1,8 +1,8 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -10,59 +10,59 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
-import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
-import { Calendar } from '@/components/ui/calendar';
+} from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { useDateLocale, useLanguage } from "@/lib/i18n/LanguageContext";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/services/auth/useAuth';
-import React from 'react';
-import PhoneInput from 'react-phone-number-input';
-import type { CountryCode } from 'libphonenumber-js';
-import 'react-phone-number-input/style.css';
-import { Label } from '@/components/ui/label';
-import AddressAutocomplete from '@/components/Autocomplete';
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/services/auth/useAuth";
+import React from "react";
+import PhoneInput from "react-phone-number-input";
+import type { CountryCode } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+import { Label } from "@/components/ui/label";
+import AddressAutocomplete from "@/components/Autocomplete";
 
 const formSchema = z.object({
-  genderId: z.enum(['1', '2', '3'], {
-    required_error: 'Veuillez sélectionner votre genre',
+  genderId: z.enum(["1", "2", "3"], {
+    required_error: "Veuillez sélectionner votre genre",
   }),
   phoneNumber: z
     .string({
-      required_error: 'Le numéro de téléphone est requis',
+      required_error: "Le numéro de téléphone est requis",
     })
     .min(8, {
-      message: 'Le numéro de téléphone est invalide',
+      message: "Le numéro de téléphone est invalide",
     }),
   birthDate: z.date({
-    required_error: 'Veuillez entrer votre date de naissance',
+    required_error: "Veuillez entrer votre date de naissance",
   }),
   address: z.string().min(5, {
     message: "L'adresse doit contenir au moins 5 caractères",
   }),
   city: z.string().min(2, {
-    message: 'Veuillez entrer une ville valide',
+    message: "Veuillez entrer une ville valide",
   }),
   country: z.string().min(2, {
-    message: 'Veuillez sélectionner un pays',
+    message: "Veuillez sélectionner un pays",
   }),
   language: z.string().min(2, {
-    message: 'Veuillez sélectionner une langue',
+    message: "Veuillez sélectionner une langue",
   }),
   coordinate: z.object({
     x: z.number(),
@@ -79,16 +79,16 @@ export function OnboardingClientPage() {
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
   // Liste des pays disponibles avec leurs codes ISO
-  const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+  const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       genderId: undefined,
-      phoneNumber: '',
-      address: '',
-      city: '',
-      country: '',
+      phoneNumber: "",
+      address: "",
+      city: "",
+      country: "",
       language: language,
       coordinate: {
         x: 0,
@@ -103,7 +103,7 @@ export function OnboardingClientPage() {
       const dataToSend = {
         ...values,
         birthDate: values.birthDate
-          ? format(values.birthDate, 'yyyy-MM-dd')
+          ? format(values.birthDate, "yyyy-MM-dd")
           : null,
       };
 
@@ -111,21 +111,21 @@ export function OnboardingClientPage() {
       await updateUser(dataToSend);
 
       toast({
-        title: 'Profil complété avec succès',
-        description: 'Vos informations ont été enregistrées avec succès.',
+        title: "Profil complété avec succès",
+        description: "Vos informations ont été enregistrées avec succès.",
       });
 
       // Rediriger vers le tableau de bord
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil:', error);
+      console.error("Erreur lors de la mise à jour du profil:", error);
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description:
           error instanceof Error
             ? error.message
             : "Une erreur est survenue lors de l'enregistrement de vos informations.",
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   }
@@ -183,12 +183,12 @@ export function OnboardingClientPage() {
                           <Button
                             variant="outline"
                             className={cn(
-                              'pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground',
+                              "pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             {field.value ? (
-                              format(field.value, 'PPP', {
+                              format(field.value, "PPP", {
                                 locale: dateLocale,
                               })
                             ) : (
@@ -210,18 +210,18 @@ export function OnboardingClientPage() {
                           }}
                           captionLayout="dropdown"
                           classNames={{
-                            caption: 'flex justify-center gap-2',
-                            caption_label: 'hidden',
-                            dropdown: 'm-0',
+                            caption: "flex justify-center gap-2",
+                            caption_label: "hidden",
+                            dropdown: "m-0",
                             dropdown_month:
-                              'px-2 py-1 rounded-md border text-sm',
+                              "px-2 py-1 rounded-md border text-sm",
                             dropdown_year:
-                              'px-2 py-1 rounded-md border text-sm',
+                              "px-2 py-1 rounded-md border text-sm",
                           }}
                           fromYear={1900}
                           toYear={new Date().getFullYear()}
                           disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
+                            date > new Date() || date < new Date("1900-01-01")
                           }
                           locale={dateLocale}
                           initialFocus
@@ -247,9 +247,9 @@ export function OnboardingClientPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="sq">Albanais</SelectItem>
-                        <SelectItem value="en">Anglais</SelectItem>
-                        <SelectItem value="fr">Francais</SelectItem>
+                        <SelectItem value="sq">Shqip</SelectItem>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="fr">Français</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -287,7 +287,7 @@ export function OnboardingClientPage() {
                 <Controller
                   name="address"
                   control={form.control}
-                  rules={{ required: 'Veuillez saisir une adresse' }}
+                  rules={{ required: "Veuillez saisir une adresse" }}
                   render={({ field: { onChange, value } }) => (
                     <AddressAutocomplete
                       type="address"
@@ -295,20 +295,20 @@ export function OnboardingClientPage() {
                       onChange={onChange}
                       onPlaceSelected={(place) => {
                         // Vous pouvez accéder aux détails de l'adresse ici si nécessaire
-                        form.setValue('address', place.formatted_address);
+                        form.setValue("address", place.formatted_address);
                         form.setValue(
-                          'city',
+                          "city",
                           place.address_components.find((component) =>
-                            component.types.includes('locality'),
+                            component.types.includes("locality"),
                           ).long_name,
                         );
                         form.setValue(
-                          'country',
+                          "country",
                           place.address_components.find((component) =>
-                            component.types.includes('country'),
+                            component.types.includes("country"),
                           ).long_name,
                         );
-                        form.setValue('coordinate', {
+                        form.setValue("coordinate", {
                           x: place.geometry.location.lat(),
                           y: place.geometry.location.lng(),
                         });

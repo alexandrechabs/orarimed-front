@@ -360,13 +360,13 @@ export function AddSecretaryForm({
             </SelectTrigger>
             <SelectContent>
               <SelectItem key="sq" value="sq">
-                Albanais
+                Shqip
               </SelectItem>
               <SelectItem key="en" value="en">
-                Anglais
+                English
               </SelectItem>
               <SelectItem key="fr" value="fr">
-                Francais
+                Français
               </SelectItem>
             </SelectContent>
           </Select>

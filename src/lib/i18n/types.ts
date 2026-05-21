@@ -103,12 +103,13 @@ export type TranslationKey = {
       title: string;
       subtitle: string;
       recommended: string;
-      plan: {
+      plans: {
         name: string;
         price: string;
         period: string;
         features: string[];
-      };
+        recommended?: boolean;
+      }[];
       cta: string;
     };
     faq: {

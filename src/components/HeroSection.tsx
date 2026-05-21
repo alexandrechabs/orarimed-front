@@ -1,21 +1,21 @@
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { MapPin, Search, UserPlus } from 'lucide-react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import heroImage from '@/assets/hero-doctor.jpg';
-import { useState } from 'react';
-import { SearchDoctor } from './search';
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { MapPin, Search, UserPlus } from "lucide-react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import heroImage from "@/assets/hero-doctor.jpg";
+import { useState } from "react";
+import { SearchDoctor } from "./search";
 
 const HeroSection = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState({
-    address: '',
+    address: "",
     lat: 0,
     lng: 0,
   });
-  const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedDoctor, setSelectedDoctor] = useState("");
 
   const search = () => {
     navigate(
@@ -69,7 +69,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-full bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 relative z-0"
+            className="w-full bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 relative z-10"
           >
             <SearchDoctor
               selectedCity={selectedCity}

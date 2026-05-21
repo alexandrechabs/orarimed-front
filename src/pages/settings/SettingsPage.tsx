@@ -1,43 +1,44 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { ImageUpload } from '@/components/ui/ImageUpload';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useAuth } from '@/services/auth/useAuth';
-import PhoneInput from 'react-phone-number-input';
-import type { CountryCode } from 'libphonenumber-js';
-import { Camera } from 'lucide-react';
-import { useUser } from '@/services/user/useUser';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useAuth } from "@/services/auth/useAuth";
+import PhoneInput from "react-phone-number-input";
+import type { CountryCode } from "libphonenumber-js";
+import { Camera } from "lucide-react";
+import { useUser } from "@/services/user/useUser";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
   const { user, specialities, updateUser, getMyUser } = useAuth();
   const { saveSubSpecialities, savePhotoUser } = useUser();
   const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
-    firstname: user.firstname || '',
-    lastname: user.lastname || '',
-    email: user.email || '',
-    phoneNumber: user.phoneNumber || '',
-    specialityId: user.specialityId?.toString() || '',
+    firstname: user.firstname || "",
+    lastname: user.lastname || "",
+    email: user.email || "",
+    phoneNumber: user.phoneNumber || "",
+    language: user.language || "",
+    specialityId: user.specialityId?.toString() || "",
     subSpecialityIds:
       user.subSpecialitiesUsers?.map((s) => s.subSpecialityId) || [],
   });
@@ -50,7 +51,7 @@ export default function SettingsPage() {
     user?.avatar || null,
   );
   const [isUploading, setIsUploading] = useState(false);
-  const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+  const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
   const API_URL = import.meta.env.VITE_API_URL;
   const { toast } = useToast();
 
@@ -72,11 +73,11 @@ export default function SettingsPage() {
       // Convertir l'image recadrée en fichier
       const response = await fetch(croppedImage);
       const blob = await response.blob();
-      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+      const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
 
       // Créer FormData pour l'envoi
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       await savePhotoUser(formData, user.id);
       await getMyUser();
@@ -95,7 +96,7 @@ export default function SettingsPage() {
     name?: string,
   ) => {
     // Si c'est un événement (champ normal)
-    if (typeof e === 'object' && e.target) {
+    if (typeof e === "object" && e.target) {
       const { name, value } = e.target;
       setFormData((prev) => ({
         ...prev,
@@ -103,7 +104,7 @@ export default function SettingsPage() {
       }));
     }
     // Si c'est une chaîne (PhoneInput)
-    else if (typeof e === 'string' && name) {
+    else if (typeof e === "string" && name) {
       setFormData((prev) => ({
         ...prev,
         [name]: e,
@@ -118,8 +119,8 @@ export default function SettingsPage() {
 
     // TODO: Implémenter la sauvegarde des paramètres
     toast({
-      title: 'Succès',
-      description: 'Les paramètres ont été enregistrés avec succès.',
+      title: "Succès",
+      description: "Les paramètres ont été enregistrés avec succès.",
     });
   };
 
@@ -152,7 +153,7 @@ export default function SettingsPage() {
                       src={
                         user?.avatar
                           ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
-                          : 'default-avatar.png'
+                          : "default-avatar.png"
                       }
                       alt={`${user?.firstname} ${user?.lastname}`}
                     />
@@ -213,11 +214,37 @@ export default function SettingsPage() {
                     countries={allowedCountries}
                     value={formData.phoneNumber}
                     onChange={(value) =>
-                      handleInputChange(value || '', 'phoneNumber')
+                      handleInputChange(value || "", "phoneNumber")
                     }
                     placeholder="Entrez votre numéro de téléphone"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Langue</Label>
+                  <Select
+                    value={formData.language}
+                    onValueChange={(value) => {
+                      handleInputChange(value || "", "language");
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez une langue" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem key="sq" value="sq">
+                        Shqip
+                      </SelectItem>
+                      <SelectItem key="en" value="en">
+                        English
+                      </SelectItem>
+                      <SelectItem key="fr" value="fr">
+                        Français
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               {user.roleId === 2 && (
@@ -226,8 +253,8 @@ export default function SettingsPage() {
                     <Label htmlFor="speciality">{t.params.speciality}</Label>
                     <Select
                       onValueChange={(value) => {
-                        handleInputChange(value, 'specialityId');
-                        handleInputChange('', 'subSpecialityIds');
+                        handleInputChange(value, "specialityId");
+                        handleInputChange("", "subSpecialityIds");
                       }}
                       defaultValue={formData.specialityId}
                     >
@@ -287,10 +314,13 @@ export default function SettingsPage() {
                                 }
 
                                 formData.subSpecialityIds = e.target.checked
-                                  ? [...(formData.subSpecialityIds || []), sub.id]
+                                  ? [
+                                      ...(formData.subSpecialityIds || []),
+                                      sub.id,
+                                    ]
                                   : (formData.subSpecialityIds || []).filter(
-                                    (id) => id !== sub.id,
-                                  );
+                                      (id) => id !== sub.id,
+                                    );
                               }}
                               className="h-4 w-4 rounded border-gray-300 ring-blue-600 focus:ring-blue-500"
                             />
@@ -403,11 +433,11 @@ export default function SettingsPage() {
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">
               <ImageUpload
-                value={tempImage || ''}
+                value={tempImage || ""}
                 onChange={(value) => {
                   if (value === null) {
                     setTempImage(null);
-                  } else if (typeof value === 'string') {
+                  } else if (typeof value === "string") {
                     setTempImage(value);
                   } else if (value instanceof File) {
                     handleImageSelect(value);
@@ -439,7 +469,7 @@ export default function SettingsPage() {
                   Enregistrement...
                 </div>
               ) : (
-                'Enregistrer'
+                "Enregistrer"
               )}
             </Button>
           </div>

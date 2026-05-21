@@ -464,14 +464,12 @@ export function AddDoctorForm({
               <SelectValue placeholder="Sélectionnez une langue" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem key="sq" value="sq">
-                Albanais
-              </SelectItem>
+              <SelectItem key="sq" value="sq"></SelectItem>
               <SelectItem key="en" value="en">
-                Anglais
+                English
               </SelectItem>
               <SelectItem key="fr" value="fr">
-                Francais
+                Français
               </SelectItem>
             </SelectContent>
           </Select>

@@ -275,19 +275,35 @@ const fr: TranslationKey = {
       title: "Nos tarifs",
       subtitle: "Commencer est gratuit et sans engagement",
       recommended: "Recommandé",
-      plan: {
-        name: "Plan Professionnel",
-        price: "Gratuit",
-        period: "pour commencer",
-        features: [
-          "Profil professionnel complet",
-          "Calendrier en ligne 24h/24",
-          "Rappels automatiques pour les patients",
-          "Statistiques de base",
-          "Support prioritaire",
-          "Aucune commission sur les réservations",
-        ],
-      },
+      plans: [
+        {
+          name: "Plan Professionnel",
+          price: "Gratuit",
+          period: "pour commencer",
+          recommended: true,
+          features: [
+            "Profil professionnel complet",
+            "Calendrier en ligne 24h/24",
+            "Rappels automatiques pour les patients",
+            "Statistiques de base",
+            "Support prioritaire",
+            "Aucune commission sur les réservations",
+          ],
+        },
+        {
+          name: "Plan Premium",
+          price: "49 €/mois",
+          period: "par mois",
+          features: [
+            "Statistiques avancées",
+            "Gestion multi-site",
+            "Rappels et formulaires personnalisés",
+            "Tableau de bord de performance",
+            "Intégrations prioritaires",
+            "Accès secrétaire",
+          ],
+        },
+      ],
       cta: "Commencer gratuitement",
     },
     faq: {
