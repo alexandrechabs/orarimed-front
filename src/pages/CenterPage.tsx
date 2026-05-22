@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { Button } from '@/components/ui/button';
-import Navigation from '@/components/Navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useUser } from '@/services/user/useUser';
-import { Map } from '@/components/Map';
-import { Center } from '@/types/center';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { Button } from "@/components/ui/button";
+import Navigation from "@/components/Navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@/services/user/useUser";
+import { Map } from "@/components/Map";
+import { Center } from "@/types/center";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -28,8 +28,8 @@ export function CenterPage() {
         const center = await getCenter(username);
         setCenter(center);
       } catch (error) {
-        console.error('Error fetching center profile:', error);
-        navigate('/404'); // Rediriger vers la page 404 si le médecin n'est pas trouvé
+        console.error("Error fetching center profile:", error);
+        navigate("/404"); // Rediriger vers la page 404 si le médecin n'est pas trouvé
       } finally {
         setIsLoading(false);
       }
@@ -42,10 +42,10 @@ export function CenterPage() {
 
   function formatPhoneNumber(phoneNumber: string): string {
     // Supprimer tous les caractères non numériques sauf le +
-    const cleaned = phoneNumber.replace(/[^\d+]/g, '');
+    const cleaned = phoneNumber.replace(/[^\d+]/g, "");
 
     // Si le numéro commence par +33 (France)
-    if (cleaned.startsWith('+33')) {
+    if (cleaned.startsWith("+33")) {
       const number = cleaned.substring(3); // Enlever le +33
       const match = number.match(/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})$/);
       if (match) {
@@ -53,7 +53,7 @@ export function CenterPage() {
       }
     }
     // Si le numéro commence par +355 (Albanie)
-    else if (cleaned.startsWith('+355')) {
+    else if (cleaned.startsWith("+355")) {
       const number = cleaned.substring(4); // Enlever le +355
       const match = number.match(/^(\d{2})(\d{3})(\d{3,4})$/);
       if (match) {
@@ -61,18 +61,18 @@ export function CenterPage() {
       }
     }
     // Format générique pour les autres pays
-    else if (cleaned.startsWith('+')) {
-      const countryCode = cleaned.match(/^\+\d{1,3}/)?.[0] || '';
+    else if (cleaned.startsWith("+")) {
+      const countryCode = cleaned.match(/^\+\d{1,3}/)?.[0] || "";
       const number = cleaned.substring(countryCode.length);
       // Format générique pour la partie locale
-      const formattedNumber = number.replace(/(\d{2})(?=\d)/g, '$1 ');
+      const formattedNumber = number.replace(/(\d{2})(?=\d)/g, "$1 ");
       return `${countryCode} ${formattedNumber}`.trim();
     }
 
     // Si aucun format ne correspond, essayer le format français par défaut
     const match = cleaned.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
     if (match) {
-      return match.slice(1).join(' ');
+      return match.slice(1).join(" ");
     }
 
     // Si rien ne correspond, retourner le numéro d'origine
@@ -102,7 +102,7 @@ export function CenterPage() {
   const fullName = `${center.name}`.trim();
   const specialityName =
     center.speciality?.translations?.find((t) => t.locale === language)?.name ||
-    'Center';
+    "Center";
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -118,7 +118,7 @@ export function CenterPage() {
                     src={
                       center.avatar
                         ? `${API_URL}/center/${center.id}/avatar/${center.avatar}`
-                        : '/hopital.png'
+                        : "/hopital.png"
                     }
                     alt={fullName}
                   />
@@ -128,12 +128,7 @@ export function CenterPage() {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <Button
-                  className="w-full"
-                  onClick={() => {
-                    /* Logique de prise de rendez-vous */
-                  }}
-                >
+                <Button className="w-full" onClick={() => {}}>
                   {t.center.takeAppointment}
                 </Button>
               </CardContent>
@@ -169,7 +164,7 @@ export function CenterPage() {
                           {dayHours.map((hours, idx) => (
                             <span className="text-sm" key={idx}>
                               {hours.openTime} - {hours.closeTime}
-                              {idx < dayHours.length - 1 ? ', ' : ''}
+                              {idx < dayHours.length - 1 ? ", " : ""}
                             </span>
                           ))}
                         </div>
@@ -198,7 +193,7 @@ export function CenterPage() {
                     <div>
                       <p className="font-medium">{t.center.phone} :</p>
                       <a
-                        href={`tel:${center.phoneNumber.replace(/\s/g, '')}`}
+                        href={`tel:${center.phoneNumber.replace(/\s/g, "")}`}
                         className="text-accent"
                       >
                         {formatPhoneNumber(center.phoneNumber)}
@@ -209,9 +204,9 @@ export function CenterPage() {
                     {/* Carte OpenStreetMap */}
                     <div className="mt-4">
                       <Map
-                        address={center.address || ''}
-                        city={center.city || ''}
-                        className="rounded-lg border"
+                        address={center.address || ""}
+                        city={center.city || ""}
+                        className="rounded-lg border h-[260px]"
                       />
                     </div>
                   </div>
@@ -244,19 +239,19 @@ export function CenterPage() {
                             src={
                               centerUser.user.avatar
                                 ? `${API_URL}/user/${centerUser.user.id}/avatar/${centerUser.user.avatar}`
-                                : '/default-avatar.png'
+                                : "/default-avatar.png"
                             }
                             alt={centerUser.user.firstname}
                             className="h-full w-full object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = '/default-avatar.png';
+                              target.src = "/default-avatar.png";
                             }}
                           />
                         </div>
                         <div className="grid">
                           <span className="truncate text-sm">
-                            {centerUser.user.firstname}{' '}
+                            {centerUser.user.firstname}{" "}
                             {centerUser.user.lastname}
                           </span>
                           <span className="text-xs text-gray-500">

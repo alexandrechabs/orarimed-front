@@ -4,7 +4,9 @@ import { User } from "@/types/user";
 import { OpeningHour } from "@/types/openingHour";
 import { ConsultationReason } from "@/types/consultationReason";
 import { Center } from "@/types/center";
+import { Diploma } from "@/types/diploma";
 import { DoctorProfile } from "@/types/doctor";
+import { Experience } from "@/types/experience";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -459,6 +461,232 @@ export const userService = {
       },
       body: JSON.stringify({ reasons }),
     });
+
+    return response.json();
+  },
+
+  async getDiplomas(userId: string): Promise<Diploma[]> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/diplomas`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Get diplomas failed");
+    }
+
+    return response.json();
+  },
+
+  async createDiploma(
+    userId: string,
+    diploma: {
+      title: string;
+      institution: string;
+      year: number;
+      field?: string | null;
+    },
+  ): Promise<Diploma> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/diplomas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(diploma),
+    });
+
+    if (!response.ok) {
+      throw new Error("Create diploma failed");
+    }
+
+    return response.json();
+  },
+
+  async updateDiploma(
+    userId: string,
+    diplomaId: number,
+    diploma: {
+      title: string;
+      institution: string;
+      year: number;
+      field?: string | null;
+    },
+  ): Promise<Diploma> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(
+      `${API_URL}/user/${userId}/diplomas/${diplomaId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(diploma),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Update diploma failed");
+    }
+
+    return response.json();
+  },
+
+  async deleteDiploma(userId: string, diplomaId: number) {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(
+      `${API_URL}/user/${userId}/diplomas/${diplomaId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Delete diploma failed");
+    }
+
+    return response.json();
+  },
+
+  async getExperiences(userId: string): Promise<Experience[]> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/experiences`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Get experiences failed");
+    }
+
+    return response.json();
+  },
+
+  async createExperience(
+    userId: string,
+    experience: {
+      company: string;
+      startYear: string;
+      endYear: string;
+      description?: string;
+    },
+  ): Promise<Experience> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/user/${userId}/experiences`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(experience),
+    });
+
+    if (!response.ok) {
+      throw new Error("Create experience failed");
+    }
+
+    return response.json();
+  },
+
+  async updateExperience(
+    userId: string,
+    experienceId: number,
+    experience: {
+      company: string;
+      startYear: string;
+      endYear: string;
+      description?: string;
+    },
+  ): Promise<Experience> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(
+      `${API_URL}/user/${userId}/experiences/${experienceId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(experience),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Update experience failed");
+    }
+
+    return response.json();
+  },
+
+  async deleteExperience(userId: string, experienceId: number) {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(
+      `${API_URL}/user/${userId}/experiences/${experienceId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Delete experience failed");
+    }
 
     return response.json();
   },

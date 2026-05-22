@@ -194,8 +194,11 @@ const fr: TranslationKey = {
     centers: "Cabinets",
     about: "À propos",
     noBiography: " n'a pas encore rédigé sa biographie.",
-    education: "Formation et expérience",
-    noEducation: "Les informations de formation ne sont pas disponibles.",
+    diploma: "Diplômes",
+    noDiploma: "Aucun diplôme répertorié pour le moment.",
+    experience: "Expérience professionnelle",
+    noExperience:
+      "Aucune expérience professionnelle répertoriée pour le moment.",
   },
   center: {
     takeAppointment: "Prendre rendez-vous",

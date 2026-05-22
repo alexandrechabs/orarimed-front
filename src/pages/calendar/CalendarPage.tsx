@@ -322,15 +322,16 @@ const CalendarPage = () => {
     if (!pendingEventMove) return;
 
     // Annuler le déplacement en rechargent les événements
-    const dateRange = {
-      start:
-        pendingEventMove.changeInfo.oldEvent.start?.toISOString() ||
-        new Date().toISOString(),
-      end:
-        pendingEventMove.changeInfo.oldEvent.end?.toISOString() ||
-        new Date().toISOString(),
-    };
-    await getEvents(dateRange, selectedDoctor?.id);
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      const view = calendarApi.view;
+
+      const dateRange = {
+        start: view.currentStart.toISOString(),
+        end: view.currentEnd.toISOString(),
+      };
+      getEvents(dateRange, selectedDoctor?.id);
+    }
 
     // Fermer la popup et réinitialiser
     setConfirmDialogOpen(false);
@@ -656,7 +657,16 @@ const CalendarPage = () => {
       />
 
       {/* Dialog de confirmation pour déplacement de rendez-vous */}
-      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+      <Dialog
+        open={confirmDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCancelMove();
+          } else {
+            setConfirmDialogOpen(open);
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t.agenda.mooveTitle}</DialogTitle>

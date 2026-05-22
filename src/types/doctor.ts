@@ -1,5 +1,7 @@
-import { CenterUser } from './CenterUser';
-import { OpeningHour } from './openingHour';
+import { CenterUser } from "./CenterUser";
+import { Diploma } from "./diploma";
+import { Experience } from "./experience";
+import { OpeningHour } from "./openingHour";
 
 export type DoctorProfile = {
   id: string;
@@ -51,20 +53,8 @@ export type DoctorProfile = {
     start: string | Date;
     end: string | Date;
   }>;
-  education?: Array<{
-    id: string;
-    degree: string;
-    university: string;
-    year: number;
-  }>;
-  experiences?: Array<{
-    id: string;
-    position: string;
-    company: string;
-    startDate: string;
-    endDate?: string;
-    description?: string;
-  }>;
+  diplomas?: Array<Diploma>;
+  experiences?: Array<Experience>;
   reviews?: Array<{
     id: string;
     rating: number;

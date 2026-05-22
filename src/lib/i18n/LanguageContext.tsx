@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Language, translations, languages } from './translations';
-import { fr, enUS, sq } from 'date-fns/locale';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { Language, translations, languages } from "./translations";
+import { fr, enUS, sq } from "date-fns/locale";
 
 type LanguageContextType = {
   language: Language;
   currentLanguage: Language;
   setLanguage: (lang: Language) => void;
-  t: (typeof translations)['sq'];
+  t: (typeof translations)["sq"];
   languages: typeof languages;
   changeLanguage: (lang: Language) => void;
 };
@@ -19,12 +19,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem('orariMedLang');
-    return (saved as Language) || 'sq';
+    const saved = localStorage.getItem("language");
+    return (saved as Language) || "sq";
   });
 
   useEffect(() => {
-    localStorage.setItem('orariMedLang', language);
+    localStorage.setItem("language", language);
     document.documentElement.lang = language;
   }, [language]);
 
@@ -49,7 +49,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    throw new Error("useLanguage must be used within a LanguageProvider");
   }
   return context;
 };
@@ -58,9 +58,9 @@ export const useDateLocale = () => {
   const { language } = useLanguage();
 
   switch (language) {
-    case 'fr':
+    case "fr":
       return fr;
-    case 'sq':
+    case "sq":
       return sq;
     default:
       return enUS;

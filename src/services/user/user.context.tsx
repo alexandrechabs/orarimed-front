@@ -5,6 +5,7 @@ import { EventInput } from "@fullcalendar/core/index.js";
 import { DateRange } from "../../types/date";
 import { User } from "@/types/user";
 import { DoctorProfile } from "@/types/doctor";
+import { Diploma } from "@/types/diploma";
 import { OpeningHour } from "@/types/openingHour";
 import { ConsultationReason } from "@/types/consultationReason";
 import { Center } from "@/types/center";
@@ -101,6 +102,27 @@ type UserContextType = {
     id: string,
     reasons: ConsultationReason[],
   ) => Promise<ConsultationReason[]>;
+  getDiplomas: (userId: string) => Promise<Diploma[]>;
+  createDiploma: (
+    userId: string,
+    diploma: {
+      title: string;
+      institution: string;
+      year: number;
+      field?: string | null;
+    },
+  ) => Promise<Diploma>;
+  updateDiploma: (
+    userId: string,
+    diplomaId: number,
+    diploma: {
+      title: string;
+      institution: string;
+      year: number;
+      field?: string | null;
+    },
+  ) => Promise<Diploma>;
+  deleteDiploma: (userId: string, diplomaId: number) => Promise<void>;
   searchClient: (search: string, userId?: string) => Promise<any[]>;
   checkValidSelection: (
     id: string,
@@ -339,6 +361,43 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function getDiplomas(userId: string) {
+    const data = await userService.getDiplomas(userId);
+    return data;
+  }
+
+  async function createDiploma(
+    userId: string,
+    diploma: {
+      title: string;
+      institution: string;
+      year: number;
+      field?: string | null;
+    },
+  ) {
+    const data = await userService.createDiploma(userId, diploma);
+    return data;
+  }
+
+  async function updateDiploma(
+    userId: string,
+    diplomaId: number,
+    diploma: {
+      title: string;
+      institution: string;
+      year: number;
+      field?: string | null;
+    },
+  ) {
+    const data = await userService.updateDiploma(userId, diplomaId, diploma);
+    return data;
+  }
+
+  async function deleteDiploma(userId: string, diplomaId: number) {
+    const data = await userService.deleteDiploma(userId, diplomaId);
+    return data;
+  }
+
   async function searchClient(search: string, userId?: string) {
     const data = await userService.searchClient(search, userId);
     return data;
@@ -465,6 +524,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         getReasonsClient,
         getReasons,
         saveReasons,
+        getDiplomas,
+        createDiploma,
+        updateDiploma,
+        deleteDiploma,
         searchClient,
         checkValidSelection,
         createRdv,

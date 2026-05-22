@@ -91,12 +91,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(data.user);
     setToken(data.token.token);
+
+    localStorage.setItem("language", language);
     localStorage.setItem("auth_token", data.token.token);
   }
 
   async function getMyUser() {
     const data = await authService.getMyUser();
     if (language !== data.language) {
+      localStorage.setItem(
+        "language",
+        languages.find((l) => l.code === data.language)?.code || "sq",
+      );
       setLanguage(
         languages.find((l) => l.code === data.language)?.code || "sq",
       );

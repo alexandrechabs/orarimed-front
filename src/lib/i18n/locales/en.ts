@@ -193,8 +193,10 @@ const en: TranslationKey = {
     centers: "Clinics",
     about: "About",
     noBiography: " hasn't written a biography yet.",
-    education: "Education and experience",
-    noEducation: "Education information is not available.",
+    diploma: "Diplomas",
+    noDiploma: "No diplomas listed yet.",
+    experience: "Professional experience",
+    noExperience: "No professional experience listed yet.",
   },
   center: {
     takeAppointment: "Take appointment",

@@ -5,15 +5,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Pencil,
   Trash2,
@@ -23,10 +25,10 @@ import {
   Eye,
   CheckCircle,
   CalendarDays,
-} from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { useUser } from '@/services/user/useUser';
-import { UserRole } from '@/types/roles';
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useUser } from "@/services/user/useUser";
+import { UserRole } from "@/types/roles";
 import {
   Dialog,
   DialogContent,
@@ -34,19 +36,23 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { AddDoctorForm } from '@/components/admin/AddDoctorForm';
-import { DoctorProfile } from '@/types/doctor';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
-import OpeningHoursForm from './OpeningHoursForm';
-import { FormProvider, useForm } from 'react-hook-form';
-import { OpeningHour } from '@/types/openingHour';
-import ConsultationReasons from './ConsultationReasons';
-import { ConsultationReason } from '@/types/consultationReason';
-import { AddSecretaryForm } from './AddSecretaryForm';
-import DoctorSecretarySearch from './DoctorSecretarySearch';
+} from "@/components/ui/dialog";
+import { AddDoctorForm } from "@/components/admin/AddDoctorForm";
+import { DoctorProfile } from "@/types/doctor";
+import { Diploma } from "@/types/diploma";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import OpeningHoursForm from "./OpeningHoursForm";
+import { FormProvider, useForm } from "react-hook-form";
+import { OpeningHour } from "@/types/openingHour";
+import ConsultationReasons from "./ConsultationReasons";
+import { ConsultationReason } from "@/types/consultationReason";
+import { AddSecretaryForm } from "./AddSecretaryForm";
+import DoctorSecretarySearch from "./DoctorSecretarySearch";
+import { Experience } from "@/types/experience";
+import { userService } from "@/services/user/user.service";
+import { Textarea } from "../ui/textarea";
 
 interface EditUser {
   id?: string;
@@ -73,18 +79,24 @@ interface EditUser {
   language: string;
 }
 
+type DiplomaForm = {
+  title: string;
+  institution: string;
+  year: number;
+  field: string;
+};
+
+type ExperienceForm = {
+  company: string;
+  startYear: string;
+  endYear?: string;
+  description?: string;
+};
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function UserList({ type }: { type: string }) {
   const navigate = useNavigate();
-  const {
-    getUsersAdmin,
-    updateUser,
-    getOpeningHours,
-    saveOpeningHours,
-    getReasons,
-    saveReasons,
-  } = useUser();
   const [users, setUsers] = useState<DoctorProfile[]>([]);
   const { language } = useLanguage();
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
@@ -98,6 +110,30 @@ export default function UserList({ type }: { type: string }) {
   const [isOpeningHoursModalOpen, setIsOpeningHoursModalOpen] = useState(false);
   const [isConsultationReasonModalOpen, setIsConsultationReasonModalOpen] =
     useState(false);
+  const [isDiplomasModalOpen, setIsDiplomasModalOpen] = useState(false);
+  const [selectedDiplomasUser, setSelectedDiplomasUser] =
+    useState<DoctorProfile | null>(null);
+  const [diplomas, setDiplomas] = useState<Diploma[]>([]);
+  const [editingDiploma, setEditingDiploma] = useState<Diploma | null>(null);
+  const [diplomaForm, setDiplomaForm] = useState<DiplomaForm>({
+    title: "",
+    institution: "",
+    year: new Date().getFullYear(),
+    field: "",
+  });
+  const [isExperiencesModalOpen, setIsExperiencesModalOpen] = useState(false);
+  const [selectedExperiencesUser, setSelectedExperiencesUser] =
+    useState<DoctorProfile | null>(null);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [editingExperience, setEditingExperience] = useState<Experience | null>(
+    null,
+  );
+  const [experienceForm, setExperienceForm] = useState<ExperienceForm>({
+    company: "",
+    startYear: "",
+    endYear: "",
+    description: "",
+  });
   const { toast } = useToast();
 
   const methods = useForm({
@@ -120,16 +156,16 @@ export default function UserList({ type }: { type: string }) {
   const loadUsers = useCallback(async () => {
     try {
       setIsLoading(true);
-      const usersData = await getUsersAdmin(
-        type === 'doctor' ? UserRole.DOCTOR : UserRole.SECRETARY,
+      const usersData = await userService.getUsersAdmin(
+        type === "doctor" ? UserRole.DOCTOR : UserRole.SECRETARY,
       );
       setUsers(usersData);
     } catch (error) {
-      console.error('Error loading users:', error);
+      console.error("Error loading users:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [getUsersAdmin, type]);
+  }, [userService.getUsersAdmin, type]);
 
   useEffect(() => {
     loadUsers();
@@ -137,19 +173,19 @@ export default function UserList({ type }: { type: string }) {
 
   const initUser = (user: DoctorProfile) => {
     const userToEdit: EditUser = {
-      id: user.id ? user.id : '',
-      email: user.email || '',
-      firstname: user.firstname || '',
-      lastname: user.lastname || '',
-      address: user.address || '',
-      city: user.city || '',
-      zipCode: user.zipCode || '',
-      country: user.country || '',
+      id: user.id ? user.id : "",
+      email: user.email || "",
+      firstname: user.firstname || "",
+      lastname: user.lastname || "",
+      address: user.address || "",
+      city: user.city || "",
+      zipCode: user.zipCode || "",
+      country: user.country || "",
       coordinate: {
         x: user.coordinate?.y || 0,
         y: user.coordinate?.x || 0,
       },
-      phoneNumber: user.phoneNumber || '',
+      phoneNumber: user.phoneNumber || "",
       specialityId: user.speciality?.id ? parseInt(user.speciality.id, 10) : 0,
       visible: user.visible,
       active: user.active,
@@ -187,7 +223,7 @@ export default function UserList({ type }: { type: string }) {
     if (!userToUpdate) return;
 
     try {
-      await updateUser(userToUpdate.id, {
+      await userService.updateUser(userToUpdate.id, {
         active: !userToUpdate.active,
         email: userToUpdate.email,
         firstname: userToUpdate.firstname,
@@ -205,23 +241,23 @@ export default function UserList({ type }: { type: string }) {
       });
 
       toast({
-        title: 'Succès',
+        title: "Succès",
         description: userToUpdate.active
-          ? 'Le compte a été désactivé avec succès.'
-          : 'Le compte a été réactivé avec succès.',
+          ? "Le compte a été désactivé avec succès."
+          : "Le compte a été réactivé avec succès.",
       });
 
       // Recharger la liste des utilisateurs
       await loadUsers();
     } catch (error) {
       console.error(
-        'Erreur lors de la mise à jour du statut du compte :',
+        "Erreur lors de la mise à jour du statut du compte :",
         error,
       );
       toast({
-        title: 'Erreur',
-        description: `Une erreur est survenue lors de la ${userToUpdate?.active ? 'désactivation' : 'réactivation'} du compte.`,
-        variant: 'destructive',
+        title: "Erreur",
+        description: `Une erreur est survenue lors de la ${userToUpdate?.active ? "désactivation" : "réactivation"} du compte.`,
+        variant: "destructive",
       });
     } finally {
       setIsUpdateDialogOpen(false);
@@ -231,7 +267,7 @@ export default function UserList({ type }: { type: string }) {
 
   const handleEditOpeningHours = (user: DoctorProfile) => {
     initUser(user);
-    getOpeningHours(user.id).then((openingHours) => {
+    userService.getOpeningHours(user.id).then((openingHours) => {
       if (openingHours) {
         reset({
           openingHours: openingHours,
@@ -244,7 +280,7 @@ export default function UserList({ type }: { type: string }) {
 
   const handleEditConsultationReasons = (user: DoctorProfile) => {
     initUser(user);
-    getReasons(user.id).then((reasons) => {
+    userService.getReasons(user.id).then((reasons) => {
       if (reasons) {
         const reasonsWithEditing = reasons.map((reason) => ({
           ...reason,
@@ -259,6 +295,269 @@ export default function UserList({ type }: { type: string }) {
     setIsConsultationReasonModalOpen(true);
   };
 
+  const handleEditDiplomas = async (user: DoctorProfile) => {
+    setSelectedDiplomasUser(user);
+    setEditingDiploma(null);
+    setDiplomaForm({
+      title: "",
+      institution: "",
+      year: new Date().getFullYear(),
+      field: "",
+    });
+
+    try {
+      const diplomasData = await userService.getDiplomas(user.id);
+      setDiplomas(diplomasData);
+      setIsDiplomasModalOpen(true);
+    } catch (error) {
+      console.error("Erreur lors du chargement des diplômes :", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les diplômes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resetDiplomaForm = () => {
+    setEditingDiploma(null);
+    setDiplomaForm({
+      title: "",
+      institution: "",
+      year: new Date().getFullYear(),
+      field: "",
+    });
+  };
+
+  const handleDiplomaEdit = (diploma: Diploma) => {
+    setEditingDiploma(diploma);
+    setDiplomaForm({
+      title: diploma.title,
+      institution: diploma.institution,
+      year: diploma.year,
+      field: diploma.field || "",
+    });
+  };
+
+  const handleDiplomaFormChange = (
+    field: keyof DiplomaForm,
+    value: string | number,
+  ) => {
+    setDiplomaForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveDiploma = async () => {
+    if (!selectedDiplomasUser) return;
+
+    try {
+      if (editingDiploma) {
+        const updated = await userService.updateDiploma(
+          selectedDiplomasUser.id,
+          editingDiploma.id,
+          {
+            title: diplomaForm.title,
+            institution: diplomaForm.institution,
+            year: diplomaForm.year,
+            field: diplomaForm.field || null,
+          },
+        );
+        setDiplomas((prev) =>
+          prev.map((d) => (d.id === updated.id ? updated : d)),
+        );
+        toast({
+          title: "Succès",
+          description: "Diplôme mis à jour.",
+        });
+      } else {
+        const created = await userService.createDiploma(
+          selectedDiplomasUser.id,
+          {
+            title: diplomaForm.title,
+            institution: diplomaForm.institution,
+            year: diplomaForm.year,
+            field: diplomaForm.field || null,
+          },
+        );
+        setDiplomas((prev) => [...prev, created]);
+        toast({
+          title: "Succès",
+          description: "Diplôme ajouté.",
+        });
+      }
+
+      resetDiplomaForm();
+    } catch (error) {
+      console.error("Erreur lors de l’enregistrement du diplôme :", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d’enregistrer le diplôme.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteDiploma = async (diplomaId: number) => {
+    if (!selectedDiplomasUser) return;
+
+    try {
+      await userService.deleteDiploma(selectedDiplomasUser.id, diplomaId);
+      setDiplomas((prev) => prev.filter((d) => d.id !== diplomaId));
+      toast({
+        title: "Succès",
+        description: "Diplôme supprimé.",
+      });
+    } catch (error) {
+      console.error("Erreur lors de la suppression du diplôme :", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le diplôme.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCloseDiplomasModal = () => {
+    setIsDiplomasModalOpen(false);
+    setSelectedDiplomasUser(null);
+    resetDiplomaForm();
+  };
+
+  const handleEditExperiences = async (user: DoctorProfile) => {
+    setSelectedExperiencesUser(user);
+    setEditingExperience(null);
+    setExperienceForm({
+      company: "",
+      startYear: "",
+      endYear: "",
+      description: "",
+    });
+
+    try {
+      const experiencesData = await userService.getExperiences(user.id);
+      setExperiences(experiencesData);
+      setIsExperiencesModalOpen(true);
+    } catch (error) {
+      console.error("Erreur lors du chargement des expériences :", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les expériences.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resetExperienceForm = () => {
+    setEditingExperience(null);
+    setExperienceForm({
+      company: "",
+      startYear: "",
+      endYear: "",
+      description: "",
+    });
+  };
+
+  const handleExperienceEdit = (experience: Experience) => {
+    setEditingExperience(experience);
+    setExperienceForm({
+      company: experience.company,
+      startYear: experience.startYear,
+      endYear: experience.endYear || "",
+      description: experience.description || "",
+    });
+  };
+
+  const handleExperienceFormChange = (
+    field: keyof ExperienceForm,
+    value: string | number,
+  ) => {
+    setExperienceForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveExperience = async () => {
+    if (!selectedExperiencesUser) return;
+
+    try {
+      if (editingExperience) {
+        const updated = await userService.updateExperience(
+          selectedExperiencesUser.id,
+          editingExperience.id,
+          {
+            company: experienceForm.company,
+            startYear: experienceForm.startYear,
+            endYear: experienceForm.endYear || null,
+            description: experienceForm.description || null,
+          },
+        );
+        setExperiences((prev) =>
+          prev.map((e) => (e.id === updated.id ? updated : e)),
+        );
+        toast({
+          title: "Succès",
+          description: "Expérience mise à jour.",
+        });
+      } else {
+        const created = await userService.createExperience(
+          selectedExperiencesUser.id,
+          {
+            company: experienceForm.company,
+            startYear: experienceForm.startYear,
+            endYear: experienceForm.endYear || null,
+            description: experienceForm.description || null,
+          },
+        );
+        setExperiences((prev) => [...prev, created]);
+        toast({
+          title: "Succès",
+          description: "Expérience ajoutée.",
+        });
+      }
+
+      resetExperienceForm();
+    } catch (error) {
+      console.error("Erreur lors de l’enregistrement de l’expérience :", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d’enregistrer l’expérience.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteExperience = async (experienceId: number) => {
+    if (!selectedExperiencesUser) return;
+
+    try {
+      await userService.deleteExperience(
+        selectedExperiencesUser.id,
+        experienceId,
+      );
+      setExperiences((prev) => prev.filter((e) => e.id !== experienceId));
+      toast({
+        title: "Succès",
+        description: "Expérience supprimée.",
+      });
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l’expérience :", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer l’expérience.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCloseExperiencesModal = () => {
+    setIsExperiencesModalOpen(false);
+    setSelectedExperiencesUser(null);
+    resetExperienceForm();
+  };
+
   const handleEditDoctorList = (user: DoctorProfile) => {
     initUser(user);
     setIsAddDoctorToSecretaryOpen(true);
@@ -270,10 +569,10 @@ export default function UserList({ type }: { type: string }) {
     openingHours.forEach((openingHour) => {
       openingHour.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     });
-    saveOpeningHours(editingUser.id, openingHours);
+    userService.saveOpeningHours(editingUser.id, openingHours);
 
     toast({
-      title: 'Succès',
+      title: "Succès",
       description: "Les heures d'ouverture ont été chargées avec succès.",
     });
   };
@@ -283,18 +582,18 @@ export default function UserList({ type }: { type: string }) {
   }) => {
     setIsConsultationReasonModalOpen(false);
     let consultationReasons = formData.consultationReasons;
-    saveReasons(editingUser.id, consultationReasons);
+    userService.saveReasons(editingUser.id, consultationReasons);
 
     toast({
-      title: 'Succès',
+      title: "Succès",
       description:
-        'Les motifs de consultation ont été enregistrés avec succès.',
+        "Les motifs de consultation ont été enregistrés avec succès.",
     });
   };
 
   const handleAddUser = () => {
     setEditingUser(null);
-    if (type === 'doctor') {
+    if (type === "doctor") {
       setIsAddDoctorOpen(true);
     } else {
       setIsAddSecretaryOpen(true);
@@ -370,13 +669,13 @@ export default function UserList({ type }: { type: string }) {
                           src={
                             user.avatar
                               ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
-                              : 'default-avatar.png'
+                              : "default-avatar.png"
                           }
                           alt={user.firstname}
                           className="h-full w-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = '/default-avatar.png';
+                            target.src = "/default-avatar.png";
                           }}
                         />
                       </div>
@@ -389,24 +688,24 @@ export default function UserList({ type }: { type: string }) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {type === 'doctor'
+                    {type === "doctor"
                       ? user.speciality.translations.filter(
                           (t) => t.locale === language,
                         )[0].name
-                      : ''}
+                      : ""}
                   </TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${user.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-gray-800'}`}
+                      className={`px-2 py-1 rounded-full text-xs ${user.active ? "bg-green-100 text-green-800" : "bg-red-100 text-gray-800"}`}
                     >
-                      {user.active ? 'Oui' : 'Non'}
+                      {user.active ? "Oui" : "Non"}
                     </span>
                   </TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${user.visible ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`px-2 py-1 rounded-full text-xs ${user.visible ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
                     >
-                      {user.visible ? 'Oui' : 'Non'}
+                      {user.visible ? "Oui" : "Non"}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -421,7 +720,7 @@ export default function UserList({ type }: { type: string }) {
                           <Pencil className="mr-2 h-4 w-4" />
                           <span>Modifier</span>
                         </DropdownMenuItem>
-                        {type === 'doctor' && (
+                        {type === "doctor" && (
                           <DropdownMenuItem
                             onClick={() => handleViewUser(user)}
                           >
@@ -429,7 +728,7 @@ export default function UserList({ type }: { type: string }) {
                             <span>Voir le profil</span>
                           </DropdownMenuItem>
                         )}
-                        {type === 'doctor' && (
+                        {type === "doctor" && (
                           <DropdownMenuItem
                             onClick={() => handleEditOpeningHours(user)}
                           >
@@ -437,7 +736,7 @@ export default function UserList({ type }: { type: string }) {
                             <span>Horaires d'ouverture</span>
                           </DropdownMenuItem>
                         )}
-                        {type === 'doctor' && (
+                        {type === "doctor" && (
                           <DropdownMenuItem
                             onClick={() => handleEditConsultationReasons(user)}
                           >
@@ -445,7 +744,23 @@ export default function UserList({ type }: { type: string }) {
                             <span>Motifs de consultation</span>
                           </DropdownMenuItem>
                         )}
-                        {type !== 'doctor' && (
+                        {type === "doctor" && (
+                          <DropdownMenuItem
+                            onClick={() => handleEditDiplomas(user)}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Diplômes</span>
+                          </DropdownMenuItem>
+                        )}
+                        {type === "doctor" && (
+                          <DropdownMenuItem
+                            onClick={() => handleEditExperiences(user)}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Expériences</span>
+                          </DropdownMenuItem>
+                        )}
+                        {type !== "doctor" && (
                           <DropdownMenuItem
                             onClick={() => handleEditDoctorList(user)}
                           >
@@ -456,8 +771,8 @@ export default function UserList({ type }: { type: string }) {
                         <DropdownMenuItem
                           className={
                             user.active
-                              ? 'text-destructive focus:text-destructive'
-                              : 'text-green-600 focus:text-green-700'
+                              ? "text-destructive focus:text-destructive"
+                              : "text-green-600 focus:text-green-700"
                           }
                           onSelect={(e) => {
                             e.preventDefault();
@@ -491,7 +806,7 @@ export default function UserList({ type }: { type: string }) {
           onInteractOutside={(e) => {
             // Empêche la fermeture de la modale lors du clic sur les suggestions
             const target = e.target as HTMLElement;
-            if (target.closest('.pac-container')) {
+            if (target.closest(".pac-container")) {
               e.preventDefault();
             }
           }}
@@ -517,7 +832,7 @@ export default function UserList({ type }: { type: string }) {
           onInteractOutside={(e) => {
             // Empêche la fermeture de la modale lors du clic sur les suggestions
             const target = e.target as HTMLElement;
-            if (target.closest('.pac-container')) {
+            if (target.closest(".pac-container")) {
               e.preventDefault();
             }
           }}
@@ -546,7 +861,7 @@ export default function UserList({ type }: { type: string }) {
           <DialogHeader>
             <DialogTitle>Modifier les horaires d'ouverture</DialogTitle>
             <DialogDescription>
-              Définissez les horaires d'ouverture pour {editingUser?.firstname}{' '}
+              Définissez les horaires d'ouverture pour {editingUser?.firstname}{" "}
               {editingUser?.lastname}
             </DialogDescription>
           </DialogHeader>
@@ -580,7 +895,7 @@ export default function UserList({ type }: { type: string }) {
           <DialogHeader>
             <DialogTitle>Modifier les raisons de consultation</DialogTitle>
             <DialogDescription>
-              Définissez les raisons de consultation pour{' '}
+              Définissez les raisons de consultation pour{" "}
               {editingUser?.firstname} {editingUser?.lastname}
             </DialogDescription>
           </DialogHeader>
@@ -612,8 +927,8 @@ export default function UserList({ type }: { type: string }) {
           <DialogHeader>
             <DialogTitle>
               {userToUpdate?.active
-                ? 'Confirmer la désactivation'
-                : 'Confirmer la réactivation'}
+                ? "Confirmer la désactivation"
+                : "Confirmer la réactivation"}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
               {userToUpdate?.active
@@ -631,10 +946,10 @@ export default function UserList({ type }: { type: string }) {
               Annuler
             </Button>
             <Button
-              variant={userToUpdate?.active ? 'destructive' : 'default'}
+              variant={userToUpdate?.active ? "destructive" : "default"}
               onClick={handleToggleUserStatus}
             >
-              {userToUpdate?.active ? 'Désactiver' : 'Réactiver'}
+              {userToUpdate?.active ? "Désactiver" : "Réactiver"}
             </Button>
           </div>
         </DialogContent>
@@ -650,7 +965,7 @@ export default function UserList({ type }: { type: string }) {
               Liste des docteurs accessible pour la secrétaire
             </DialogTitle>
             <DialogDescription>
-              Ajoutez un accès entre docteur et la secrétaire{' '}
+              Ajoutez un accès entre docteur et la secrétaire{" "}
               {editingUser?.firstname}
             </DialogDescription>
           </DialogHeader>
@@ -668,6 +983,276 @@ export default function UserList({ type }: { type: string }) {
               Annuler
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isDiplomasModalOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDiplomasModal();
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Gérer les diplômes</DialogTitle>
+            <DialogDescription>
+              {selectedDiplomasUser
+                ? `${selectedDiplomasUser.firstname} ${selectedDiplomasUser.lastname}`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="diploma-title">Diplôme</Label>
+                  <Input
+                    id="diploma-title"
+                    value={diplomaForm.title}
+                    onChange={(e) =>
+                      handleDiplomaFormChange("title", e.target.value)
+                    }
+                    placeholder="Ex : Doctorat en médecine"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="diploma-institution">Institution</Label>
+                  <Input
+                    id="diploma-institution"
+                    value={diplomaForm.institution}
+                    onChange={(e) =>
+                      handleDiplomaFormChange("institution", e.target.value)
+                    }
+                    placeholder="Ex : Université de Paris"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="diploma-year">Année</Label>
+                  <Input
+                    id="diploma-year"
+                    type="number"
+                    value={diplomaForm.year}
+                    onChange={(e) =>
+                      handleDiplomaFormChange(
+                        "year",
+                        parseInt(e.target.value, 10) || 0,
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="diploma-field">Domaine</Label>
+                  <Input
+                    id="diploma-field"
+                    value={diplomaForm.field}
+                    onChange={(e) =>
+                      handleDiplomaFormChange("field", e.target.value)
+                    }
+                    placeholder="Ex : Chirurgie"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" onClick={handleSaveDiploma}>
+                  {editingDiploma ? "Mettre à jour" : "Ajouter"}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Diplômes existants</h3>
+              {diplomas.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Aucun diplôme trouvé.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {diplomas.map((diploma) => (
+                    <div
+                      key={diploma.id}
+                      className="rounded-lg border p-4 grid gap-3 sm:grid-cols-[1fr_auto]"
+                    >
+                      <div>
+                        <div className="font-semibold">{diploma.title}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {diploma.institution} — {diploma.year}
+                          {diploma.field ? ` • ${diploma.field}` : ""}
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 justify-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDiplomaEdit(diploma)}
+                        >
+                          Modifier
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteDiploma(diploma.id)}
+                        >
+                          Supprimer
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseDiplomasModal}>
+              Fermer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isExperiencesModalOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseExperiencesModal();
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Gérer les expériences</DialogTitle>
+            <DialogDescription>
+              {selectedExperiencesUser
+                ? `${selectedExperiencesUser.firstname} ${selectedExperiencesUser.lastname}`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <Label htmlFor="experience-company">Entreprise</Label>
+                  <Input
+                    id="experience-company"
+                    value={experienceForm.company}
+                    onChange={(e) =>
+                      handleExperienceFormChange("company", e.target.value)
+                    }
+                    placeholder="Ex : Hôpital"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="experience-startYear">Année de début</Label>
+                  <Input
+                    id="experience-startYear"
+                    type="number"
+                    value={experienceForm.startYear}
+                    onChange={(e) =>
+                      handleExperienceFormChange("startYear", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="experience-endYear">Année de fin</Label>
+                  <Input
+                    id="experience-endYear"
+                    type="number"
+                    value={experienceForm.endYear}
+                    onChange={(e) =>
+                      handleExperienceFormChange("endYear", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <Label htmlFor="experience-description">Description</Label>
+                  <Textarea
+                    id="description"
+                    rows={5}
+                    placeholder={"description"}
+                    value={experienceForm.description}
+                    onChange={(e) =>
+                      handleExperienceFormChange("description", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" onClick={handleSaveExperience}>
+                  {editingExperience ? "Mettre à jour" : "Ajouter"}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Experiences existants</h3>
+              {experiences.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Aucune expérience trouvée.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {experiences.map((experience) => (
+                    <div
+                      key={experience.id}
+                      className="rounded-lg border p-4 grid gap-3 sm:grid-cols-[1fr_auto]"
+                    >
+                      <div>
+                        <div>
+                          <span className="font-semibold">
+                            {experience.startYear} -{" "}
+                            {experience.endYear || "Present"}
+                          </span>{" "}
+                          {experience.company}
+                        </div>
+                        {experience.description !== "" && (
+                          <div className="text-sm text-muted-foreground whitespace-pre-line">
+                            {experience.description}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-start gap-2 justify-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleExperienceEdit(experience)}
+                        >
+                          Modifier
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteExperience(experience.id)}
+                        >
+                          Supprimer
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseExperiencesModal}>
+              Fermer
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

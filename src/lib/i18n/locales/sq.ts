@@ -195,8 +195,10 @@ const sq: TranslationKey = {
     centers: "Klinikat",
     about: "Rreth më",
     noBiography: " nuk ka shkruar ende një biografi.",
-    education: "Edukimi dhe përvoja",
-    noEducation: "Informacioni i edukimit nuk është i disponueshëm.",
+    diploma: "Diploma",
+    noDiploma: "Nuk ka diploma të listuara ende.",
+    experience: "Përvoja profesionale",
+    noExperience: "Nuk ka përvojë profesionale të listuar ende.",
   },
   center: {
     takeAppointment: "Rezervo takim",

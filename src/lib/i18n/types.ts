@@ -189,8 +189,10 @@ export type TranslationKey = {
     centers: string;
     about: string;
     noBiography: string;
-    education: string;
-    noEducation: string;
+    diploma: string;
+    noDiploma: string;
+    experience: string;
+    noExperience: string;
   };
   center: {
     takeAppointment: string;
