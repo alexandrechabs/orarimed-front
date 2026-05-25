@@ -32,7 +32,9 @@ export default function AppointmentPage() {
   const [appointmentType, setAppointmentType] = useState<ConsultationReason[]>(
     [],
   );
-  const { doctor, slot, date } = location.state as LocationState;
+  const locationState = location.state as LocationState | null;
+  const doctor = locationState?.doctor;
+  const slot = locationState?.slot ?? null;
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
@@ -44,11 +46,16 @@ export default function AppointmentPage() {
   const [pendingDuration, setPendingDuration] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!doctor) {
+      navigate("/", { replace: true });
+      return;
+    }
+
     setSelectedSlot(slot);
     getReasonsClient(doctor.id).then((reasons) => {
       setAppointmentType(reasons);
     });
-  }, []);
+  }, [doctor, getReasonsClient, navigate, slot]);
 
   // Quand le ref est prêt et qu'il y a une durée en attente, charger les créneaux
   useEffect(() => {

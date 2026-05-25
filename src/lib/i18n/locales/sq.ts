@@ -209,6 +209,7 @@ const sq: TranslationKey = {
     doctor: "Doktorët",
     about: "Rreth më",
     noBiography: " nuk ka shkruar ende një përshkrim.",
+    centerDoctors: "Zgjidhni një mjek në këtë qendër për të caktuar një takim.",
   },
   professionalsPage: {
     badge: "Për profesionistët shëndetësorë",

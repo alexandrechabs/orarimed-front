@@ -42,6 +42,7 @@ import AppointmentPage from "./pages/AppointmentPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import AppointmentsPage from "./pages/AppointmentsPage";
 import CenterPage from "./pages/CenterPage";
+import SelectDoctorPage from "./pages/SelectDoctorPage";
 import CabinetSettingsPage from "./pages/settings/CabinetSettingsPage";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -352,6 +353,10 @@ const App = () => (
           </Route>
           <Route path="/doctor/:city/:username" element={<DoctorPage />} />
           <Route path="/center/:city/:username" element={<CenterPage />} />
+          <Route
+            path="/center/:centerId/select-doctor"
+            element={<SelectDoctorPage />}
+          />
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -203,6 +203,7 @@ export type TranslationKey = {
     doctor: string;
     about: string;
     noBiography: string;
+    centerDoctors: string;
   };
   auth: {
     login: string;

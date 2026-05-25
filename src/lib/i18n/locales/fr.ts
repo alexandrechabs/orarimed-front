@@ -209,6 +209,8 @@ const fr: TranslationKey = {
     doctor: "Docteurs",
     about: "À propos",
     noBiography: " n'a pas encore de description.",
+    centerDoctors:
+      "Sélectionnez un médecin dans ce centre pour prendre rendez-vous.",
   },
   professionalsPage: {
     badge: "Pour les professionnels de santé",

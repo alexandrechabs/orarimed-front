@@ -99,6 +99,26 @@ export function CenterPage() {
     );
   }
 
+  function takeAppointment() {
+    if (center.centerUsers?.length === 1) {
+      const centerUser = center.centerUsers[0];
+      navigate("/appointment", {
+        state: {
+          doctor: {
+            id: centerUser.user.id,
+            fullName: `${centerUser.user.firstname} ${centerUser.user.lastname}`,
+            speciality: centerUser.user.speciality.translations.find(
+              (translation) => translation.locale === language,
+            )?.name,
+          },
+          slot: null,
+        },
+      });
+    } else {
+      navigate(`/center/${center.id}/select-doctor`);
+    }
+  }
+
   const fullName = `${center.name}`.trim();
   const specialityName =
     center.speciality?.translations?.find((t) => t.locale === language)?.name ||
@@ -128,7 +148,11 @@ export function CenterPage() {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <Button className="w-full" onClick={() => {}}>
+                <Button
+                  className="w-full"
+                  disabled={center.centerUsers.length === 0}
+                  onClick={() => takeAppointment()}
+                >
                   {t.center.takeAppointment}
                 </Button>
               </CardContent>

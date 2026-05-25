@@ -1,62 +1,62 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Trash2, Plus, ChevronDown, ChevronUp } from 'lucide-react';
-import type { Speciality, SubSpeciality, Locale } from '@/types/specialty';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import type { Speciality, SubSpeciality, Locale } from "@/types/specialty";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import * as LucideIcons from 'lucide-react';
+} from "@/components/ui/select";
+import * as LucideIcons from "lucide-react";
 
 const LUCIDE_ICONS = [
-  'Stethoscope',
-  'Heart',
-  'Activity',
-  'Baby',
-  'Bone',
-  'Brain',
-  'Ear',
-  'Eye',
-  'FlaskConical',
-  'HeartPulse',
-  'Hospital',
-  'Pill',
-  'Scissors',
-  'Syringe',
-  'Smile',
-  'SmilePlus',
-  'Thermometer',
-  'Utensils',
-  'Droplet',
-  'User',
-  'Users',
+  "Stethoscope",
+  "Heart",
+  "Activity",
+  "Baby",
+  "Bone",
+  "Brain",
+  "Ear",
+  "Eye",
+  "FlaskConical",
+  "HeartPulse",
+  "Hospital",
+  "Pill",
+  "Scissors",
+  "Syringe",
+  "Smile",
+  "SmilePlus",
+  "Thermometer",
+  "Utensils",
+  "Droplet",
+  "User",
+  "Users",
 ] as const;
 
 const COLOR_PALETTE = [
-  'from-blue-500 to-blue-600',
-  'from-red-500 to-red-600',
-  'from-pink-500 to-pink-600',
-  'from-yellow-500 to-yellow-600',
-  'from-purple-500 to-purple-600',
-  'from-orange-500 to-orange-600',
-  'from-indigo-500 to-indigo-600',
-  'from-green-500 to-green-600',
-  'from-cyan-500 to-cyan-600',
-  'from-teal-500 to-teal-600',
-  'from-sky-500 to-sky-600',
-  'from-emerald-500 to-emerald-600',
+  "from-blue-500 to-blue-600",
+  "from-red-500 to-red-600",
+  "from-pink-500 to-pink-600",
+  "from-yellow-500 to-yellow-600",
+  "from-purple-500 to-purple-600",
+  "from-orange-500 to-orange-600",
+  "from-indigo-500 to-indigo-600",
+  "from-green-500 to-green-600",
+  "from-cyan-500 to-cyan-600",
+  "from-teal-500 to-teal-600",
+  "from-sky-500 to-sky-600",
+  "from-emerald-500 to-emerald-600",
 ] as const;
 
 const LOCALES: { code: Locale; label: string }[] = [
-  { code: 'en', label: 'EN' },
-  { code: 'fr', label: 'FR' },
-  { code: 'sq', label: 'SQ' },
+  { code: "en", label: "EN" },
+  { code: "fr", label: "FR" },
+  { code: "sq", label: "SQ" },
 ];
 
 interface Props {
@@ -70,16 +70,16 @@ export default function SpecialitiesManager({
 }: Props) {
   const [specialities, setSpecialities] = useState<Speciality[]>(initialData);
   const [expanded, setExpanded] = useState<number | null>(null);
-  const [activeLocale, setActiveLocale] = useState<Locale>('en');
+  const [activeLocale, setActiveLocale] = useState<Locale>("en");
 
   const slugify = (value: string) =>
     value
       .toLowerCase()
-      .normalize('NFD')
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .normalize("NFD")
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
   /* -----------------------------
      SPECIALITY
@@ -89,14 +89,14 @@ export default function SpecialitiesManager({
     setSpecialities((prev) => [
       ...prev,
       {
-        slug: '',
+        slug: "",
         translations: LOCALES.map((l) => ({
           locale: l.code,
-          name: '',
+          name: "",
         })),
         subSpecialities: [],
-        icon: 'Stethoscope', // Icône par défaut
-        color: 'from-blue-500 to-blue-600', // Couleur par défaut (bleu)
+        icon: "Stethoscope", // Icône par défaut
+        color: "from-blue-500 to-blue-600", // Couleur par défaut (bleu)
         position: prev.length,
       },
     ]);
@@ -116,7 +116,7 @@ export default function SpecialitiesManager({
     if (translation) {
       translation.name = value;
 
-      if (locale === 'en') {
+      if (locale === "en") {
         copy[index].slug = slugify(value);
       }
     }
@@ -131,9 +131,9 @@ export default function SpecialitiesManager({
     return copy;
   };
 
-  const moveSpeciality = (index: number, direction: 'up' | 'down') => {
+  const moveSpeciality = (index: number, direction: "up" | "down") => {
     setSpecialities((prev) => {
-      const target = direction === 'up' ? index - 1 : index + 1;
+      const target = direction === "up" ? index - 1 : index + 1;
       if (target < 0 || target >= prev.length) return prev;
 
       const reordered = moveItem(prev, index, target);
@@ -152,10 +152,10 @@ export default function SpecialitiesManager({
   const addSubSpeciality = (specIndex: number) => {
     const copy = [...specialities];
     copy[specIndex].subSpecialities.push({
-      slug: '',
+      slug: "",
       translations: LOCALES.map((l) => ({
         locale: l.code,
-        name: '',
+        name: "",
       })),
     });
     setSpecialities(copy);
@@ -174,7 +174,7 @@ export default function SpecialitiesManager({
     if (translation) {
       translation.name = value;
 
-      if (locale === 'en') {
+      if (locale === "en") {
         sub.slug = slugify(value);
       }
     }
@@ -213,11 +213,11 @@ export default function SpecialitiesManager({
       </div>
 
       {/* LANG SELECT */}
-      <div className="flex gap-2">
+      <div className="sticky top-[65px] bg-white z-10 flex gap-2 py-4">
         {LOCALES.map((l) => (
           <Button
             key={l.code}
-            variant={activeLocale === l.code ? 'default' : 'outline'}
+            variant={activeLocale === l.code ? "default" : "outline"}
             size="sm"
             onClick={() => setActiveLocale(l.code)}
           >
@@ -248,7 +248,7 @@ export default function SpecialitiesManager({
                       disabled={index === 0}
                       onClick={(e) => {
                         e.stopPropagation();
-                        moveSpeciality(index, 'up');
+                        moveSpeciality(index, "up");
                       }}
                     >
                       <ChevronUp className="h-4 w-4" />
@@ -261,7 +261,7 @@ export default function SpecialitiesManager({
                       disabled={index === specialities.length - 1}
                       onClick={(e) => {
                         e.stopPropagation();
-                        moveSpeciality(index, 'down');
+                        moveSpeciality(index, "down");
                       }}
                     >
                       <ChevronDown className="h-4 w-4" />
@@ -281,7 +281,7 @@ export default function SpecialitiesManager({
                       })()}
                     </div>
                     <span className="font-medium text-sm md:text-base">
-                      {currentTranslation?.name || 'Nouvelle spécialité'}
+                      {currentTranslation?.name || "Nouvelle spécialité"}
                     </span>
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export default function SpecialitiesManager({
                   <div className="space-y-2 mr-8 md:mr-16">
                     <Label>Icône</Label>
                     <Select
-                      value={spec.icon || 'Stethoscope'}
+                      value={spec.icon || "Stethoscope"}
                       onValueChange={(value) => {
                         const copy = [...specialities];
                         copy[index].icon = value;
@@ -370,7 +370,7 @@ export default function SpecialitiesManager({
                 <div>
                   <Label>Nom ({activeLocale.toUpperCase()})</Label>
                   <Input
-                    value={currentTranslation?.name || ''}
+                    value={currentTranslation?.name || ""}
                     onChange={(e) =>
                       updateSpecialityName(index, activeLocale, e.target.value)
                     }
@@ -412,7 +412,7 @@ export default function SpecialitiesManager({
                     return (
                       <div key={subIndex} className="flex gap-2 items-center">
                         <Input
-                          value={subTranslation?.name || ''}
+                          value={subTranslation?.name || ""}
                           onChange={(e) =>
                             updateSubSpecialityName(
                               index,
