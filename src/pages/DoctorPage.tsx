@@ -25,19 +25,11 @@ export function DoctorPage() {
     const fetchDoctorProfile = async () => {
       try {
         setIsLoading(true);
-        // Remplacez cette URL par votre endpoint API réel
         const doctor = await getDoctor(username);
-        // set seo data
-        document.title =
-          `${doctor.firstname} ${doctor.lastname}`.trim() +
-          ` - ${
-            doctor.speciality?.translations?.find((t) => t.locale === language)
-              ?.name || "Doctor"
-          }`;
         setDoctor(doctor);
       } catch (error) {
         console.error("Error fetching doctor profile:", error);
-        navigate("/404"); // Rediriger vers la page 404 si le médecin n'est pas trouvé
+        navigate("/404");
       } finally {
         setIsLoading(false);
       }
@@ -47,6 +39,106 @@ export function DoctorPage() {
       fetchDoctorProfile();
     }
   }, [username, city, navigate]);
+
+  useEffect(() => {
+    if (!doctor) {
+      return;
+    }
+
+    const specialityLabel =
+      doctor.speciality?.translations?.find((t) => t.locale === language)
+        ?.name || "Doctor";
+
+    const pageTitle = `${doctor.firstname} ${doctor.lastname}`.trim();
+    const pageDescription = t.doctor.pageDescription
+      .replace("{name}", pageTitle)
+      .replace("{specialty}", specialityLabel)
+      .replace(
+        "{center}",
+        doctor.centerUsers && doctor.centerUsers.length > 0
+          ? doctor.centerUsers[0].center.name
+          : "clinic",
+      )
+      .replace("{city}", doctor.city || "");
+
+    document.title = `${pageTitle} - ${specialityLabel}`;
+
+    const setMeta = (
+      attrName: "name" | "property",
+      attrValue: string,
+      content: string,
+    ) => {
+      let meta = document.head.querySelector(
+        `meta[${attrName}="${attrValue}"]`,
+      ) as HTMLMetaElement | null;
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attrName, attrValue);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    };
+
+    const setCanonical = (href: string) => {
+      let link = document.head.querySelector(
+        'link[rel="canonical"]',
+      ) as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", href);
+    };
+
+    const pageUrl =
+      typeof window !== "undefined"
+        ? window.location.href
+        : `https://orarimed.com/doctor/${city}/${username}`;
+
+    const localeMap: Record<string, string> = {
+      sq: "sq_AL",
+      en: "en_US",
+      fr: "fr_FR",
+    };
+
+    const ogTitle = `${pageTitle} - ${specialityLabel} | OrariMed`;
+    const socialImage =
+      doctor.avatar && typeof window !== "undefined"
+        ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
+        : "https://orarimed.com/home.png";
+
+    const keywords = [
+      pageTitle,
+      specialityLabel,
+      doctor.city,
+      doctor.centerUsers && doctor.centerUsers.length > 0
+        ? doctor.centerUsers[0].center.name
+        : "OrariMed",
+      doctor.subSpecialitiesUsers
+        .map(
+          (sub) =>
+            sub.subSpeciality?.translations?.find((t) => t.locale === language)
+              ?.name,
+        )
+        .join(", "),
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    setMeta("name", "description", pageDescription);
+    setMeta("name", "keywords", keywords);
+    setMeta("property", "og:title", ogTitle);
+    setMeta("property", "og:description", pageDescription);
+    setMeta("property", "og:url", pageUrl);
+    setMeta("property", "og:locale", localeMap[language] || "sq_AL");
+    setMeta("property", "og:site_name", "OrariMed");
+    setMeta("property", "og:image", socialImage);
+    setMeta("name", "twitter:title", ogTitle);
+    setMeta("name", "twitter:description", pageDescription);
+    setMeta("name", "twitter:image", socialImage);
+    setCanonical(pageUrl);
+  }, [doctor, t.doctor.pageDescription, language, city, username]);
 
   function formatPhoneNumber(phoneNumber: string): string {
     // Supprimer tous les caractères non numériques sauf le +
@@ -334,7 +426,7 @@ export function DoctorPage() {
               <CardContent>
                 {doctor.experiences && doctor.experiences.length > 0 ? (
                   doctor.experiences?.map((experience) => (
-                    <div className="mb-2">
+                    <div className="mb-2" key={experience.id}>
                       <p>
                         <strong>
                           {experience.startYear} -{" "}
@@ -361,7 +453,7 @@ export function DoctorPage() {
               <CardContent>
                 {doctor.diplomas ? (
                   doctor.diplomas.map((diploma) => (
-                    <p>
+                    <p key={diploma.id}>
                       <strong>{diploma.title}</strong> - {diploma.institution} (
                       {diploma.year}){" "}
                       {diploma.field ? `• ${diploma.field}` : ""}

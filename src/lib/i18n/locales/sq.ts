@@ -106,9 +106,7 @@ const sq: TranslationKey = {
     privacy: "Politika e privatësisë",
     terms: "Kushtet e përdorimit",
     cookies: "Cookies",
-    faq: "Pyetje të shpeshta",
     forProfessionals: "Për profesionistët",
-    aboutUs: "Rreth OrariMed",
     location: "Shqipëri",
   },
   specialityNames: {
@@ -194,6 +192,8 @@ const sq: TranslationKey = {
     specialties: "Specializimet",
     centers: "Klinikat",
     about: "Rreth më",
+    pageDescription:
+      "Dr. {name}, specialist në {specialty}, i shikuar në {center} në {city}. Gjeni disponibilitetin, shërbimet (konsultim, telekonsultim, eksamina) dhe recenzat e pacientëve. Rezervoni një kohë të sigurt në disa klikime.",
     noBiography: " nuk ka shkruar ende një biografi.",
     diploma: "Diploma",
     noDiploma: "Nuk ka diploma të listuara ende.",
@@ -208,6 +208,8 @@ const sq: TranslationKey = {
     phone: "Telefoni",
     doctor: "Doktorët",
     about: "Rreth më",
+    pageDescription:
+      "{name} është një qendër shëndetësore e specializuar në {specialty} në {city}. Gjeni doktorët e bashkangjitur, shërbimet e ofruara dhe vlerësimet e pacientëve. Rezervoni një takim të sigurt shpejt.",
     noBiography: " nuk ka shkruar ende një përshkrim.",
     centerDoctors: "Zgjidhni një mjek në këtë qendër për të caktuar një takim.",
   },

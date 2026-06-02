@@ -29,7 +29,7 @@ export function CenterPage() {
         setCenter(center);
       } catch (error) {
         console.error("Error fetching center profile:", error);
-        navigate("/404"); // Rediriger vers la page 404 si le médecin n'est pas trouvé
+        navigate("/404"); // Rediriger vers la page 404 si le centre n'est pas trouvé
       } finally {
         setIsLoading(false);
       }
@@ -39,6 +39,84 @@ export function CenterPage() {
       fetchCenterProfile();
     }
   }, [username, city, navigate]);
+
+  useEffect(() => {
+    if (!center) {
+      return;
+    }
+
+    const specialityLabel =
+      center.speciality?.translations?.find((t) => t.locale === language)
+        ?.name || "Center";
+
+    const pageTitle = `${center.name}`.trim();
+    const pageDescription = t.center.pageDescription
+      .replace("{name}", pageTitle)
+      .replace("{specialty}", specialityLabel)
+      .replace("{city}", center.city || "");
+
+    document.title = `${pageTitle} - ${specialityLabel}`;
+
+    const setMeta = (
+      attrName: "name" | "property",
+      attrValue: string,
+      content: string,
+    ) => {
+      let meta = document.head.querySelector(
+        `meta[${attrName}="${attrValue}"]`,
+      ) as HTMLMetaElement | null;
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attrName, attrValue);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    };
+
+    const setCanonical = (href: string) => {
+      let link = document.head.querySelector(
+        'link[rel="canonical"]',
+      ) as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", href);
+    };
+
+    const pageUrl =
+      typeof window !== "undefined"
+        ? window.location.href
+        : `https://orarimed.com/center/${city}/${username}`;
+
+    const localeMap: Record<string, string> = {
+      sq: "sq_AL",
+      en: "en_US",
+      fr: "fr_FR",
+    };
+
+    const ogTitle = `${pageTitle} - ${specialityLabel} | OrariMed`;
+    const socialImage =
+      center.avatar && typeof window !== "undefined"
+        ? `${window.location.origin}${center.avatar.startsWith("/") ? "" : "/"}${center.avatar}`
+        : "https://orarimed.com/home.png";
+
+    const keywords = `${center.name}, ${specialityLabel}, ${center.city}, doctors, healthcare, appointments, reviews, services`;
+
+    setMeta("name", "description", pageDescription);
+    setMeta("name", "keywords", keywords);
+    setMeta("property", "og:title", ogTitle);
+    setMeta("property", "og:description", pageDescription);
+    setMeta("property", "og:url", pageUrl);
+    setMeta("property", "og:locale", localeMap[language] || "sq_AL");
+    setMeta("property", "og:site_name", "OrariMed");
+    setMeta("property", "og:image", socialImage);
+    setMeta("name", "twitter:title", ogTitle);
+    setMeta("name", "twitter:description", pageDescription);
+    setMeta("name", "twitter:image", socialImage);
+    setCanonical(pageUrl);
+  }, [center, t.center.pageDescription, language, city, username]);
 
   function formatPhoneNumber(phoneNumber: string): string {
     // Supprimer tous les caractères non numériques sauf le +

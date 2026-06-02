@@ -134,9 +134,7 @@ export type TranslationKey = {
     privacy: string;
     terms: string;
     cookies: string;
-    faq: string;
     forProfessionals: string;
-    aboutUs: string;
     location: string;
   };
   specialityNames: Record<string, string>;
@@ -188,6 +186,7 @@ export type TranslationKey = {
     specialties: string;
     centers: string;
     about: string;
+    pageDescription: string;
     noBiography: string;
     diploma: string;
     noDiploma: string;
@@ -202,6 +201,7 @@ export type TranslationKey = {
     phone: string;
     doctor: string;
     about: string;
+    pageDescription: string;
     noBiography: string;
     centerDoctors: string;
   };

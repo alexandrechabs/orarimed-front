@@ -106,9 +106,7 @@ const fr: TranslationKey = {
     privacy: "Politique de confidentialité",
     terms: "Conditions d'utilisation",
     cookies: "Cookies",
-    faq: "FAQ",
     forProfessionals: "Pour les professionnels",
-    aboutUs: "À propos d'OrariMed",
     location: "Albanie",
   },
   specialityNames: {
@@ -193,6 +191,8 @@ const fr: TranslationKey = {
     specialties: "Spécialités",
     centers: "Cabinets",
     about: "À propos",
+    pageDescription:
+      "Dr. {name}, spécialiste en {specialty}, vous reçoit au {center} à {city}. Retrouvez ses disponibilités, ses services (consultation, téléconsultation, examens) et les avis patients. Réservez un créneau sécurisé en quelques clics.",
     noBiography: " n'a pas encore rédigé sa biographie.",
     diploma: "Diplômes",
     noDiploma: "Aucun diplôme répertorié pour le moment.",
@@ -208,6 +208,8 @@ const fr: TranslationKey = {
     phone: "Téléphone",
     doctor: "Docteurs",
     about: "À propos",
+    pageDescription:
+      "{name} est un centre de santé spécialisé en {specialty} à {city}. Retrouvez les médecins associés, les services proposés et les avis patients. Réservez rapidement un rendez-vous sécurisé.",
     noBiography: " n'a pas encore de description.",
     centerDoctors:
       "Sélectionnez un médecin dans ce centre pour prendre rendez-vous.",
