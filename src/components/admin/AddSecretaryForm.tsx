@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/services/user/useUser";
 import { UserRole } from "@/types/roles";
 import { Camera, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -18,10 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import PhoneInput from "react-phone-number-input";
-import { useAuth } from "@/services/auth/useAuth";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import type { CountryCode } from "libphonenumber-js";
-import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import ImageUpload from "../ui/ImageUpload";
 
@@ -35,33 +33,15 @@ const createSecretarySchema = (isEditMode: boolean) => {
     lastname: z.string().min(2, "Le nom est requis"),
     phoneNumber: z.string().min(10, "Numéro de téléphone invalide").optional(),
     language: z.string().min(2, "La langue est requise"),
+    acceptTerms: isEditMode
+      ? z.boolean().optional() // En mode édition, ce champ n'est pas requis
+      : z.literal(true, {
+          errorMap: () => ({ message: "Vous devez accepter les conditions" }),
+        }), // En mode création, ce champ doit être true
   };
-
-  // En mode édition, le mot de passe est optionnel et ne doit être validé que s'il est fourni
-  const passwordSchema = isEditMode
-    ? {
-        password: z
-          .union([
-            z.string().length(0), // Accepte une chaîne vide
-            z
-              .string()
-              .min(8, "Le mot de passe doit faire au moins 8 caractères"),
-          ])
-          .optional()
-          .transform((e) => (e === "" ? undefined : e)), // Transforme une chaîne vide en undefined
-      }
-    : {
-        password: z
-          .string()
-          .min(8, "Le mot de passe doit faire au moins 8 caractères"),
-        acceptTerms: z.boolean().refine((val) => val, {
-          message: "Vous devez accepter les conditions d'utilisation",
-        }),
-      };
 
   return z.object({
     ...baseSchema,
-    ...passwordSchema,
   });
 };
 
@@ -79,6 +59,7 @@ interface SecretaryFormProps {
     phoneNumber: string;
     active: boolean;
     language: string;
+    acceptTerms?: boolean;
   } | null;
 }
 
@@ -116,15 +97,15 @@ export function AddSecretaryForm({
           firstname: user.firstname,
           lastname: user.lastname,
           phoneNumber: user.phoneNumber,
-          password: "", // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
           language: user.language,
+          acceptTerms: true, // Valeur par défaut en mode édition
         }
       : {
           email: "",
           firstname: "",
           lastname: "",
           phoneNumber: "",
-          password: "",
+          language: "",
           acceptTerms: false,
         },
   });
@@ -139,11 +120,10 @@ export function AddSecretaryForm({
         firstname: data.firstname,
         lastname: data.lastname,
         phoneNumber: data.phoneNumber,
-        // Ne pas envoyer le mot de passe s'il est vide (mode édition sans modification du mot de passe)
-        ...(data.password && { password: data.password }),
         roleId: UserRole.SECRETARY,
         active: user?.active,
         language: data.language,
+        acceptTerms: data.acceptTerms,
       };
 
       // Créer l'objet final en fonction du mode
@@ -311,41 +291,6 @@ export function AddSecretaryForm({
           )}
         </div>
 
-        <div>
-          {!isEditMode && (
-            <>
-              <Label>Mot de passe temporaire</Label>
-              <Input
-                type="password"
-                {...register("password")}
-                autoComplete="new-password"
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-            </>
-          )}
-          {isEditMode && (
-            <div className="space-y-2">
-              <Label>
-                Changer le mot de passe (laisser vide pour ne pas modifier)
-              </Label>
-              <Input
-                type="password"
-                {...register("password")}
-                autoComplete="new-password"
-                placeholder="Nouveau mot de passe"
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
         <div className="space-y-2">
           <Label>Langue</Label>
           <Select

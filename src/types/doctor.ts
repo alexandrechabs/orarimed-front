@@ -2,6 +2,7 @@ import { CenterUser } from "./CenterUser";
 import { Diploma } from "./diploma";
 import { Experience } from "./experience";
 import { OpeningHour } from "./openingHour";
+import { SecretaryUser } from "./secretaryUser";
 
 export type DoctorProfile = {
   id: string;
@@ -69,4 +70,5 @@ export type DoctorProfile = {
   }>;
   openingHours?: OpeningHour[];
   centerUsers?: CenterUser[];
+  secretaryUsers?: SecretaryUser[];
 };

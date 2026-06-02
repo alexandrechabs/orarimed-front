@@ -1,5 +1,5 @@
-import { Center } from './center';
-import { DoctorProfile } from './doctor';
+import { Center } from "./center";
+import { DoctorProfile } from "./doctor";
 
 export type CenterUser = {
   id: string;

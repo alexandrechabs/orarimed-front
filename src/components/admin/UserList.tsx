@@ -207,12 +207,11 @@ export default function UserList({ type }: { type: string }) {
       );
     }
     initUser(user);
-    setIsAddDoctorOpen(true);
-  };
-
-  const handleEditSecretary = (user: DoctorProfile) => {
-    initUser(user);
-    setIsAddSecretaryOpen(true);
+    if (type === "doctor") {
+      setIsAddDoctorOpen(true);
+    } else {
+      setIsAddSecretaryOpen(true);
+    }
   };
 
   const handleViewUser = (user: DoctorProfile) => {
@@ -635,20 +634,21 @@ export default function UserList({ type }: { type: string }) {
           <TableHeader>
             <TableRow>
               <TableHead>Nom</TableHead>
-              <TableHead>Spécialité</TableHead>
+              {type === "doctor" ? <TableHead>Spécialité</TableHead> : ""}
               <TableHead>Compte actif</TableHead>
               <TableHead>
                 <div className="flex items-center gap-1">
                   <span>Visible</span>
                   <div className="group relative">
                     <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 p-2 text-xs bg-popover text-popover-foreground rounded shadow-lg border">
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block w-48 p-2 text-xs bg-popover text-popover-foreground rounded shadow-lg border">
                       Indique si le profil du médecin est visible par les
                       patients
                     </div>
                   </div>
                 </div>
               </TableHead>
+              {type !== "doctor" ? <TableHead>Docteurs</TableHead> : ""}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -687,13 +687,17 @@ export default function UserList({ type }: { type: string }) {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    {type === "doctor"
-                      ? user.speciality.translations.filter(
+                  {type === "doctor" ? (
+                    <TableCell>
+                      {
+                        user.speciality.translations.filter(
                           (t) => t.locale === language,
                         )[0].name
-                      : ""}
-                  </TableCell>
+                      }
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${user.active ? "bg-green-100 text-green-800" : "bg-red-100 text-gray-800"}`}
@@ -708,6 +712,44 @@ export default function UserList({ type }: { type: string }) {
                       {user.visible ? "Oui" : "Non"}
                     </span>
                   </TableCell>
+
+                  {type !== "doctor" ? (
+                    <TableCell>
+                      {user.secretaryUsers?.map((centerUser) => (
+                        <div
+                          key={centerUser.id}
+                          className="flex bg-gray-200 p-2 rounded-lg mb-2"
+                        >
+                          <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden mr-4">
+                            <img
+                              src={
+                                centerUser.doctor?.avatar
+                                  ? `${API_URL}/user/${centerUser.doctor.id}/avatar/${centerUser.doctor.avatar}`
+                                  : "/default-avatar.png"
+                              }
+                              alt={centerUser.doctor?.firstname}
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/default-avatar.png";
+                              }}
+                            />
+                          </div>
+                          <div className="grid">
+                            <span className="text-sm">
+                              {centerUser.doctor?.firstname}{" "}
+                              {centerUser.doctor?.lastname}
+                            </span>
+                            <span className="text-sm">
+                              {centerUser.doctor?.email}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

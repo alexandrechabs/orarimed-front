@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/services/user/useUser";
 import { UserRole } from "@/types/roles";
 import { Camera, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -25,7 +25,6 @@ import type { CountryCode } from "libphonenumber-js";
 import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import ImageUpload from "../ui/ImageUpload";
-import { a } from "node_modules/framer-motion/dist/types.d-DagZKalS";
 
 const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
@@ -52,6 +51,7 @@ const createDoctorSchema = (isEditMode: boolean) => {
       : z.boolean().refine((val) => val === true, {
           message: "Vous devez accepter les conditions d'utilisation",
         }),
+    doctorIdentifier: z.string(),
   };
 
   return z.object({
@@ -83,6 +83,7 @@ interface DoctorFormProps {
     visible: boolean;
     active: boolean;
     language: string;
+    doctorIdentifier: string;
   } | null;
 }
 
@@ -133,6 +134,7 @@ export function AddDoctorForm({
           specialityId: user.specialityId,
           subSpecialityId: user.subSpecialityId,
           language: user.language,
+          doctorIdentifier: user.doctorIdentifier,
         }
       : {
           email: "",
@@ -147,8 +149,26 @@ export function AddDoctorForm({
           specialityId: 0,
           acceptTerms: false,
           subSpecialityId: [],
+          doctorIdentifier: "",
         },
   });
+
+  // set le doctorIdentifier quand on est pas en mode édition avec le nom - prénom - ville des inputs quand ils changent
+  useEffect(() => {
+    if (!isEditMode) {
+      const doctorIdentifier =
+        `${watch("firstname")}-${watch("lastname")}-${watch("city")}`
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "-");
+      setValue("doctorIdentifier", doctorIdentifier);
+    }
+  }, [
+    isEditMode,
+    watch("firstname"),
+    watch("lastname"),
+    watch("city"),
+    setValue,
+  ]);
 
   const onSubmit = async (data: DoctorFormValues) => {
     try {
@@ -172,6 +192,7 @@ export function AddDoctorForm({
         active: user?.active,
         specialityId: data.specialityId,
         language: data.language,
+        doctorIdentifier: data.doctorIdentifier,
       };
 
       // Créer l'objet final en fonction du mode
@@ -451,7 +472,7 @@ export function AddDoctorForm({
               ))}
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="spaceff-y-2">
           <Label>Langue</Label>
           <Select
             value={watch("language")?.toString() || ""}
@@ -464,7 +485,9 @@ export function AddDoctorForm({
               <SelectValue placeholder="Sélectionnez une langue" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem key="sq" value="sq"></SelectItem>
+              <SelectItem key="sq" value="sq">
+                Shqip
+              </SelectItem>
               <SelectItem key="en" value="en">
                 English
               </SelectItem>
@@ -476,6 +499,15 @@ export function AddDoctorForm({
           {errors.language && (
             <p className="text-sm text-destructive">
               {errors.language.message}
+            </p>
+          )}
+        </div>
+        <div>
+          <Label>Identifiant Docteur</Label>
+          <Input type="text" {...register("doctorIdentifier")} />
+          {errors.doctorIdentifier && (
+            <p className="text-sm text-destructive">
+              {errors.doctorIdentifier.message}
             </p>
           )}
         </div>

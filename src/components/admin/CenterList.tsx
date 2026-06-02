@@ -5,15 +5,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Pencil,
   Trash2,
@@ -23,9 +23,9 @@ import {
   Eye,
   CheckCircle,
   CalendarDays,
-} from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { useUser } from '@/services/user/useUser';
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useUser } from "@/services/user/useUser";
 import {
   Dialog,
   DialogContent,
@@ -33,16 +33,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
-import OpeningHoursForm from './OpeningHoursForm';
-import { FormProvider, useForm } from 'react-hook-form';
-import { OpeningHour } from '@/types/openingHour';
-import { Center } from '@/types/center';
-import { AddCenterForm } from './AddCenterForm';
-import DoctorCenterSearch from './DoctorCenterSearch';
+} from "@/components/ui/dialog";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import OpeningHoursForm from "./OpeningHoursForm";
+import { FormProvider, useForm } from "react-hook-form";
+import { OpeningHour } from "@/types/openingHour";
+import { Center } from "@/types/center";
+import { AddCenterForm } from "./AddCenterForm";
+import DoctorCenterSearch from "./DoctorCenterSearch";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -78,7 +78,7 @@ export default function CenterList() {
       const centerData = await getCenters();
       setCenters(centerData);
     } catch (error) {
-      console.error('Error loading users:', error);
+      console.error("Error loading users:", error);
     } finally {
       setIsLoading(false);
     }
@@ -122,23 +122,23 @@ export default function CenterList() {
       });
 
       toast({
-        title: 'Succès',
+        title: "Succès",
         description: centerToUpdate.active
-          ? 'Le centre a été désactivé avec succès.'
-          : 'Le centre a été réactivé avec succès.',
+          ? "Le centre a été désactivé avec succès."
+          : "Le centre a été réactivé avec succès.",
       });
 
       // Recharger la liste des utilisateurs
       await loadCenter();
     } catch (error) {
       console.error(
-        'Erreur lors de la mise à jour du statut du compte :',
+        "Erreur lors de la mise à jour du statut du compte :",
         error,
       );
       toast({
-        title: 'Erreur',
-        description: `Une erreur est survenue lors de la ${centerToUpdate?.active ? 'désactivation' : 'réactivation'} du centre.`,
-        variant: 'destructive',
+        title: "Erreur",
+        description: `Une erreur est survenue lors de la ${centerToUpdate?.active ? "désactivation" : "réactivation"} du centre.`,
+        variant: "destructive",
       });
     } finally {
       setIsUpdateDialogOpen(false);
@@ -168,7 +168,7 @@ export default function CenterList() {
     saveOpeningHoursCenter(editingCenter.id, openingHours);
 
     toast({
-      title: 'Succès',
+      title: "Succès",
       description: "Les heures d'ouverture ont été chargées avec succès.",
     });
   };
@@ -224,7 +224,7 @@ export default function CenterList() {
                   <span>Visible</span>
                   <div className="group relative">
                     <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 p-2 text-xs bg-popover text-popover-foreground rounded shadow-lg border">
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block w-48 p-2 text-xs bg-popover text-popover-foreground rounded shadow-lg border">
                       Indique si le profil du médecin est visible par les
                       patients
                     </div>
@@ -252,13 +252,13 @@ export default function CenterList() {
                           src={
                             center.avatar
                               ? `${API_URL}/center/${center.id}/avatar/${center.avatar}`
-                              : 'hopital.png'
+                              : "hopital.png"
                           }
                           alt={center.name}
                           className="h-full w-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = '/default-avatar.png';
+                            target.src = "/default-avatar.png";
                           }}
                         />
                       </div>
@@ -278,16 +278,16 @@ export default function CenterList() {
                   </TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${center.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-gray-800'}`}
+                      className={`px-2 py-1 rounded-full text-xs ${center.active ? "bg-green-100 text-green-800" : "bg-red-100 text-gray-800"}`}
                     >
-                      {center.active ? 'Oui' : 'Non'}
+                      {center.active ? "Oui" : "Non"}
                     </span>
                   </TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${center.visible ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                      className={`px-2 py-1 rounded-full text-xs ${center.visible ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
                     >
-                      {center.visible ? 'Oui' : 'Non'}
+                      {center.visible ? "Oui" : "Non"}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -301,19 +301,19 @@ export default function CenterList() {
                             src={
                               centerUser.user?.avatar
                                 ? `${API_URL}/user/${centerUser.user.id}/avatar/${centerUser.user.avatar}`
-                                : '/default-avatar.png'
+                                : "/default-avatar.png"
                             }
                             alt={centerUser.user?.firstname}
                             className="h-full w-full object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = '/default-avatar.png';
+                              target.src = "/default-avatar.png";
                             }}
                           />
                         </div>
                         <div className="grid">
                           <span className="text-sm">
-                            {centerUser.user?.firstname}{' '}
+                            {centerUser.user?.firstname}{" "}
                             {centerUser.user?.lastname}
                           </span>
                           <span className="text-sm">
@@ -358,8 +358,8 @@ export default function CenterList() {
                         <DropdownMenuItem
                           className={
                             center.active
-                              ? 'text-destructive focus:text-destructive'
-                              : 'text-green-600 focus:text-green-700'
+                              ? "text-destructive focus:text-destructive"
+                              : "text-green-600 focus:text-green-700"
                           }
                           onSelect={(e) => {
                             e.preventDefault();
@@ -393,7 +393,7 @@ export default function CenterList() {
           onInteractOutside={(e) => {
             // Empêche la fermeture de la modale lors du clic sur les suggestions
             const target = e.target as HTMLElement;
-            if (target.closest('.pac-container')) {
+            if (target.closest(".pac-container")) {
               e.preventDefault();
             }
           }}
@@ -452,8 +452,8 @@ export default function CenterList() {
           <DialogHeader>
             <DialogTitle>
               {centerToUpdate?.active
-                ? 'Confirmer la désactivation'
-                : 'Confirmer la réactivation'}
+                ? "Confirmer la désactivation"
+                : "Confirmer la réactivation"}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
               {centerToUpdate?.active
@@ -471,10 +471,10 @@ export default function CenterList() {
               Annuler
             </Button>
             <Button
-              variant={centerToUpdate?.active ? 'destructive' : 'default'}
+              variant={centerToUpdate?.active ? "destructive" : "default"}
               onClick={handleToggleCenterStatus}
             >
-              {centerToUpdate?.active ? 'Désactiver' : 'Réactiver'}
+              {centerToUpdate?.active ? "Désactiver" : "Réactiver"}
             </Button>
           </div>
         </DialogContent>
