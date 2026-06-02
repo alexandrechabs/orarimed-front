@@ -37,6 +37,9 @@ import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import AdminArticlesPage from "./pages/admin/ArticlePage";
 import DoctorPage from "./pages/DoctorPage";
 import SearchPage from "./pages/SearchPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
+import CookiesPage from "./pages/CookiesPage";
 import DoctorSettingsPage from "./pages/settings/DoctorSettingsPage";
 import AppointmentPage from "./pages/AppointmentPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
@@ -353,6 +356,9 @@ const App = () => (
           </Route>
           <Route path="/doctor/:city/:username" element={<DoctorPage />} />
           <Route path="/center/:city/:username" element={<CenterPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/cookies" element={<CookiesPage />} />
           <Route
             path="/center/:centerId/select-doctor"
             element={<SelectDoctorPage />}

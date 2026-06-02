@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import logoIcon from '@/assets/logo-icon.png';
+import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import logoIcon from "@/assets/logo-icon.png";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -35,10 +35,9 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3">
               {[
-                { href: '/specialities', label: t.nav.specialities },
-                { href: '/actualities', label: t.nav.news },
-                { href: '/profesionist', label: t.footer.forProfessionals },
-                { href: '/rreth-nesh', label: t.footer.aboutUs },
+                { href: "/specialities", label: t.nav.specialities },
+                { href: "/actualities", label: t.nav.news },
+                { href: "/professionals", label: t.footer.forProfessionals },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -59,10 +58,9 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3">
               {[
-                { href: '/privatesia', label: t.footer.privacy },
-                { href: '/kushtet', label: t.footer.terms },
-                { href: '/cookies', label: t.footer.cookies },
-                { href: '/faq', label: t.footer.faq },
+                { href: "/privacy", label: t.footer.privacy },
+                { href: "/terms", label: t.footer.terms },
+                { href: "/cookies", label: t.footer.cookies },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

@@ -18,8 +18,6 @@ const Actualities = () => {
 
   // get articles from API
   useEffect(() => {
-    console.log(locale);
-
     const loadArticles = async () => {
       try {
         const res = await fetch(
