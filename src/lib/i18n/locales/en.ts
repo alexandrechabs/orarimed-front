@@ -469,6 +469,7 @@ const en: TranslationKey = {
     thisWeek: "this week",
     average: "average",
     perDay: "per day",
+    resizePicture: "Resize picture",
   },
   common: {
     success: "Success",
@@ -486,6 +487,7 @@ const en: TranslationKey = {
     yes: "Yes",
     no: "No",
     create: "Create",
+    update: "Update",
     add: "Add",
     modify: "Modify",
     activate: "Activate",
@@ -728,7 +730,6 @@ const en: TranslationKey = {
   adminSettings: {
     title: "Administration",
     description: "Manage application settings and configurations",
-    general: "General",
     specialities: "Specialities",
     system: "System",
     generalSettings: "General Settings",
@@ -741,6 +742,74 @@ const en: TranslationKey = {
     systemSettings: "System Settings",
     systemConfiguration: "System Configuration",
     systemConfigurationDescription: "Configure system settings and maintenance",
+    menu: {
+      general: "General",
+      office: "Office",
+      doctor: "Doctor",
+      secretary: "Secretary",
+      specialities: "Specialities",
+    },
+    openingHours: {
+      title: "Opening Hours Management",
+      description: "Define your opening hours for",
+    },
+    disableAccount: {
+      titleDisable: "Confirm Deactivation",
+      titleEnable: "Confirm Reactivation",
+      descriptionDisable:
+        "Are you sure you want to deactivate the account of {account}?\nThis action is reversible.",
+      descriptionEnable:
+        "Are you sure you want to reactivate the account of {account}?\nThis action is reversible.",
+    },
+    office: {
+      title: "Office Management",
+      description: "View and manage offices",
+      noOffice: "No offices selected",
+      activateSuccess: "The office has been activated successfully",
+      deactivateSuccess: "The office has been deactivated successfully",
+      statusError: "An error occurred while {action} the office",
+      table: {
+        name: "Name",
+        speciality: "Speciality",
+        activeAccount: "Active Account",
+        visible: "Visible",
+        visibleInfo: "Whether the office is publicly visible",
+        Doctors: "Doctors",
+        actions: "Actions",
+      },
+      actions: {
+        edit: "Edit",
+        seeProfile: "See profile",
+        addDoctor: "Add doctor",
+        openingHours: "Opening hours",
+        disable: "Disable",
+        enable: "Enable",
+      },
+      officeForm: {
+        newTitle: "New office",
+        editTitle: "Edit ",
+        name: "Name",
+        email: "Email",
+        phone: "Phone",
+        phonePlaceholder: "+355 4X XXX XXXX",
+        address: "Address",
+        addressPlaceholder: "Enter the address of your office",
+        description: "Description",
+        descriptionPlaceholder: "Describe your office, services, etc.",
+        speciality: "Speciality",
+        specialityPlaceholder: "Select the main speciality of the office",
+        visible: "Visible publicly",
+        error: {
+          email: "Invalid email address",
+          name: "Name is required",
+          address: "Address is required",
+          city: "City is required",
+          country: "Country is required",
+          phone: "Invalid phone number",
+          speciality: "Speciality is required",
+        },
+      },
+    },
     addDoctor: {
       title: "Add Doctor",
       form: {
@@ -755,6 +824,9 @@ const en: TranslationKey = {
       },
       success: "Doctor account created successfully",
       error: "An error occurred while creating the account",
+    },
+    speciality: {
+      specialityError: "Please fill in all speciality and sub-speciality names",
     },
   },
 };

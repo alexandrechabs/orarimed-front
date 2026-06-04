@@ -428,7 +428,7 @@ export default function SettingsPage() {
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Recadrer l'image</DialogTitle>
+            <DialogTitle>{t.stats.resizePicture}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">

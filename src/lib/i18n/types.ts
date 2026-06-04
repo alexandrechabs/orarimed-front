@@ -363,6 +363,7 @@ export type TranslationKey = {
     thisWeek: string;
     average: string;
     perDay: string;
+    resizePicture: string;
   };
   common: {
     success: string;
@@ -380,6 +381,7 @@ export type TranslationKey = {
     yes: string;
     no: string;
     create: string;
+    update: string;
     add: string;
     modify: string;
     activate: string;
@@ -609,7 +611,6 @@ export type TranslationKey = {
   adminSettings: {
     title: string;
     description: string;
-    general: string;
     specialities: string;
     system: string;
     generalSettings: string;
@@ -621,6 +622,72 @@ export type TranslationKey = {
     systemSettings: string;
     systemConfiguration: string;
     systemConfigurationDescription: string;
+    menu: {
+      general: string;
+      office: string;
+      doctor: string;
+      secretary: string;
+      specialities: string;
+    };
+    openingHours: {
+      title: string;
+      description: string;
+    };
+    disableAccount: {
+      titleDisable: string;
+      titleEnable: string;
+      descriptionDisable: string;
+      descriptionEnable: string;
+    };
+    office: {
+      title: string;
+      description: string;
+      noOffice: string;
+      activateSuccess: string;
+      deactivateSuccess: string;
+      statusError: string;
+      table: {
+        name: string;
+        speciality: string;
+        activeAccount: string;
+        visible: string;
+        visibleInfo: string;
+        Doctors: string;
+        actions: string;
+      };
+      actions: {
+        edit: string;
+        seeProfile: string;
+        addDoctor: string;
+        openingHours: string;
+        disable: string;
+        enable: string;
+      };
+      officeForm: {
+        newTitle: string;
+        editTitle: string;
+        name: string;
+        email: string;
+        phone: string;
+        phonePlaceholder: string;
+        address: string;
+        addressPlaceholder: string;
+        description: string;
+        descriptionPlaceholder: string;
+        speciality: string;
+        specialityPlaceholder: string;
+        visible: string;
+        error: {
+          email: string;
+          name: string;
+          address: string;
+          city: string;
+          country: string;
+          phone: string;
+          speciality: string;
+        };
+      };
+    };
     addDoctor: {
       title: string;
       form: {
@@ -635,6 +702,9 @@ export type TranslationKey = {
       };
       success: string;
       error: string;
+    };
+    speciality: {
+      specialityError: string;
     };
   };
 };

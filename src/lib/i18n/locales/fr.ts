@@ -478,6 +478,7 @@ const fr: TranslationKey = {
     thisWeek: "Cette semaine",
     average: "Moyenne",
     perDay: "par jour",
+    resizePicture: "Redimensionner l'image'",
   },
   common: {
     success: "Succès",
@@ -495,6 +496,7 @@ const fr: TranslationKey = {
     yes: "Oui",
     no: "Non",
     create: "Créer",
+    update: "Mettre à jour",
     add: "Ajouter",
     modify: "Modifier",
     activate: "Activer",
@@ -624,7 +626,7 @@ const fr: TranslationKey = {
     notifications: "Notifications",
     accountTitle: "Mon compte",
     notificationTitle: "Mes notifications",
-    changePicture: "Changer la photo de profil",
+    changePicture: "{t.params.changePicture}",
     clickToChange: "Cliquez sur l'icône pour changer votre photo de profil",
     firstname: "Prénom",
     lastname: "Nom",
@@ -742,7 +744,6 @@ const fr: TranslationKey = {
   adminSettings: {
     title: "Administration",
     description: "Gérez les paramètres et configurations de l'application",
-    general: "Général",
     specialities: "Spécialités",
     system: "Système",
     generalSettings: "Paramètres généraux",
@@ -757,6 +758,76 @@ const fr: TranslationKey = {
     systemConfiguration: "Configuration système",
     systemConfigurationDescription:
       "Configurez les paramètres système et la maintenance",
+    menu: {
+      general: "Général",
+      office: "Cabinet",
+      doctor: "Docteur",
+      secretary: "Secrétaire",
+      specialities: "Spécialités",
+    },
+    openingHours: {
+      title: "Modifier les horaires d'ouverture",
+      description: "Définissez les horaires pour",
+    },
+    disableAccount: {
+      titleDisable: "Confirmer la désactivation",
+      titleEnable: "Confirmer l'activation",
+      descriptionDisable:
+        "Êtes-vous sûr de vouloir désactiver le compte de {account} ?\nCette action est réversible.",
+      descriptionEnable:
+        "Êtes-vous sûr de vouloir réactiver le compte de {account} ?\nCette action est réversible.",
+    },
+    office: {
+      title: "Gestion des cabinets",
+      description: "Affichez et gérez les cabinets",
+      noOffice: "Aucun cabinet sélectionné",
+      activateSuccess: "Le cabinet a été activé avec succès",
+      deactivateSuccess: "Le cabinet a été désactivé avec succès",
+      statusError: "Une erreur est survenue lors de la {action} du cabinet",
+      table: {
+        name: "Nom",
+        speciality: "Spécialité",
+        activeAccount: "Compte actif",
+        visible: "Visible",
+        visibleInfo:
+          "Indique si le profil du médecin est visible par les patients",
+        Doctors: "Docteurs",
+        actions: "Actions",
+      },
+      actions: {
+        edit: "Modifier",
+        seeProfile: "Voir le profil",
+        addDoctor: "Ajouter un docteur",
+        openingHours: "Horaires d'ouverture",
+        disable: "Désactiver",
+        enable: "Activer",
+      },
+      officeForm: {
+        newTitle: "Nouveau cabinet médical",
+        editTitle: "Modifier ",
+        name: "Nom",
+        email: "Email",
+        phone: "Téléphone",
+        phonePlaceholder: "+33 6 XX XX XX XX",
+        address: "Adresse",
+        addressPlaceholder: "Saisissez l'adresse de votre cabinet",
+        description: "Description",
+        descriptionPlaceholder: "Description du cabinet...",
+        speciality: "Spécialité",
+        specialityPlaceholder:
+          "Sélectionnez la spécialité principale du cabinet",
+        visible: "Cabinet visible publiquement",
+        error: {
+          email: "L'email est requis",
+          name: "Le nom est requis",
+          address: "L'adresse est requise",
+          city: "La ville est requise",
+          country: "Le pays est requis",
+          phone: "Le numéro de téléphone est requis",
+          speciality: "La spécialité est requise",
+        },
+      },
+    },
     addDoctor: {
       title: "Ajouter un docteur",
       form: {
@@ -771,6 +842,10 @@ const fr: TranslationKey = {
       },
       success: "Le compte docteur a été créé avec succès",
       error: "Une erreur est survenue lors de la création du compte",
+    },
+    speciality: {
+      specialityError:
+        "Veuillez remplir tous les noms de spécialités et sous-spécialités",
     },
   },
 };

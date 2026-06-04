@@ -34,20 +34,20 @@ import ImageUpload from "../ui/ImageUpload";
 const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
 // Fonction pour créer le schéma en fonction du mode (édition ou création)
-const createDoctorSchema = (isEditMode: boolean) => {
+const createDoctorSchema = (isEditMode: boolean, errors: any) => {
   return z.object({
-    email: z.string().email("Email invalide"),
-    name: z.string().min(2, "Le nom est requis"),
-    address: z.string().min(5, "L'adresse est requise"),
-    city: z.string().min(2, "La ville est requise"),
-    country: z.string().min(2, "Le pays est requis"),
+    email: z.string().email(errors.email),
+    name: z.string().min(2, errors.name),
+    address: z.string().min(5, errors.address),
+    city: z.string().min(2, errors.city),
+    country: z.string().min(2, errors.country),
     coordinate: z.object({
       x: z.number(),
       y: z.number(),
     }),
-    phoneNumber: z.string().min(10, "Numéro de téléphone invalide"),
+    phoneNumber: z.string().min(10, errors.phone),
     visible: z.boolean().default(false).optional(),
-    specialityId: z.number().min(1, "La spécialité est requise"),
+    specialityId: z.number().min(1, errors.speciality),
     description: z.string().optional(),
   });
 };
@@ -68,7 +68,7 @@ export function AddCenterForm({
   const API_URL = import.meta.env.VITE_API_URL;
   const { toast } = useToast();
   const { specialities } = useAuth();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const { createCenter, updateCenter, savePhotoCenter, getCenter } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -78,7 +78,12 @@ export function AddCenterForm({
   );
 
   const isEditMode = !!center;
-  const doctorSchema = createDoctorSchema(isEditMode);
+  const doctorSchema = createDoctorSchema(
+    isEditMode,
+    t.adminSettings.office.officeForm.error,
+  );
+
+  const office = t.adminSettings.office;
 
   const {
     register,
@@ -240,13 +245,13 @@ export function AddCenterForm({
                 ) : (
                   <Camera className="h-5 w-5" />
                 )}
-                <span className="sr-only">Changer la photo de profil</span>
+                <span className="sr-only">{t.params.changePicture}</span>
               </button>
             </div>
           </div>
         )}
         <div>
-          <Label>Nom</Label>
+          <Label>{office.officeForm.name}</Label>
           <Input {...register("name")} />
           {errors.name && (
             <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -254,15 +259,20 @@ export function AddCenterForm({
         </div>
 
         <div>
-          <Label>Email</Label>
+          <Label>{office.officeForm.email}</Label>
           <Input type="email" {...register("email")} autoComplete="new-email" />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
         <div>
-          <Label>Description</Label>
-          <Input type="description" {...register("description")} />
+          <Label>{office.officeForm.description}</Label>
+          <textarea
+            {...register("description")}
+            placeholder={office.officeForm.descriptionPlaceholder}
+            className="w-full h-32 p-2 border rounded-md text-sm"
+            required
+          />
           {errors.description && (
             <p className="text-sm text-destructive">
               {errors.description.message}
@@ -271,7 +281,7 @@ export function AddCenterForm({
         </div>
 
         <div>
-          <Label>Adresse</Label>
+          <Label>{office.officeForm.address}</Label>
           <AddressAutocomplete
             type="address"
             value={watch("address")} // Use watch to get the current value
@@ -296,7 +306,7 @@ export function AddCenterForm({
               });
             }}
             className="bg-background"
-            placeholder="Saisissez l'adresse de votre cabinet"
+            placeholder={office.officeForm.addressPlaceholder}
           />
           {errors.address && (
             <p className="text-sm text-destructive">{errors.address.message}</p>
@@ -304,7 +314,7 @@ export function AddCenterForm({
         </div>
 
         <div>
-          <Label>Téléphone</Label>
+          <Label>{office.officeForm.phone}</Label>
           <PhoneInput
             international
             defaultCountry="AL"
@@ -312,7 +322,7 @@ export function AddCenterForm({
             value={watch("phoneNumber")}
             onChange={(value) => setValue("phoneNumber", value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-background"
-            placeholder="+33 6 12 34 56 78"
+            placeholder={office.officeForm.phonePlaceholder}
             autoComplete="new-phone"
           />
           {errors.phoneNumber && (
@@ -322,7 +332,7 @@ export function AddCenterForm({
           )}
         </div>
         <div>
-          <Label>Spécialité</Label>
+          <Label>{office.officeForm.speciality}</Label>
           <Select
             value={watch("specialityId")?.toString() || ""}
             onValueChange={(value) => {
@@ -332,7 +342,9 @@ export function AddCenterForm({
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une spécialité" />
+              <SelectValue
+                placeholder={office.officeForm.specialityPlaceholder}
+              />
             </SelectTrigger>
             <SelectContent>
               {specialities?.map((speciality) => (
@@ -358,7 +370,7 @@ export function AddCenterForm({
         {/* Interrupteur Actif/Inactif */}
         <div className="flex items-center space-x-2 mt-4">
           <Label htmlFor="visible" className="text-sm font-medium">
-            Cabinet visible
+            {office.officeForm.visible}
           </Label>
           <Checkbox
             id="visible"
@@ -377,18 +389,18 @@ export function AddCenterForm({
             }}
             disabled={isLoading}
           >
-            Annuler
+            {t.common.cancel}
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditMode ? "Mettre à jour" : "Créer le compte"}
+            {isEditMode ? t.common.update : t.common.create}
           </Button>
         </div>
       </form>
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Recadrer l'image</DialogTitle>
+            <DialogTitle>{t.stats.resizePicture}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">
@@ -415,7 +427,7 @@ export function AddCenterForm({
               onClick={() => setIsCropModalOpen(false)}
               disabled={isUploading}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               onClick={() => {
@@ -428,10 +440,10 @@ export function AddCenterForm({
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Enregistrement...
+                  {t.common.saving}
                 </div>
               ) : (
-                "Enregistrer"
+                t.common.save
               )}
             </Button>
           </div>

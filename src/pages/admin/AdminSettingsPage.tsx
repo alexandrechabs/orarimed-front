@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useAuth } from '@/services/auth/useAuth';
-import { toast } from '@/components/ui/use-toast';
-import { useEffect, useState } from 'react';
-import { Speciality } from '@/types/specialty';
-import SpecialitiesManager from '@/components/admin/SpecialtiesManager';
-import UserList from '@/components/admin/UserList';
-import CenterList from '@/components/admin/CenterList';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useAuth } from "@/services/auth/useAuth";
+import { toast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
+import { Speciality } from "@/types/specialty";
+import SpecialitiesManager from "@/components/admin/SpecialtiesManager";
+import UserList from "@/components/admin/UserList";
+import CenterList from "@/components/admin/CenterList";
 
 export default function AdminSettingsPage() {
   const { t } = useLanguage();
@@ -33,9 +33,8 @@ export default function AdminSettingsPage() {
     if (hasEmptyNames) {
       toast({
         title: t.common.error,
-        description:
-          'Veuillez remplir tous les noms de spécialités et sous-spécialités',
-        variant: 'destructive',
+        description: adminT.speciality.specialityError,
+        variant: "destructive",
       });
       return;
     }
@@ -50,7 +49,7 @@ export default function AdminSettingsPage() {
   if (!user) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p>Chargement des informations utilisateur...</p>
+        <p>{t.common.loading}</p>
       </div>
     );
   }
@@ -65,31 +64,34 @@ export default function AdminSettingsPage() {
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList className="inline-table">
           <TabsTrigger value="general">
-            {adminT.general || 'General'}
+            {adminT.menu.general || "General"}
           </TabsTrigger>
-          <TabsTrigger value="office">Cabinet médical</TabsTrigger>
-          <TabsTrigger value="doctor">Docteur</TabsTrigger>
-          <TabsTrigger value="secretary">Secrétaire</TabsTrigger>
+          <TabsTrigger value="office">
+            {adminT.menu.office || "Office"}
+          </TabsTrigger>
+          <TabsTrigger value="doctor">
+            {adminT.menu.doctor || "Doctor"}
+          </TabsTrigger>
+          <TabsTrigger value="secretary">
+            {adminT.menu.secretary || "Secretary"}
+          </TabsTrigger>
           <TabsTrigger value="specialities">
-            {adminT.specialities || 'specialities'}
+            {adminT.menu.specialities || "Specialities"}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>
-                {adminT.generalSettings || 'General Settings'}
-              </CardTitle>
+              <CardTitle>{adminT.generalSettings}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">
-                  {adminT.applicationSettings || 'Application Settings'}
+                  {adminT.applicationSettings}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {adminT.applicationSettingsDescription ||
-                    'Configure general application settings'}
+                  {adminT.applicationSettingsDescription}
                 </p>
               </div>
               {/* Add settings form fields here */}
@@ -100,7 +102,7 @@ export default function AdminSettingsPage() {
         <TabsContent value="office" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Gestion des Cabinets</CardTitle>
+              <CardTitle>{adminT.office.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <CenterList />

@@ -470,6 +470,7 @@ const sq: TranslationKey = {
     thisWeek: "kjo javë",
     average: "mesatarja",
     perDay: "për ditë",
+    resizePicture: "Ndrysho madhësinë e fotos",
   },
   common: {
     success: "Sukses",
@@ -487,6 +488,7 @@ const sq: TranslationKey = {
     yes: "Po",
     no: "Jo",
     create: "Krijo",
+    update: "Përditëso",
     add: "Shto",
     modify: "Modifiko",
     activate: "Aktivizo",
@@ -732,7 +734,6 @@ const sq: TranslationKey = {
   adminSettings: {
     title: "Administrimi",
     description: "Menaxho cilësimet e aplikacionit dhe konfigurimet",
-    general: "Të përgjithshme",
     specialities: "Specialitetet",
     system: "Sistemi",
     generalSettings: "Cilësimet e përgjithshme",
@@ -747,6 +748,74 @@ const sq: TranslationKey = {
     systemConfiguration: "Konfigurimi i sistemit",
     systemConfigurationDescription:
       "Konfiguro cilësimet e përgjithshme të sistemit",
+    menu: {
+      general: "Të përgjithshme",
+      office: "Ofisa",
+      doctor: "Doktor",
+      secretary: "Sekretar",
+      specialities: "Specialitetet",
+    },
+    openingHours: {
+      title: "Ndryshoni orarin e hapjes",
+      description: "Cakto oraret për",
+    },
+    disableAccount: {
+      titleDisable: "Çaktivizo llogarinë",
+      titleEnable: "Aktivizo llogarinë",
+      descriptionDisable:
+        "A jeni i sigurt që doni ta çaktivizoni llogarinë {account}?\nKy veprim është i kthyeshëm.",
+      descriptionEnable:
+        "A jeni i sigurt që doni ta aktivizoni llogarinë {account}?\nKy veprim është i kthyeshëm.",
+    },
+    office: {
+      title: "Cilësimet e ofisës",
+      description: "Shiko dhe menaxho ofisat",
+      noOffice: "Nuk ka ofis të përzgjedhur",
+      activateSuccess: "Ofisa u aktivizua me sukses",
+      deactivateSuccess: "Ofisa u çaktivizua me sukses",
+      statusError: "Ndodhi një gabim gjatë {action} të kabinetit",
+      table: {
+        name: "Emri",
+        speciality: "Specialitet",
+        activeAccount: "Llogaria e aktive",
+        visible: "I dukshëm",
+        visibleInfo: "A nëse ofisa është e dukshme publikisht",
+        Doctors: "Doktorët",
+        actions: "Veprimet",
+      },
+      actions: {
+        edit: "Modifiko",
+        seeProfile: "Shiko profillin",
+        addDoctor: "Shto doktor",
+        openingHours: "Oraret e hapjes",
+        disable: "Çaktivizo",
+        enable: "Aktivizo",
+      },
+      officeForm: {
+        newTitle: "Krijo një ofis të ri",
+        editTitle: "Modifiko ",
+        name: "Emri",
+        email: "Email",
+        phone: "Telefoni",
+        phonePlaceholder: "+355 4X XXX XXXX",
+        address: "Adresa",
+        addressPlaceholder: "Shkruani adresën tuaj të zyrës",
+        description: "Përshkrimi",
+        descriptionPlaceholder: "Përshkrimi i ofisë...",
+        speciality: "Specialiteti",
+        specialityPlaceholder: "Zgjidh një specialitet",
+        visible: "I dukshëm publikisht",
+        error: {
+          email: "Adresa e emailit është e pavlefshme",
+          name: "Emri është i nevojshëm",
+          address: "Adresa është e nevojshme",
+          city: "Qyteti është i nevojshëm",
+          country: "Shteti është i nevojshëm",
+          phone: "Numri i telefonit është i pavlefshëm",
+          speciality: "Specialiteti është i nevojshëm",
+        },
+      },
+    },
     addDoctor: {
       title: "Shto docteur",
       form: {
@@ -761,6 +830,10 @@ const sq: TranslationKey = {
       },
       success: "Llogaria e docteurit u krijua me sukses",
       error: "Ndodhi një gabim gjatë krijimit të llogarisë",
+    },
+    speciality: {
+      specialityError:
+        "Ju lutemi plotësoni të gjitha emrat e specialiteteve dhe nëspecialiteteve",
     },
   },
 };

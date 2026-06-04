@@ -55,7 +55,7 @@ export default function CenterList() {
     saveOpeningHoursCenter,
   } = useUser();
   const [centers, setCenters] = useState<Center[]>([]);
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const [isAddCenterOpen, setIsAddCenterOpen] = useState(false);
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
   const [editingCenter, setEditingCenter] = useState<Center | null>(null);
@@ -64,6 +64,7 @@ export default function CenterList() {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isOpeningHoursModalOpen, setIsOpeningHoursModalOpen] = useState(false);
   const { toast } = useToast();
+  const office = t.adminSettings.office;
 
   const methods = useForm({
     defaultValues: {
@@ -122,10 +123,10 @@ export default function CenterList() {
       });
 
       toast({
-        title: "Succès",
+        title: t.common.success,
         description: centerToUpdate.active
-          ? "Le centre a été désactivé avec succès."
-          : "Le centre a été réactivé avec succès.",
+          ? office.deactivateSuccess
+          : office.activateSuccess,
       });
 
       // Recharger la liste des utilisateurs
@@ -136,8 +137,11 @@ export default function CenterList() {
         error,
       );
       toast({
-        title: "Erreur",
-        description: `Une erreur est survenue lors de la ${centerToUpdate?.active ? "désactivation" : "réactivation"} du centre.`,
+        title: t.common.error,
+        description: office.statusError.replace(
+          "{action}",
+          centerToUpdate?.active ? t.common.deactivate : t.common.activate,
+        ),
         variant: "destructive",
       });
     } finally {
@@ -168,8 +172,8 @@ export default function CenterList() {
     saveOpeningHoursCenter(editingCenter.id, openingHours);
 
     toast({
-      title: "Succès",
-      description: "Les heures d'ouverture ont été chargées avec succès.",
+      title: t.common.success,
+      description: t.doctorParams.saveOpeningHour,
     });
   };
 
@@ -201,38 +205,37 @@ export default function CenterList() {
   return (
     <div>
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          Affichez et gérez les comptes et les permissions
-        </p>
+        <p className="text-sm text-muted-foreground">{office.description}</p>
       </div>
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold"></h2>
         <Button className="mb-2" onClick={handleAddUser}>
           <Plus className="mr-2 h-4 w-4" />
-          Ajouter
+          {t.common.add}
         </Button>
       </div>
       <div className="rounded-md border overflow-x-auto">
         <Table className="overflow-visible">
           <TableHeader>
             <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Spécialité</TableHead>
-              <TableHead>Compte actif</TableHead>
+              <TableHead>{office.table.name}</TableHead>
+              <TableHead>{office.table.speciality}</TableHead>
+              <TableHead>{office.table.activeAccount}</TableHead>
               <TableHead>
                 <div className="flex items-center gap-1">
-                  <span>Visible</span>
+                  <span>{office.table.visible}</span>
                   <div className="group relative">
                     <Info className="h-3.5 w-3.5 text-muted-foreground" />
                     <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block w-48 p-2 text-xs bg-popover text-popover-foreground rounded shadow-lg border">
-                      Indique si le profil du médecin est visible par les
-                      patients
+                      {office.table.visibleInfo}
                     </div>
                   </div>
                 </div>
               </TableHead>
-              <TableHead>Docteurs</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{office.table.Doctors}</TableHead>
+              <TableHead className="text-right">
+                {office.table.actions}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -335,25 +338,25 @@ export default function CenterList() {
                           onClick={() => handleEditCenter(center)}
                         >
                           <Pencil className="mr-2 h-4 w-4" />
-                          <span>Modifier</span>
+                          <span>{office.actions.edit}</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleViewCenter(center)}
                         >
                           <Eye className="mr-2 h-4 w-4" />
-                          <span>Voir le profil</span>
+                          <span>{office.actions.seeProfile}</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleAddDoctor(center)}
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          <span>Ajouter un docteur</span>
+                          <span>{office.actions.addDoctor}</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleEditOpeningHours(center)}
                         >
                           <CalendarDays className="mr-2 h-4 w-4" />
-                          <span>Horaires d'ouverture</span>
+                          <span>{office.actions.openingHours}</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className={
@@ -370,12 +373,12 @@ export default function CenterList() {
                           {center.active ? (
                             <>
                               <Trash2 className="mr-2 h-4 w-4" />
-                              <span>Désactiver le compte</span>
+                              <span>{office.actions.disable}</span>
                             </>
                           ) : (
                             <>
                               <CheckCircle className="mr-2 h-4 w-4" />
-                              <span>Réactiver le compte</span>
+                              <span>{office.actions.enable}</span>
                             </>
                           )}
                         </DropdownMenuItem>
@@ -401,8 +404,8 @@ export default function CenterList() {
           <DialogHeader>
             <DialogTitle>
               {editingCenter
-                ? `Modifier ${editingCenter.name}`
-                : `Nouveau cabinet médicale`}
+                ? `${office.officeForm.editTitle} ${editingCenter.name}`
+                : office.officeForm.newTitle}
             </DialogTitle>
           </DialogHeader>
           <AddCenterForm
@@ -420,9 +423,9 @@ export default function CenterList() {
       >
         <DialogContent className="sm:max-w-[400px] md:max-w-[600px] lg:max-w-[950px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Modifier les horaires d'ouverture</DialogTitle>
+            <DialogTitle>{t.adminSettings.openingHours.title}</DialogTitle>
             <DialogDescription>
-              Définissez les horaires d'ouverture pour {editingCenter?.name}
+              {t.adminSettings.openingHours.description} {editingCenter?.name}
             </DialogDescription>
           </DialogHeader>
           <FormProvider {...methods}>
@@ -438,9 +441,9 @@ export default function CenterList() {
                   variant="outline"
                   onClick={() => setIsOpeningHoursModalOpen(false)}
                 >
-                  Annuler
+                  {t.common.cancel}
                 </Button>
-                <Button type="submit">Enregistrer</Button>
+                <Button type="submit">{t.common.save}</Button>
               </DialogFooter>
             </form>
           </FormProvider>
@@ -452,15 +455,19 @@ export default function CenterList() {
           <DialogHeader>
             <DialogTitle>
               {centerToUpdate?.active
-                ? "Confirmer la désactivation"
-                : "Confirmer la réactivation"}
+                ? t.adminSettings.disableAccount.titleDisable
+                : t.adminSettings.disableAccount.titleEnable}
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground whitespace-pre-line">
               {centerToUpdate?.active
-                ? `Êtes-vous sûr de vouloir désactiver le compte de ${centerToUpdate?.name} ?`
-                : `Êtes-vous sûr de vouloir réactiver le compte de ${centerToUpdate?.name} ?`}
-              <br />
-              Cette action est réversible.
+                ? t.adminSettings.disableAccount.descriptionDisable.replace(
+                    "{account}",
+                    centerToUpdate?.name,
+                  )
+                : t.adminSettings.disableAccount.descriptionEnable.replace(
+                    "{account}",
+                    centerToUpdate?.name,
+                  )}
             </p>
           </DialogHeader>
           <div className="flex justify-end space-x-2 mt-4">
@@ -468,13 +475,13 @@ export default function CenterList() {
               variant="outline"
               onClick={() => setIsUpdateDialogOpen(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               variant={centerToUpdate?.active ? "destructive" : "default"}
               onClick={handleToggleCenterStatus}
             >
-              {centerToUpdate?.active ? "Désactiver" : "Réactiver"}
+              {centerToUpdate?.active ? t.common.deactivate : t.common.activate}
             </Button>
           </div>
         </DialogContent>

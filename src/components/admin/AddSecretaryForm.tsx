@@ -235,7 +235,7 @@ export function AddSecretaryForm({
                 ) : (
                   <Camera className="h-5 w-5" />
                 )}
-                <span className="sr-only">Changer la photo de profil</span>
+                <span className="sr-only">{t.params.changePicture}</span>
               </button>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -363,7 +363,7 @@ export function AddSecretaryForm({
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Recadrer l'image</DialogTitle>
+            <DialogTitle>{t.stats.resizePicture}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">

@@ -1,40 +1,40 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import OpeningHoursForm from '@/components/admin/OpeningHoursForm';
-import DoctorCenterSearch from '@/components/admin/DoctorCenterSearch';
-import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/services/auth/useAuth';
-import { OpeningHour } from '@/types/openingHour';
-import { Button } from '@/components/ui/button';
-import { FormProvider } from 'react-hook-form';
-import { useSearchParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUser } from '@/services/user/useUser';
-import { Center } from '@/types/center';
-import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import OpeningHoursForm from "@/components/admin/OpeningHoursForm";
+import DoctorCenterSearch from "@/components/admin/DoctorCenterSearch";
+import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/services/auth/useAuth";
+import { OpeningHour } from "@/types/openingHour";
+import { Button } from "@/components/ui/button";
+import { FormProvider } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUser } from "@/services/user/useUser";
+import { Center } from "@/types/center";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Camera, Shield } from 'lucide-react';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
+} from "@/components/ui/select";
+import { Camera, Shield } from "lucide-react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import ImageUpload from '@/components/ui/ImageUpload';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import AddressAutocomplete from '@/components/Autocomplete';
+} from "@/components/ui/dialog";
+import ImageUpload from "@/components/ui/ImageUpload";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import AddressAutocomplete from "@/components/Autocomplete";
 
 export default function CabinetSettingsPage() {
   const { user } = useAuth();
@@ -56,13 +56,13 @@ export default function CabinetSettingsPage() {
   });
   const centerInfoMethods = useForm({
     defaultValues: {
-      name: '',
-      description: '',
-      email: '',
-      phoneNumber: '',
-      address: '',
-      city: '',
-      country: '',
+      name: "",
+      description: "",
+      email: "",
+      phoneNumber: "",
+      address: "",
+      city: "",
+      country: "",
       coordinate: {
         x: 0,
         y: 0,
@@ -72,7 +72,7 @@ export default function CabinetSettingsPage() {
     },
   });
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'info';
+  const defaultTab = searchParams.get("tab") || "info";
   const { handleSubmit, setValue, watch, reset } = methods;
   const {
     handleSubmit: centerInfoHandleSubmit,
@@ -85,7 +85,7 @@ export default function CabinetSettingsPage() {
   const [centerDoctors, setCenterDoctors] = useState<any[]>([]);
   const [doctorCenters, setDoctorCenters] = useState<Center[]>([]);
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
-  const [selectedCenterId, setSelectedCenterId] = useState<string>('');
+  const [selectedCenterId, setSelectedCenterId] = useState<string>("");
   const [isCenterAdmin, setIsCenterAdmin] = useState<boolean>(false);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -101,7 +101,7 @@ export default function CabinetSettingsPage() {
 
       // Sélectionner le premier centre par défaut si aucun n'est sélectionné
       if (doctorCenters && doctorCenters.length > 0 && !selectedCenterId) {
-        setSelectedCenterId(doctorCenters[0].id?.toString() || '');
+        setSelectedCenterId(doctorCenters[0].id?.toString() || "");
       }
     });
   }, [user]);
@@ -113,13 +113,13 @@ export default function CabinetSettingsPage() {
         if (centerData) {
           setCenter(centerData);
           centerInfoReset({
-            name: centerData.name || '',
-            description: centerData.description || '',
-            email: centerData.email || '',
-            phoneNumber: centerData.phoneNumber || '',
-            address: centerData.address || '',
-            city: centerData.city || '',
-            country: centerData.country || '',
+            name: centerData.name || "",
+            description: centerData.description || "",
+            email: centerData.email || "",
+            phoneNumber: centerData.phoneNumber || "",
+            address: centerData.address || "",
+            city: centerData.city || "",
+            country: centerData.country || "",
             coordinate: centerData.coordinate || { x: 0, y: 0 },
             visible: centerData.visible ?? true,
             active: centerData.active ?? true,
@@ -165,24 +165,24 @@ export default function CabinetSettingsPage() {
       // Convertir l'image recadrée en fichier
       const response = await fetch(croppedImage);
       const blob = await response.blob();
-      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+      const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
 
       // Créer FormData pour l'envoi
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       await savePhotoCenter(formData, selectedCenterId);
       getCenter(selectedCenterId).then((centerData) => {
         if (centerData) {
           setCenter(centerData);
           centerInfoReset({
-            name: centerData.name || '',
-            description: centerData.description || '',
-            email: centerData.email || '',
-            phoneNumber: centerData.phoneNumber || '',
-            address: centerData.address || '',
-            city: centerData.city || '',
-            country: centerData.country || '',
+            name: centerData.name || "",
+            description: centerData.description || "",
+            email: centerData.email || "",
+            phoneNumber: centerData.phoneNumber || "",
+            address: centerData.address || "",
+            city: centerData.city || "",
+            country: centerData.country || "",
             visible: centerData.visible ?? true,
             active: centerData.active ?? true,
           });
@@ -225,7 +225,7 @@ export default function CabinetSettingsPage() {
         toast({
           title: t.common.error,
           description: t.cabinetParams.errorInfo,
-          variant: 'destructive',
+          variant: "destructive",
         });
       });
   };
@@ -293,7 +293,7 @@ export default function CabinetSettingsPage() {
                   {doctorCenters.map((center) => (
                     <SelectItem
                       key={center.id}
-                      value={center.id?.toString() || ''}
+                      value={center.id?.toString() || ""}
                     >
                       {center.name}
                     </SelectItem>
@@ -355,7 +355,7 @@ export default function CabinetSettingsPage() {
                 {doctorCenters.map((center) => (
                   <SelectItem
                     key={center.id}
-                    value={center.id?.toString() || ''}
+                    value={center.id?.toString() || ""}
                   >
                     {center.name}
                   </SelectItem>
@@ -395,7 +395,7 @@ export default function CabinetSettingsPage() {
                           src={
                             center?.avatar
                               ? `${API_URL}/center/${center.id}/avatar/${center.avatar}`
-                              : 'hopital.png'
+                              : "hopital.png"
                           }
                           alt={`${user?.firstname} ${user?.lastname}`}
                         />
@@ -424,7 +424,7 @@ export default function CabinetSettingsPage() {
                       </Label>
                       <Input
                         id="name"
-                        {...centerInfoMethods.register('name')}
+                        {...centerInfoMethods.register("name")}
                         placeholder={t.cabinetParams.infoForm.name}
                       />
                     </div>
@@ -435,7 +435,7 @@ export default function CabinetSettingsPage() {
                       <Input
                         id="email"
                         type="email"
-                        {...centerInfoMethods.register('email')}
+                        {...centerInfoMethods.register("email")}
                         placeholder="email@cabinet.com"
                       />
                     </div>
@@ -445,7 +445,7 @@ export default function CabinetSettingsPage() {
                       </Label>
                       <Input
                         id="phoneNumber"
-                        {...centerInfoMethods.register('phoneNumber')}
+                        {...centerInfoMethods.register("phoneNumber")}
                         placeholder="01 23 45 67 89"
                       />
                     </div>
@@ -455,28 +455,28 @@ export default function CabinetSettingsPage() {
                     <Label>{t.cabinetParams.infoForm.address}</Label>
                     <AddressAutocomplete
                       type="address"
-                      value={centerInfoMethods.watch('address')} // Use watch to get the current value
+                      value={centerInfoMethods.watch("address")} // Use watch to get the current value
                       onChange={(value) =>
-                        centerInfoMethods.setValue('address', value)
+                        centerInfoMethods.setValue("address", value)
                       } // Use setValue to update the value
                       onPlaceSelected={(place) => {
                         centerInfoMethods.setValue(
-                          'address',
+                          "address",
                           place.formatted_address,
                         );
                         centerInfoMethods.setValue(
-                          'city',
+                          "city",
                           place.address_components.find((component) =>
-                            component.types.includes('locality'),
-                          )?.long_name || '',
+                            component.types.includes("locality"),
+                          )?.long_name || "",
                         );
                         centerInfoMethods.setValue(
-                          'country',
+                          "country",
                           place.address_components.find((component) =>
-                            component.types.includes('country'),
+                            component.types.includes("country"),
                           ).long_name,
                         );
-                        centerInfoMethods.setValue('coordinate', {
+                        centerInfoMethods.setValue("coordinate", {
                           x: place.geometry.location.lat(),
                           y: place.geometry.location.lng(),
                         });
@@ -492,7 +492,7 @@ export default function CabinetSettingsPage() {
                     </Label>
                     <Textarea
                       id="description"
-                      {...centerInfoMethods.register('description')}
+                      {...centerInfoMethods.register("description")}
                       placeholder={
                         t.cabinetParams.infoForm.descriptionPlaceholder
                       }
@@ -504,9 +504,9 @@ export default function CabinetSettingsPage() {
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="visible"
-                        checked={centerInfoWatch('visible')}
+                        checked={centerInfoWatch("visible")}
                         onCheckedChange={(checked) =>
-                          centerInfoSetValue('visible', checked)
+                          centerInfoSetValue("visible", checked)
                         }
                       />
                       <Label htmlFor="visible">
@@ -517,9 +517,9 @@ export default function CabinetSettingsPage() {
                       <Switch
                         id="active"
                         disabled={true}
-                        checked={centerInfoWatch('active')}
+                        checked={centerInfoWatch("active")}
                         onCheckedChange={(checked) =>
-                          centerInfoSetValue('active', checked)
+                          centerInfoSetValue("active", checked)
                         }
                       />
                       <Label htmlFor="active">
@@ -604,13 +604,13 @@ export default function CabinetSettingsPage() {
                                 src={
                                   user?.avatar
                                     ? `${API_URL}/user/${doctor.id}/avatar/${doctor.avatar}`
-                                    : '/default-avatar.png'
+                                    : "/default-avatar.png"
                                 }
                                 alt={doctor?.firstname}
                                 className="h-full w-full object-cover"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
-                                  target.src = '/default-avatar.png';
+                                  target.src = "/default-avatar.png";
                                 }}
                               />
                             </div>
@@ -638,16 +638,16 @@ export default function CabinetSettingsPage() {
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Recadrer l'image</DialogTitle>
+            <DialogTitle>{t.stats.resizePicture}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="w-full max-w-md mx-auto">
               <ImageUpload
-                value={tempImage || ''}
+                value={tempImage || ""}
                 onChange={(value) => {
                   if (value === null) {
                     setTempImage(null);
-                  } else if (typeof value === 'string') {
+                  } else if (typeof value === "string") {
                     setTempImage(value);
                   } else if (value instanceof File) {
                     handleImageSelect(value);

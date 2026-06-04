@@ -265,7 +265,9 @@ export const ImageUpload = ({
               <div className="fixed inset-0 z-50 bg-black/80 flex flex-col items-center justify-center p-4">
                 <div className="bg-background p-4 rounded-lg max-w-2xl w-full">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-medium">Recadrer l'image</h3>
+                    <h3 className="text-lg font-medium">
+                      {t.stats.resizePicture}
+                    </h3>
                     <button
                       type="button"
                       onClick={() => setCrop(undefined)}
