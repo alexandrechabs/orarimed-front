@@ -18,6 +18,7 @@ const en: TranslationKey = {
       doctor: "Doctor settings",
       cabinet: "Cabinet settings",
       admin: "Admin settings",
+      articles: "Manage articles",
     },
   },
   hero: {

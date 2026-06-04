@@ -1,23 +1,21 @@
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Calendar as CalendarIcon,
-  User as UserIcon,
   LogOut,
   Menu,
   X,
-  Stethoscope,
-  FileText,
   Settings,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import logoIcon from '@/assets/logo-icon.png';
-import { useToast } from '@/components/ui/use-toast';
-import { useAuth } from '@/services/auth/useAuth';
-import LanguageSelector from '@/components/LanguageSelector';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+  Newspaper,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import logoIcon from "@/assets/logo-icon.png";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/services/auth/useAuth";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 type NavItem = {
   name: string;
@@ -38,7 +36,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   const { user, logout } = useAuth();
   const { t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activePath, setActivePath] = useState('');
+  const [activePath, setActivePath] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -46,51 +44,57 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   const navigation: NavItem[] = [
     {
       name: t.nav.connected.dashboard,
-      href: '/dashboard',
+      href: "/dashboard",
       icon: LayoutDashboard,
       role: [1, 2, 3, 4],
     },
     {
       name: t.nav.connected.calendar,
-      href: '/calendar',
+      href: "/calendar",
       icon: CalendarIcon,
       role: [2, 3],
     },
     {
       name: t.nav.connected.appointments,
-      href: '/appointments',
+      href: "/appointments",
       icon: CalendarIcon,
       role: [1],
     },
     {
       name: t.nav.connected.settings,
-      href: '/settings',
+      href: "/settings",
       icon: Settings,
       role: [1, 2, 3, 4],
     },
     {
       name: t.nav.connected.doctor,
-      href: '/doctor-settings',
+      href: "/doctor-settings",
       icon: Settings,
       role: [2],
     },
     {
       name: t.nav.connected.cabinet,
-      href: '/cabinet-settings',
+      href: "/cabinet-settings",
       icon: Settings,
       role: [2],
     },
     {
       name: t.nav.connected.admin,
-      href: '/admin-settings',
+      href: "/admin-settings",
       icon: Settings,
+      role: [4],
+    },
+    {
+      name: t.nav.connected.articles,
+      href: "/admin-articles",
+      icon: Newspaper,
       role: [4],
     },
   ];
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     setActivePath(location.pathname);
@@ -98,10 +102,10 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
     toast({
-      title: 'Déconnexion réussie',
-      description: 'Vous avez été déconnecté avec succès.',
+      title: "Déconnexion réussie",
+      description: "Vous avez été déconnecté avec succès.",
     });
   };
 
@@ -114,14 +118,14 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       {/* Mobile sidebar */}
       <div
         className={cn(
-          'lg:hidden fixed inset-0 z-40 bg-black/50 transition-opacity',
-          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
+          "lg:hidden fixed inset-0 z-40 bg-black/50 transition-opacity",
+          sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
       >
         <div
           className={cn(
-            'fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+            "fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out",
+            sidebarOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
@@ -147,17 +151,17 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                 }}
                 className={cn(
                   activePath === item.href
-                    ? 'bg-accent/20 text-primary-600'
-                    : 'text-gray-700 hover:bg-accent/10 hover:text-gray-900',
-                  'group flex items-center px-4 py-3 text-sm font-medium rounded-md',
+                    ? "bg-accent/20 text-primary-600"
+                    : "text-gray-700 hover:bg-accent/10 hover:text-gray-900",
+                  "group flex items-center px-4 py-3 text-sm font-medium rounded-md",
                 )}
               >
                 <item.icon
                   className={cn(
                     activePath === item.href
-                      ? 'text-primary-500'
-                      : 'text-gray-400 group-hover:text-gray-500',
-                    'mr-3 flex-shrink-0 h-5 w-5',
+                      ? "text-primary-500"
+                      : "text-gray-400 group-hover:text-gray-500",
+                    "mr-3 flex-shrink-0 h-5 w-5",
                   )}
                   aria-hidden="true"
                 />
@@ -187,17 +191,17 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                 }}
                 className={cn(
                   activePath === item.href
-                    ? 'bg-accent/20 text-primary-600'
-                    : 'text-gray-700 hover:bg-accent/10 hover:text-gray-900',
-                  'group flex items-center px-4 py-3 text-sm font-medium rounded-md',
+                    ? "bg-accent/20 text-primary-600"
+                    : "text-gray-700 hover:bg-accent/10 hover:text-gray-900",
+                  "group flex items-center px-4 py-3 text-sm font-medium rounded-md",
                 )}
               >
                 <item.icon
                   className={cn(
                     activePath === item.href
-                      ? 'text-primary-500'
-                      : 'text-gray-400 group-hover:text-gray-500',
-                    'mr-3 h-5 w-5 flex-shrink-0',
+                      ? "text-primary-500"
+                      : "text-gray-400 group-hover:text-gray-500",
+                    "mr-3 h-5 w-5 flex-shrink-0",
                   )}
                   aria-hidden="true"
                 />
@@ -233,19 +237,19 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                         src={
                           user?.avatar
                             ? `${API_URL}/user/${user.id}/avatar/${user.avatar}`
-                            : '/default-avatar.png'
+                            : "/default-avatar.png"
                         }
                         alt={user?.firstname}
                         className="h-full w-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = '/default-avatar.png';
+                          target.src = "/default-avatar.png";
                         }}
                       />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-700">
-                        {user.roleId === 2 && 'Dr. '}
+                        {user.roleId === 2 && "Dr. "}
                         {user.firstname}
                       </p>
                       <p className="text-sm font-medium text-gray-700">

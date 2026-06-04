@@ -18,6 +18,7 @@ const sq: TranslationKey = {
       doctor: "Cilësimet e mjekut",
       cabinet: "Cilësimet e kabinetit",
       admin: "Cilësimet e adminit",
+      articles: "Menaxho artikujt",
     },
   },
   hero: {

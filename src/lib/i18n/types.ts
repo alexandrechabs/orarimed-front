@@ -16,6 +16,7 @@ export type TranslationKey = {
       doctor: string;
       cabinet: string;
       admin: string;
+      articles: string;
     };
   };
   hero: {
