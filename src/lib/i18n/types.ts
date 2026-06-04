@@ -138,8 +138,6 @@ export type TranslationKey = {
     forProfessionals: string;
     location: string;
   };
-  specialityNames: Record<string, string>;
-  specialityDescriptions: Record<string, string>;
   contact: {
     title: string;
     subtitle: string;
@@ -296,38 +294,6 @@ export type TranslationKey = {
     // Ajoutez d'autres traductions selon vos besoins
   };
   other: string;
-
-  adminSettings: {
-    title: string;
-    description: string;
-    general: string;
-    specialities: string;
-    system: string;
-    generalSettings: string;
-    applicationSettings: string;
-    applicationSettingsDescription: string;
-    specialitiesManagement: string;
-    manageSpecialities: string;
-    manageSpecialitiesDescription: string;
-    systemSettings: string;
-    systemConfiguration: string;
-    systemConfigurationDescription: string;
-    addDoctor: {
-      title: string;
-      form: {
-        firstname: string;
-        lastname: string;
-        email: string;
-        phone: string;
-        password: string;
-        speciality: string;
-        submit: string;
-        cancel: string;
-      };
-      success: string;
-      error: string;
-    };
-  };
   createRdv: {
     searchPage: {
       viewMoreSlots: string;
@@ -361,7 +327,6 @@ export type TranslationKey = {
       lateInfo: string;
     };
   };
-
   appointments: {
     title: string;
     description: string;
@@ -639,6 +604,37 @@ export type TranslationKey = {
       alreadySelected: string;
       doctorSelected: string;
       addDoctorButton: string;
+    };
+  };
+  adminSettings: {
+    title: string;
+    description: string;
+    general: string;
+    specialities: string;
+    system: string;
+    generalSettings: string;
+    applicationSettings: string;
+    applicationSettingsDescription: string;
+    specialitiesManagement: string;
+    manageSpecialities: string;
+    manageSpecialitiesDescription: string;
+    systemSettings: string;
+    systemConfiguration: string;
+    systemConfigurationDescription: string;
+    addDoctor: {
+      title: string;
+      form: {
+        firstname: string;
+        lastname: string;
+        email: string;
+        phone: string;
+        password: string;
+        speciality: string;
+        submit: string;
+        cancel: string;
+      };
+      success: string;
+      error: string;
     };
   };
 };
