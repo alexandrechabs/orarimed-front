@@ -113,7 +113,7 @@ export default function AdminSettingsPage() {
         <TabsContent value="doctor" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Gestion des Docteurs</CardTitle>
+              <CardTitle>{adminT.doctor.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <UserList type="doctor" />

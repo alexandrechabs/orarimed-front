@@ -150,16 +150,15 @@ export function AddCenterForm({
         // Mise à jour du cabinet existant
         result = await updateCenter(center.id, userData);
         toast({
-          title: "Succès",
-          description:
-            "Les informations du cabinet ont été mises à jour avec succès",
+          title: t.common.success,
+          description: t.adminSettings.office.updateSuccess,
         });
       } else {
         // Création d'un nouveau cabinet
         result = await createCenter(userData);
         toast({
-          title: "Succès",
-          description: "Le cabinet a été créé avec succès",
+          title: t.common.success,
+          description: t.adminSettings.office.addSuccess,
         });
       }
 
@@ -167,8 +166,8 @@ export function AddCenterForm({
       onSuccess?.();
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: error.message || "Une erreur est survenue",
+        title: t.common.error,
+        description: error.message || t.adminSettings.office.addError,
         variant: "destructive",
       });
     } finally {
@@ -207,7 +206,7 @@ export function AddCenterForm({
       setIsCropModalOpen(false);
     } catch (error) {
       console.error("Erreur lors du téléversement de l'image:", error);
-      alert("Une erreur est survenue lors du téléversement de l'image");
+      alert(t.adminSettings.doctor.imageError);
     } finally {
       setIsUploading(false);
     }

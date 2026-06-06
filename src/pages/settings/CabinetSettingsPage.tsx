@@ -192,7 +192,7 @@ export default function CabinetSettingsPage() {
       setIsCropModalOpen(false);
     } catch (error) {
       console.error("Erreur lors du téléversement de l'image:", error);
-      alert("Une erreur est survenue lors du téléversement de l'image");
+      alert(t.adminSettings.doctor.imageError);
     } finally {
       setIsUploading(false);
     }

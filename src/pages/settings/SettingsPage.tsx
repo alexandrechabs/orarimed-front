@@ -85,7 +85,7 @@ export default function SettingsPage() {
       setIsCropModalOpen(false);
     } catch (error) {
       console.error("Erreur lors du téléversement de l'image:", error);
-      alert("Une erreur est survenue lors du téléversement de l'image");
+      alert(t.adminSettings.doctor.imageError);
     } finally {
       setIsUploading(false);
     }
@@ -119,8 +119,8 @@ export default function SettingsPage() {
 
     // TODO: Implémenter la sauvegarde des paramètres
     toast({
-      title: "Succès",
-      description: "Les paramètres ont été enregistrés avec succès.",
+      title: t.common.success,
+      description: t.params.saveSuccess,
     });
   };
 
@@ -453,7 +453,7 @@ export default function SettingsPage() {
               onClick={() => setIsCropModalOpen(false)}
               disabled={isUploading}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               onClick={() => {
@@ -466,10 +466,10 @@ export default function SettingsPage() {
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Enregistrement...
+                  {t.common.saving}
                 </div>
               ) : (
-                "Enregistrer"
+                t.common.save
               )}
             </Button>
           </div>

@@ -502,6 +502,7 @@ const fr: TranslationKey = {
     activate: "Activer",
     deactivate: "Désactiver",
     limitReached: "Limite atteinte",
+    validate: "Valider",
   },
   daysOfWeek: {
     1: "Lundi",
@@ -643,6 +644,7 @@ const fr: TranslationKey = {
     pushNotificationDetail: "Recevoir des notifications sur votre appareil",
     smsNotification: "Notifications par SMS",
     smsNotificationDetail: "Recevoir des notifications par SMS",
+    saveSuccess: "Les paramètres ont été enregistrés avec succès.",
   },
   doctorParams: {
     title: "Paramètres du Docteur",
@@ -672,6 +674,7 @@ const fr: TranslationKey = {
     hoursAlreadyExistTitle: "Créneau déjà existant",
     reasonForm: {
       name: "Nom",
+      namePlaceholder: "Nom du motif",
       duration: "Durée (min)",
       color: "Couleur",
       type: "Type",
@@ -780,10 +783,13 @@ const fr: TranslationKey = {
     office: {
       title: "Gestion des cabinets",
       description: "Affichez et gérez les cabinets",
-      noOffice: "Aucun cabinet sélectionné",
       activateSuccess: "Le cabinet a été activé avec succès",
       deactivateSuccess: "Le cabinet a été désactivé avec succès",
       statusError: "Une erreur est survenue lors de la {action} du cabinet",
+      addSuccess: "Le cabinet a été créé avec succès",
+      updateSuccess:
+        "Les informations du cabinet ont été mises à jour avec succès",
+      addError: "Une erreur est survenue",
       table: {
         name: "Nom",
         speciality: "Spécialité",
@@ -827,26 +833,137 @@ const fr: TranslationKey = {
           speciality: "La spécialité est requise",
         },
       },
+      doctorList: {
+        title: "Liste des docteurs rattachés au cabinet",
+        description: "Ajoutez un docteur au cabinet",
+      },
     },
-    addDoctor: {
-      title: "Ajouter un docteur",
+    doctor: {
+      title: "Gestion des docteurs",
+      description: "Affichez et gérez les comptes docteurs",
+      activateSuccess: "Le docteur a été activé avec succès",
+      deactivateSuccess: "Le docteur a été désactivé avec succès",
+      statusError: "Une erreur est survenue lors de la {action} du docteur",
+      imageError: "Une erreur est survenue lors du téléversement de l'image",
+      table: {
+        name: "Nom",
+        speciality: "Spécialité",
+        activeAccount: "Compte actif",
+        visible: "Visible",
+        visibleInfo:
+          "Indique si le profil du médecin est visible par les patients",
+        doctors: "Cabinets",
+        actions: "Actions",
+      },
+      actions: {
+        edit: "Modifier",
+        seeProfile: "Voir le profil",
+        openingHours: "Horaires d'ouverture",
+        consultationReasons: "Motifs de consultation",
+        diplomas: "Diplômes",
+        experiences: "Expériences",
+        disable: "Désactiver",
+        enable: "Activer",
+      },
+      addDoctor: {
+        title: "Nouveau compte docteur",
+        titleEdit: "Modifier le compte de",
+        form: {
+          firstname: "Prénom",
+          lastname: "Nom",
+          email: "Email",
+          phone: "Téléphone",
+          password: "Mot de passe",
+          speciality: "Spécialité",
+          submit: "Créer le compte",
+          cancel: "Annuler",
+        },
+        success: "Le compte docteur a été créé avec succès",
+        error: "Une erreur est survenue lors de la création du compte",
+      },
+      diplomas: {
+        title: "Gérer les diplômes",
+        noDiplomas: "Aucun diplôme répertorié pour le moment.",
+        updateSuccess: "Les diplômes ont été mis à jour avec succès.",
+        updateError:
+          "Une erreur est survenue lors de la mise à jour des diplômes.",
+        delete: "Diplôme supprimé avec succès.",
+        deleteError:
+          "Une erreur est survenue lors de la suppression du diplôme.",
+        existing: "Diplômes existants",
+        form: {
+          diploma: "Diplôme",
+          diplomaPlaceholder: "Ex : Doctorat en médecine",
+          university: "Université",
+          universityPlaceholder: "Ex : Université de Paris",
+          year: "Année",
+          speciality: "Spécialité",
+          specialityPlaceholder: "Ex : Chirurgie",
+        },
+      },
+      experiences: {
+        title: "Gérer les expériences",
+        noExperiences: "Aucune expérience répertoriée pour le moment.",
+        saveSuccess: "L'expérience a été enregistrée avec succès.",
+        saveError:
+          "Une erreur est survenue lors de l'enregistrement de l'expérience.",
+        updateSuccess: "L'expérience a été mise à jour avec succès.",
+        deleteSuccess: "Expérience supprimée avec succès.",
+        deleteError:
+          "Une erreur est survenue lors de la suppression de l'expérience.",
+        existing: "Experiences existantes",
+        form: {
+          company: "Entreprise",
+          companyPlaceholder: "Ex : Hôpital",
+          startYear: "Année de début",
+          endYear: "Année de fin",
+          description: "Description",
+          descriptionPlaceholder: "Description",
+        },
+      },
+      consultationReason: {
+        title: "Modifier les raisons de consultation",
+        description: "Définissez les raisons de consultation pour",
+      },
+    },
+    secretary: {
+      title: "Nouveau compte Secrétaire",
+      addSuccess: "Le compte secretaire a été créé avec succès",
+      updateSuccess:
+        "Les informations du secrétaire ont été mises à jour avec succès",
+      addError: "Une erreur est survenue",
       form: {
         firstname: "Prénom",
+        firstnamePlaceholder: "Prénom",
         lastname: "Nom",
+        lastnamePlaceholder: "Nom",
         email: "Email",
+        emailPlaceholder: "Email",
         phone: "Téléphone",
-        password: "Mot de passe",
-        speciality: "Spécialité",
-        submit: "Créer le compte",
-        cancel: "Annuler",
+        phonePlaceholder: "+33 6 XX XX XX XX",
+        language: "Langue",
+        languePlaceholder: "Sélectionnez une langue",
+        conditions: "J'accepte les conditions d'utilisation",
       },
-      success: "Le compte docteur a été créé avec succès",
-      error: "Une erreur est survenue lors de la création du compte",
     },
     speciality: {
       specialityError:
         "Veuillez remplir tous les noms de spécialités et sous-spécialités",
     },
+  },
+  picture: {
+    download: "Télécharger une photo",
+    addProfile: "Ajoutez votre photo de profil",
+    professional:
+      "Une photo professionnelle aide les patients à vous reconnaître et à vous faire confiance.",
+    load: "",
+    resolutionError:
+      "La résolution de l'image ne doit pas dépasser {max}px (actuelle: {current}px)",
+    sizeError: "La taille du fichier ne doit pas dépasser 5MB",
+    typeError: "Veuillez télécharger une image valide",
+    put: "Déposez la photo ici...",
+    dragAndDrop: "Glissez-déposez une image, ou cliquez pour sélectionner",
+    formatAndSize: "PNG, JPG, WEBP (max. {volume} • {size}px)",
   },
 };
 

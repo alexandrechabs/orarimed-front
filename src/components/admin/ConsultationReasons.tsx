@@ -147,7 +147,7 @@ export default function ConsultationReasons({
               onChange={(e) =>
                 setNewReason({ ...newReason, name: e.target.value })
               }
-              placeholder="Nom du motif"
+              placeholder={t.doctorParams.reasonForm.namePlaceholder}
               className="w-full"
             />
           </div>
@@ -167,7 +167,7 @@ export default function ConsultationReasons({
                   duration: parseInt(e.target.value) || 0,
                 })
               }
-              placeholder="Durée (min)"
+              placeholder={t.doctorParams.reasonForm.duration}
               className="w-full"
               min="5"
               step="5"

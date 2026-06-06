@@ -70,7 +70,7 @@ export function AddSecretaryForm({
 }: SecretaryFormProps) {
   const API_URL = import.meta.env.VITE_API_URL;
   const { toast } = useToast();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const { createUser, updateUser, savePhotoUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -81,6 +81,7 @@ export function AddSecretaryForm({
 
   const isEditMode = !!user;
   const doctorSchema = createSecretarySchema(isEditMode);
+  const secretary = t.adminSettings.secretary;
 
   const {
     register,
@@ -142,16 +143,15 @@ export function AddSecretaryForm({
         // Mise à jour de l'utilisateur existant
         result = await updateUser(user.id, userData);
         toast({
-          title: "Succès",
-          description:
-            "Les informations du médecin ont été mises à jour avec succès",
+          title: t.common.success,
+          description: t.adminSettings.secretary.updateSuccess,
         });
       } else {
         // Création d'un nouvel utilisateur
         result = await createUser(userData);
         toast({
-          title: "Succès",
-          description: "Le compte docteur a été créé avec succès",
+          title: t.common.success,
+          description: t.adminSettings.secretary.addSuccess,
         });
       }
 
@@ -159,8 +159,8 @@ export function AddSecretaryForm({
       onSuccess?.();
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: error.message || "Une erreur est survenue",
+        title: t.common.error,
+        description: error.message || t.adminSettings.secretary.addError,
         variant: "destructive",
       });
     } finally {
@@ -197,7 +197,7 @@ export function AddSecretaryForm({
       setIsCropModalOpen(false);
     } catch (error) {
       console.error("Erreur lors du téléversement de l'image:", error);
-      alert("Une erreur est survenue lors du téléversement de l'image");
+      alert(t.adminSettings.doctor.imageError);
     } finally {
       setIsUploading(false);
     }
@@ -239,14 +239,17 @@ export function AddSecretaryForm({
               </button>
             </div>
             <p className="text-sm text-muted-foreground">
-              Cliquez sur l'icône pour changer votre photo de profil
+              {t.params.clickToChange}
             </p>
           </div>
         )}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Prénom</Label>
-            <Input {...register("firstname")} />
+            <Label>{secretary.form.firstname}</Label>
+            <Input
+              {...register("firstname")}
+              placeholder={secretary.form.firstnamePlaceholder}
+            />
             {errors.firstname && (
               <p className="text-sm text-destructive">
                 {errors.firstname.message}
@@ -254,8 +257,11 @@ export function AddSecretaryForm({
             )}
           </div>
           <div>
-            <Label>Nom</Label>
-            <Input {...register("lastname")} />
+            <Label>{secretary.form.lastname}</Label>
+            <Input
+              {...register("lastname")}
+              placeholder={secretary.form.lastnamePlaceholder}
+            />
             {errors.lastname && (
               <p className="text-sm text-destructive">
                 {errors.lastname.message}
@@ -265,15 +271,20 @@ export function AddSecretaryForm({
         </div>
 
         <div>
-          <Label>Email</Label>
-          <Input type="email" {...register("email")} autoComplete="new-email" />
+          <Label>{secretary.form.email}</Label>
+          <Input
+            type="email"
+            {...register("email")}
+            autoComplete="new-email"
+            placeholder={secretary.form.emailPlaceholder}
+          />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
 
         <div>
-          <Label>Téléphone</Label>
+          <Label>{secretary.form.phone}</Label>
           <PhoneInput
             international
             defaultCountry="AL"
@@ -281,7 +292,7 @@ export function AddSecretaryForm({
             value={watch("phoneNumber")}
             onChange={(value) => setValue("phoneNumber", value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-background"
-            placeholder="+33 6 12 34 56 78"
+            placeholder={secretary.form.phonePlaceholder}
             autoComplete="new-phone"
           />
           {errors.phoneNumber && (
@@ -292,7 +303,7 @@ export function AddSecretaryForm({
         </div>
 
         <div className="space-y-2">
-          <Label>Langue</Label>
+          <Label>{secretary.form.language}</Label>
           <Select
             value={watch("language")?.toString() || ""}
             onValueChange={(value) => {
@@ -301,7 +312,7 @@ export function AddSecretaryForm({
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une spécialité" />
+              <SelectValue placeholder={secretary.form.languePlaceholder} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem key="sq" value="sq">
@@ -331,7 +342,7 @@ export function AddSecretaryForm({
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
               <Label htmlFor="acceptTerms" className="text-sm font-medium">
-                J'accepte les conditions d'utilisation
+                {secretary.form.conditions}
               </Label>
             </div>
             {errors.acceptTerms && (
@@ -356,7 +367,7 @@ export function AddSecretaryForm({
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditMode ? "Mettre à jour" : "Créer le compte"}
+            {isEditMode ? t.common.update : t.common.create}
           </Button>
         </div>
       </form>

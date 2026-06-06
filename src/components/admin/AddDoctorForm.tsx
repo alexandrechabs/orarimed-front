@@ -83,7 +83,7 @@ interface DoctorFormProps {
     visible: boolean;
     active: boolean;
     language: string;
-    doctorIdentifier: string;
+    doctorIdentifier?: string;
   } | null;
 }
 
@@ -95,7 +95,7 @@ export function AddDoctorForm({
   const API_URL = import.meta.env.VITE_API_URL;
   const { toast } = useToast();
   const { specialities } = useAuth();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const { createUser, updateUser, saveSubSpecialities, savePhotoUser } =
     useUser();
   const [isLoading, setIsLoading] = useState(false);
@@ -271,7 +271,7 @@ export function AddDoctorForm({
       setIsCropModalOpen(false);
     } catch (error) {
       console.error("Erreur lors du téléversement de l'image:", error);
-      alert("Une erreur est survenue lors du téléversement de l'image");
+      alert(t.adminSettings.doctor.imageError);
     } finally {
       setIsUploading(false);
     }
@@ -313,7 +313,7 @@ export function AddDoctorForm({
               </button>
             </div>
             <p className="text-sm text-muted-foreground">
-              Cliquez sur l'icône pour changer votre photo de profil
+              {t.params.clickToChange}
             </p>
           </div>
         )}

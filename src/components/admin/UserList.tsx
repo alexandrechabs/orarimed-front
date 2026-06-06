@@ -98,7 +98,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function UserList({ type }: { type: string }) {
   const navigate = useNavigate();
   const [users, setUsers] = useState<DoctorProfile[]>([]);
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
   const [isAddSecretaryOpen, setIsAddSecretaryOpen] = useState(false);
   const [isAddDoctorToSecretaryOpen, setIsAddDoctorToSecretaryOpen] =
@@ -146,6 +146,7 @@ export default function UserList({ type }: { type: string }) {
       consultationReasons: [],
     },
   });
+  const doctor = t.adminSettings.doctor;
   const { handleSubmit, setValue, watch, reset } = methods;
   const {
     handleSubmit: consultationReasonsHandleSubmit,
@@ -240,10 +241,10 @@ export default function UserList({ type }: { type: string }) {
       });
 
       toast({
-        title: "Succès",
+        title: t.common.success,
         description: userToUpdate.active
-          ? "Le compte a été désactivé avec succès."
-          : "Le compte a été réactivé avec succès.",
+          ? doctor.deactivateSuccess
+          : doctor.activateSuccess,
       });
 
       // Recharger la liste des utilisateurs
@@ -254,8 +255,11 @@ export default function UserList({ type }: { type: string }) {
         error,
       );
       toast({
-        title: "Erreur",
-        description: `Une erreur est survenue lors de la ${userToUpdate?.active ? "désactivation" : "réactivation"} du compte.`,
+        title: t.common.error,
+        description: doctor.statusError.replace(
+          "{action}",
+          userToUpdate?.active ? t.common.deactivate : t.common.activate,
+        ),
         variant: "destructive",
       });
     } finally {
@@ -310,11 +314,6 @@ export default function UserList({ type }: { type: string }) {
       setIsDiplomasModalOpen(true);
     } catch (error) {
       console.error("Erreur lors du chargement des diplômes :", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les diplômes.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -367,8 +366,8 @@ export default function UserList({ type }: { type: string }) {
           prev.map((d) => (d.id === updated.id ? updated : d)),
         );
         toast({
-          title: "Succès",
-          description: "Diplôme mis à jour.",
+          title: t.common.success,
+          description: doctor.diplomas.updateSuccess,
         });
       } else {
         const created = await userService.createDiploma(
@@ -382,8 +381,8 @@ export default function UserList({ type }: { type: string }) {
         );
         setDiplomas((prev) => [...prev, created]);
         toast({
-          title: "Succès",
-          description: "Diplôme ajouté.",
+          title: t.common.success,
+          description: doctor.diplomas.updateSuccess,
         });
       }
 
@@ -391,8 +390,8 @@ export default function UserList({ type }: { type: string }) {
     } catch (error) {
       console.error("Erreur lors de l’enregistrement du diplôme :", error);
       toast({
-        title: "Erreur",
-        description: "Impossible d’enregistrer le diplôme.",
+        title: t.common.error,
+        description: doctor.diplomas.updateError,
         variant: "destructive",
       });
     }
@@ -405,14 +404,14 @@ export default function UserList({ type }: { type: string }) {
       await userService.deleteDiploma(selectedDiplomasUser.id, diplomaId);
       setDiplomas((prev) => prev.filter((d) => d.id !== diplomaId));
       toast({
-        title: "Succès",
-        description: "Diplôme supprimé.",
+        title: t.common.success,
+        description: doctor.diplomas.delete,
       });
     } catch (error) {
       console.error("Erreur lors de la suppression du diplôme :", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le diplôme.",
+        title: t.common.error,
+        description: doctor.diplomas.deleteError,
         variant: "destructive",
       });
     }
@@ -440,11 +439,6 @@ export default function UserList({ type }: { type: string }) {
       setIsExperiencesModalOpen(true);
     } catch (error) {
       console.error("Erreur lors du chargement des expériences :", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les expériences.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -497,8 +491,8 @@ export default function UserList({ type }: { type: string }) {
           prev.map((e) => (e.id === updated.id ? updated : e)),
         );
         toast({
-          title: "Succès",
-          description: "Expérience mise à jour.",
+          title: t.common.success,
+          description: doctor.experiences.updateSuccess,
         });
       } else {
         const created = await userService.createExperience(
@@ -512,8 +506,8 @@ export default function UserList({ type }: { type: string }) {
         );
         setExperiences((prev) => [...prev, created]);
         toast({
-          title: "Succès",
-          description: "Expérience ajoutée.",
+          title: t.common.success,
+          description: doctor.experiences.saveSuccess,
         });
       }
 
@@ -521,8 +515,8 @@ export default function UserList({ type }: { type: string }) {
     } catch (error) {
       console.error("Erreur lors de l’enregistrement de l’expérience :", error);
       toast({
-        title: "Erreur",
-        description: "Impossible d’enregistrer l’expérience.",
+        title: t.common.error,
+        description: doctor.experiences.saveError,
         variant: "destructive",
       });
     }
@@ -538,14 +532,14 @@ export default function UserList({ type }: { type: string }) {
       );
       setExperiences((prev) => prev.filter((e) => e.id !== experienceId));
       toast({
-        title: "Succès",
-        description: "Expérience supprimée.",
+        title: t.common.success,
+        description: doctor.experiences.deleteSuccess,
       });
     } catch (error) {
       console.error("Erreur lors de la suppression de l’expérience :", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer l’expérience.",
+        title: t.common.error,
+        description: doctor.experiences.deleteError,
         variant: "destructive",
       });
     }
@@ -571,8 +565,8 @@ export default function UserList({ type }: { type: string }) {
     userService.saveOpeningHours(editingUser.id, openingHours);
 
     toast({
-      title: "Succès",
-      description: "Les heures d'ouverture ont été chargées avec succès.",
+      title: t.common.success,
+      description: t.doctorParams.saveOpeningHour,
     });
   };
 
@@ -584,9 +578,8 @@ export default function UserList({ type }: { type: string }) {
     userService.saveReasons(editingUser.id, consultationReasons);
 
     toast({
-      title: "Succès",
-      description:
-        "Les motifs de consultation ont été enregistrés avec succès.",
+      title: t.common.success,
+      description: t.doctorParams.saveReason,
     });
   };
 
@@ -618,38 +611,45 @@ export default function UserList({ type }: { type: string }) {
   return (
     <div>
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          Affichez et gérez les comptes et les permissions
-        </p>
+        <p className="text-sm text-muted-foreground">{doctor.description}</p>
       </div>
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold"></h2>
         <Button className="mb-2" onClick={handleAddUser}>
           <Plus className="mr-2 h-4 w-4" />
-          Ajouter
+          {t.common.add}
         </Button>
       </div>
       <div className="rounded-md border overflow-x-auto">
         <Table className="overflow-visible">
           <TableHeader>
             <TableRow>
-              <TableHead>Nom</TableHead>
-              {type === "doctor" ? <TableHead>Spécialité</TableHead> : ""}
-              <TableHead>Compte actif</TableHead>
+              <TableHead>{doctor.table.name}</TableHead>
+              {type === "doctor" ? (
+                <TableHead>{doctor.table.speciality}</TableHead>
+              ) : (
+                ""
+              )}
+              <TableHead>{doctor.table.activeAccount}</TableHead>
               <TableHead>
                 <div className="flex items-center gap-1">
-                  <span>Visible</span>
+                  <span>{doctor.table.visible}</span>
                   <div className="group relative">
                     <Info className="h-3.5 w-3.5 text-muted-foreground" />
                     <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block w-48 p-2 text-xs bg-popover text-popover-foreground rounded shadow-lg border">
-                      Indique si le profil du médecin est visible par les
-                      patients
+                      {doctor.table.visibleInfo}
                     </div>
                   </div>
                 </div>
               </TableHead>
-              {type !== "doctor" ? <TableHead>Docteurs</TableHead> : ""}
-              <TableHead className="text-right">Actions</TableHead>
+              {type !== "doctor" ? (
+                <TableHead>{doctor.table.doctors}</TableHead>
+              ) : (
+                ""
+              )}
+              <TableHead className="text-right">
+                {doctor.table.actions}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -760,14 +760,14 @@ export default function UserList({ type }: { type: string }) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEditUser(user)}>
                           <Pencil className="mr-2 h-4 w-4" />
-                          <span>Modifier</span>
+                          <span>{doctor.actions.edit}</span>
                         </DropdownMenuItem>
                         {type === "doctor" && (
                           <DropdownMenuItem
                             onClick={() => handleViewUser(user)}
                           >
                             <Eye className="mr-2 h-4 w-4" />
-                            <span>Voir le profil</span>
+                            <span>{doctor.actions.seeProfile}</span>
                           </DropdownMenuItem>
                         )}
                         {type === "doctor" && (
@@ -775,7 +775,7 @@ export default function UserList({ type }: { type: string }) {
                             onClick={() => handleEditOpeningHours(user)}
                           >
                             <CalendarDays className="mr-2 h-4 w-4" />
-                            <span>Horaires d'ouverture</span>
+                            <span>{doctor.actions.openingHours}</span>
                           </DropdownMenuItem>
                         )}
                         {type === "doctor" && (
@@ -783,7 +783,7 @@ export default function UserList({ type }: { type: string }) {
                             onClick={() => handleEditConsultationReasons(user)}
                           >
                             <CalendarDays className="mr-2 h-4 w-4" />
-                            <span>Motifs de consultation</span>
+                            <span>{doctor.actions.consultationReasons}</span>
                           </DropdownMenuItem>
                         )}
                         {type === "doctor" && (
@@ -791,7 +791,7 @@ export default function UserList({ type }: { type: string }) {
                             onClick={() => handleEditDiplomas(user)}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            <span>Diplômes</span>
+                            <span>{doctor.actions.diplomas}</span>
                           </DropdownMenuItem>
                         )}
                         {type === "doctor" && (
@@ -799,7 +799,7 @@ export default function UserList({ type }: { type: string }) {
                             onClick={() => handleEditExperiences(user)}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            <span>Expériences</span>
+                            <span>{doctor.actions.experiences}</span>
                           </DropdownMenuItem>
                         )}
                         {type !== "doctor" && (
@@ -807,7 +807,7 @@ export default function UserList({ type }: { type: string }) {
                             onClick={() => handleEditDoctorList(user)}
                           >
                             <CalendarDays className="mr-2 h-4 w-4" />
-                            <span>Accès docteur</span>
+                            <span>{doctor.actions.seeProfile}</span>
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
@@ -825,12 +825,12 @@ export default function UserList({ type }: { type: string }) {
                           {user.active ? (
                             <>
                               <Trash2 className="mr-2 h-4 w-4" />
-                              <span>Désactiver le compte</span>
+                              <span>{doctor.actions.disable}</span>
                             </>
                           ) : (
                             <>
                               <CheckCircle className="mr-2 h-4 w-4" />
-                              <span>Réactiver le compte</span>
+                              <span>{doctor.actions.enable}</span>
                             </>
                           )}
                         </DropdownMenuItem>
@@ -856,8 +856,8 @@ export default function UserList({ type }: { type: string }) {
           <DialogHeader>
             <DialogTitle>
               {editingUser
-                ? `Modifier ${editingUser.firstname} ${editingUser.lastname}`
-                : `Nouveau compte docteur`}
+                ? `${doctor.addDoctor.titleEdit} ${editingUser.firstname} ${editingUser.lastname}`
+                : `${doctor.addDoctor.title}`}
             </DialogTitle>
           </DialogHeader>
           <AddDoctorForm
@@ -882,8 +882,8 @@ export default function UserList({ type }: { type: string }) {
           <DialogHeader>
             <DialogTitle>
               {editingUser
-                ? `Modifier ${editingUser.firstname} ${editingUser.lastname}`
-                : `Nouveau compte Secrétaire`}
+                ? `${t.common.modify} ${editingUser.firstname} ${editingUser.lastname}`
+                : t.adminSettings.secretary.title}
             </DialogTitle>
           </DialogHeader>
           <AddSecretaryForm
@@ -901,10 +901,10 @@ export default function UserList({ type }: { type: string }) {
       >
         <DialogContent className="sm:max-w-[400px] md:max-w-[600px] lg:max-w-[950px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Modifier les horaires d'ouverture</DialogTitle>
+            <DialogTitle>{t.adminSettings.openingHours.title}</DialogTitle>
             <DialogDescription>
-              Définissez les horaires d'ouverture pour {editingUser?.firstname}{" "}
-              {editingUser?.lastname}
+              {t.adminSettings.openingHours.description}{" "}
+              {editingUser?.firstname} {editingUser?.lastname}
             </DialogDescription>
           </DialogHeader>
           <FormProvider {...methods}>
@@ -920,9 +920,9 @@ export default function UserList({ type }: { type: string }) {
                   variant="outline"
                   onClick={() => setIsOpeningHoursModalOpen(false)}
                 >
-                  Annuler
+                  {t.common.cancel}
                 </Button>
-                <Button type="submit">Enregistrer</Button>
+                <Button type="submit">{t.common.save}</Button>
               </DialogFooter>
             </form>
           </FormProvider>
@@ -935,10 +935,10 @@ export default function UserList({ type }: { type: string }) {
       >
         <DialogContent className="sm:max-w-[400px] md:max-w-[600px] lg:max-w-[950px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Modifier les raisons de consultation</DialogTitle>
+            <DialogTitle>{doctor.consultationReason.title}</DialogTitle>
             <DialogDescription>
-              Définissez les raisons de consultation pour{" "}
-              {editingUser?.firstname} {editingUser?.lastname}
+              {doctor.consultationReason.description} {editingUser?.firstname}{" "}
+              {editingUser?.lastname}
             </DialogDescription>
           </DialogHeader>
           <FormProvider {...consultationReasonsMethods}>
@@ -955,9 +955,9 @@ export default function UserList({ type }: { type: string }) {
                   variant="outline"
                   onClick={() => setIsConsultationReasonModalOpen(false)}
                 >
-                  Annuler
+                  {t.common.cancel}
                 </Button>
-                <Button type="submit">Enregistrer</Button>
+                <Button type="submit">{t.common.save}</Button>
               </DialogFooter>
             </form>
           </FormProvider>
@@ -969,15 +969,19 @@ export default function UserList({ type }: { type: string }) {
           <DialogHeader>
             <DialogTitle>
               {userToUpdate?.active
-                ? "Confirmer la désactivation"
-                : "Confirmer la réactivation"}
+                ? t.adminSettings.disableAccount.titleDisable
+                : t.adminSettings.disableAccount.titleEnable}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
               {userToUpdate?.active
-                ? `Êtes-vous sûr de vouloir désactiver le compte de ${userToUpdate?.firstname} ${userToUpdate?.lastname} ?`
-                : `Êtes-vous sûr de vouloir réactiver le compte de ${userToUpdate?.firstname} ${userToUpdate?.lastname} ?`}
-              <br />
-              Cette action est réversible.
+                ? t.adminSettings.disableAccount.descriptionDisable.replace(
+                    "{account}",
+                    userToUpdate?.firstname + " " + userToUpdate?.lastname,
+                  )
+                : t.adminSettings.disableAccount.descriptionEnable.replace(
+                    "{account}",
+                    userToUpdate?.firstname + " " + userToUpdate?.lastname,
+                  )}
             </p>
           </DialogHeader>
           <div className="flex justify-end space-x-2 mt-4">
@@ -985,13 +989,13 @@ export default function UserList({ type }: { type: string }) {
               variant="outline"
               onClick={() => setIsUpdateDialogOpen(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               variant={userToUpdate?.active ? "destructive" : "default"}
               onClick={handleToggleUserStatus}
             >
-              {userToUpdate?.active ? "Désactiver" : "Réactiver"}
+              {userToUpdate?.active ? t.common.deactivate : t.common.activate}
             </Button>
           </div>
         </DialogContent>
@@ -1022,7 +1026,7 @@ export default function UserList({ type }: { type: string }) {
               variant="outline"
               onClick={() => setIsAddDoctorToSecretaryOpen(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
           </div>
         </DialogContent>
@@ -1038,7 +1042,7 @@ export default function UserList({ type }: { type: string }) {
       >
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Gérer les diplômes</DialogTitle>
+            <DialogTitle>{doctor.diplomas.title}</DialogTitle>
             <DialogDescription>
               {selectedDiplomasUser
                 ? `${selectedDiplomasUser.firstname} ${selectedDiplomasUser.lastname}`
@@ -1050,7 +1054,9 @@ export default function UserList({ type }: { type: string }) {
             <div className="grid grid-cols-1 gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="diploma-title">Diplôme</Label>
+                  <Label htmlFor="diploma-title">
+                    {doctor.diplomas.form.diploma}
+                  </Label>
                   <Input
                     id="diploma-title"
                     value={diplomaForm.title}
@@ -1061,21 +1067,25 @@ export default function UserList({ type }: { type: string }) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="diploma-institution">Institution</Label>
+                  <Label htmlFor="diploma-institution">
+                    {doctor.diplomas.form.university}
+                  </Label>
                   <Input
                     id="diploma-institution"
                     value={diplomaForm.institution}
                     onChange={(e) =>
                       handleDiplomaFormChange("institution", e.target.value)
                     }
-                    placeholder="Ex : Université de Paris"
+                    placeholder={doctor.diplomas.form.universityPlaceholder}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="diploma-year">Année</Label>
+                  <Label htmlFor="diploma-year">
+                    {doctor.diplomas.form.year}
+                  </Label>
                   <Input
                     id="diploma-year"
                     type="number"
@@ -1089,30 +1099,34 @@ export default function UserList({ type }: { type: string }) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="diploma-field">Domaine</Label>
+                  <Label htmlFor="diploma-field">
+                    {doctor.diplomas.form.speciality}
+                  </Label>
                   <Input
                     id="diploma-field"
                     value={diplomaForm.field}
                     onChange={(e) =>
                       handleDiplomaFormChange("field", e.target.value)
                     }
-                    placeholder="Ex : Chirurgie"
+                    placeholder={doctor.diplomas.form.specialityPlaceholder}
                   />
                 </div>
               </div>
 
               <div className="flex justify-end gap-2">
                 <Button type="button" onClick={handleSaveDiploma}>
-                  {editingDiploma ? "Mettre à jour" : "Ajouter"}
+                  {editingDiploma ? t.common.update : t.common.add}
                 </Button>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Diplômes existants</h3>
+              <h3 className="text-lg font-medium">
+                {doctor.diplomas.existing}
+              </h3>
               {diplomas.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Aucun diplôme trouvé.
+                  {doctor.diplomas.noDiplomas}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -1134,14 +1148,14 @@ export default function UserList({ type }: { type: string }) {
                           size="sm"
                           onClick={() => handleDiplomaEdit(diploma)}
                         >
-                          Modifier
+                          {t.common.modify}
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={() => handleDeleteDiploma(diploma.id)}
                         >
-                          Supprimer
+                          {t.common.delete}
                         </Button>
                       </div>
                     </div>
@@ -1153,7 +1167,7 @@ export default function UserList({ type }: { type: string }) {
 
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseDiplomasModal}>
-              Fermer
+              {t.common.close}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1169,7 +1183,7 @@ export default function UserList({ type }: { type: string }) {
       >
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Gérer les expériences</DialogTitle>
+            <DialogTitle>{doctor.experiences.title}</DialogTitle>
             <DialogDescription>
               {selectedExperiencesUser
                 ? `${selectedExperiencesUser.firstname} ${selectedExperiencesUser.lastname}`
@@ -1181,21 +1195,25 @@ export default function UserList({ type }: { type: string }) {
             <div className="grid grid-cols-1 gap-4">
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <Label htmlFor="experience-company">Entreprise</Label>
+                  <Label htmlFor="experience-company">
+                    {doctor.experiences.form.company}
+                  </Label>
                   <Input
                     id="experience-company"
                     value={experienceForm.company}
                     onChange={(e) =>
                       handleExperienceFormChange("company", e.target.value)
                     }
-                    placeholder="Ex : Hôpital"
+                    placeholder={doctor.experiences.form.companyPlaceholder}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="experience-startYear">Année de début</Label>
+                  <Label htmlFor="experience-startYear">
+                    {doctor.experiences.form.startYear}
+                  </Label>
                   <Input
                     id="experience-startYear"
                     type="number"
@@ -1206,7 +1224,9 @@ export default function UserList({ type }: { type: string }) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="experience-endYear">Année de fin</Label>
+                  <Label htmlFor="experience-endYear">
+                    {doctor.experiences.form.endYear}
+                  </Label>
                   <Input
                     id="experience-endYear"
                     type="number"
@@ -1220,11 +1240,13 @@ export default function UserList({ type }: { type: string }) {
 
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <Label htmlFor="experience-description">Description</Label>
+                  <Label htmlFor="experience-description">
+                    {doctor.experiences.form.description}
+                  </Label>
                   <Textarea
                     id="description"
                     rows={5}
-                    placeholder={"description"}
+                    placeholder={doctor.experiences.form.descriptionPlaceholder}
                     value={experienceForm.description}
                     onChange={(e) =>
                       handleExperienceFormChange("description", e.target.value)
@@ -1235,16 +1257,18 @@ export default function UserList({ type }: { type: string }) {
 
               <div className="flex justify-end gap-2">
                 <Button type="button" onClick={handleSaveExperience}>
-                  {editingExperience ? "Mettre à jour" : "Ajouter"}
+                  {editingExperience ? t.common.update : t.common.add}
                 </Button>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Experiences existants</h3>
+              <h3 className="text-lg font-medium">
+                {doctor.experiences.existing}
+              </h3>
               {experiences.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Aucune expérience trouvée.
+                  {doctor.experiences.noExperiences}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -1273,14 +1297,14 @@ export default function UserList({ type }: { type: string }) {
                           size="sm"
                           onClick={() => handleExperienceEdit(experience)}
                         >
-                          Modifier
+                          {t.common.modify}
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={() => handleDeleteExperience(experience.id)}
                         >
-                          Supprimer
+                          {t.common.delete}
                         </Button>
                       </div>
                     </div>
@@ -1292,7 +1316,7 @@ export default function UserList({ type }: { type: string }) {
 
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseExperiencesModal}>
-              Fermer
+              {t.common.close}
             </Button>
           </DialogFooter>
         </DialogContent>

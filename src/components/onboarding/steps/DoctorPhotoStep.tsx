@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { useState } from "react";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface DoctorPhotoStepProps {
   onNext?: (data: any) => void;
@@ -15,7 +15,7 @@ export const DoctorPhotoStep = ({
   onBack,
   data,
 }: DoctorPhotoStepProps) => {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const { setValue, watch, handleSubmit } = useFormContext();
 
   const photoUrl = watch("photoUrl");
@@ -47,19 +47,13 @@ export const DoctorPhotoStep = ({
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            {t(
-              "onboarding.doctor.photo.title",
-              "Ajoutez votre photo de profil",
-            )}
+            {t.picture.addProfile}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <p className="text-muted-foreground text-center">
-              {t(
-                "onboarding.doctor.photo.description",
-                "Une photo professionnelle aide les patients à vous reconnaître et à vous faire confiance.",
-              )}
+              {t.picture.professional}
             </p>
 
             <div className="flex justify-center">
@@ -78,10 +72,7 @@ export const DoctorPhotoStep = ({
                       setValue("photoUrl", value, { shouldValidate: true });
                     }
                   }}
-                  label={t(
-                    "onboarding.doctor.photo.uploadLabel",
-                    "Télécharger une photo",
-                  )}
+                  label={t.picture.download}
                   aspect={1}
                   maxWidth={2000}
                   maxHeight={2000}

@@ -9,6 +9,7 @@ import ReactCrop, {
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "./button";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ImageUploadProps {
   value?: string;
@@ -25,12 +26,13 @@ export const ImageUpload = ({
   value,
   onChange,
   disabled = false,
-  label = "Télécharger une photo",
+  label = "",
   aspect = 1,
   className = "",
   maxWidth = 4000,
   maxHeight = 4000,
 }: ImageUploadProps) => {
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +42,9 @@ export const ImageUpload = ({
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  if ((label = "")) {
+    label = t.picture.download;
+  }
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement> | File[]) => {
     const files = Array.isArray(e) ? e : e.target.files;
     if (files && files.length > 0) {
@@ -51,7 +56,9 @@ export const ImageUpload = ({
         // Vérifier les dimensions de l'image
         if (img.width > maxWidth || img.height > maxHeight) {
           setError(
-            `La résolution de l'image ne doit pas dépasser ${maxWidth}x${maxHeight}px (actuelle: ${img.width}x${img.height}px)`,
+            t.picture.resolutionError
+              .replace("{max}", maxWidth + "x" + maxHeight)
+              .replace("{current}", img.width + "x" + img.height),
           );
           return;
         }
@@ -84,13 +91,13 @@ export const ImageUpload = ({
 
       // Vérifier la taille du fichier (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setError("La taille du fichier ne doit pas dépasser 5MB");
+        setError(t.picture.sizeError);
         return;
       }
 
       // Vérifier le type de fichier
       if (!file.type.startsWith("image/")) {
-        setError("Veuillez télécharger une image valide");
+        setError(t.picture.typeError);
         return;
       }
 
@@ -299,7 +306,7 @@ export const ImageUpload = ({
                       onClick={() => setCrop(undefined)}
                       className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
                     >
-                      Annuler
+                      {t.common.cancel}
                     </button>
                     <button
                       type="button"
@@ -336,7 +343,7 @@ export const ImageUpload = ({
                       className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 flex items-center"
                     >
                       <Check className="mr-2 h-4 w-4" />
-                      Valider
+                      {t.common.validate}
                     </button>
                   </div>
                 </div>
@@ -417,15 +424,15 @@ export const ImageUpload = ({
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium">
-                {isLoading ? "Téléchargement..." : label}
+                {isLoading ? t.common.loading : label}
               </p>
               <p className="text-xs text-muted-foreground">
-                {isDragActive
-                  ? "Déposez la photo ici..."
-                  : "Glissez-déposez une image, ou cliquez pour sélectionner"}
+                {isDragActive ? t.picture.put : t.picture.dragAndDrop}
               </p>
               <p className="text-xs text-muted-foreground">
-                PNG, JPG, WEBP (max. 5MB • {maxWidth}x{maxHeight}px)
+                {t.picture.formatAndSize
+                  .replace("{volume}", "5MB")
+                  .replace("size", maxWidth + "x" + maxHeight)}
               </p>
             </div>
           </div>

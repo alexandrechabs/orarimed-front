@@ -490,9 +490,9 @@ export default function CenterList() {
       <Dialog open={isAddDoctorOpen} onOpenChange={setIsAddDoctorOpen}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Liste des docteurs rattachés au cabinet</DialogTitle>
+            <DialogTitle>{office.doctorList.title}</DialogTitle>
             <DialogDescription>
-              Ajoutez un docteur au cabinet {editingCenter?.name}
+              {office.doctorList.description} {editingCenter?.name}
             </DialogDescription>
           </DialogHeader>
           <DoctorCenterSearch

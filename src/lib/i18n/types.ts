@@ -387,6 +387,7 @@ export type TranslationKey = {
     activate: string;
     deactivate: string;
     limitReached: string;
+    validate: string;
   };
 
   daysOfWeek: {
@@ -525,6 +526,7 @@ export type TranslationKey = {
     pushNotificationDetail: string;
     smsNotification: string;
     smsNotificationDetail: string;
+    saveSuccess: string;
   };
   doctorParams: {
     title: string;
@@ -550,6 +552,7 @@ export type TranslationKey = {
     hoursAlreadyExistTitle: string;
     reasonForm: {
       name: string;
+      namePlaceholder: string;
       duration: string;
       color: string;
       type: string;
@@ -642,10 +645,12 @@ export type TranslationKey = {
     office: {
       title: string;
       description: string;
-      noOffice: string;
       activateSuccess: string;
       deactivateSuccess: string;
       statusError: string;
+      addSuccess: string;
+      updateSuccess: string;
+      addError: string;
       table: {
         name: string;
         speciality: string;
@@ -687,25 +692,128 @@ export type TranslationKey = {
           speciality: string;
         };
       };
+      doctorList: {
+        title: string;
+        description: string;
+      };
     };
-    addDoctor: {
+    doctor: {
       title: string;
+      description: string;
+      activateSuccess: string;
+      deactivateSuccess: string;
+      statusError: string;
+      imageError: string;
+      table: {
+        name: string;
+        speciality: string;
+        activeAccount: string;
+        visible: string;
+        visibleInfo: string;
+        doctors: string;
+        actions: string;
+      };
+      actions: {
+        edit: string;
+        seeProfile: string;
+        openingHours: string;
+        consultationReasons: string;
+        diplomas: string;
+        experiences: string;
+        disable: string;
+        enable: string;
+      };
+      addDoctor: {
+        title: string;
+        titleEdit: string;
+        form: {
+          firstname: string;
+          lastname: string;
+          email: string;
+          phone: string;
+          password: string;
+          speciality: string;
+          submit: string;
+          cancel: string;
+        };
+        success: string;
+        error: string;
+      };
+      diplomas: {
+        title: string;
+        noDiplomas: string;
+        updateSuccess: string;
+        updateError: string;
+        delete: string;
+        deleteError: string;
+        existing: string;
+        form: {
+          diploma: string;
+          diplomaPlaceholder: string;
+          university: string;
+          universityPlaceholder: string;
+          year: string;
+          speciality: string;
+          specialityPlaceholder: string;
+        };
+      };
+      experiences: {
+        title: string;
+        noExperiences: string;
+        saveSuccess: string;
+        saveError: string;
+        updateSuccess: string;
+        deleteSuccess: string;
+        deleteError: string;
+        existing: string;
+        form: {
+          company: string;
+          companyPlaceholder: string;
+          startYear: string;
+          endYear: string;
+          description: string;
+          descriptionPlaceholder: string;
+        };
+      };
+      consultationReason: {
+        title: string;
+        description: string;
+      };
+    };
+    secretary: {
+      title: string;
+      addSuccess: string;
+      updateSuccess: string;
+      addError: string;
       form: {
         firstname: string;
+        firstnamePlaceholder: string;
         lastname: string;
+        lastnamePlaceholder: string;
         email: string;
+        emailPlaceholder: string;
         phone: string;
-        password: string;
-        speciality: string;
-        submit: string;
-        cancel: string;
+        phonePlaceholder: string;
+        language: string;
+        languePlaceholder: string;
+        conditions: string;
       };
-      success: string;
-      error: string;
     };
     speciality: {
       specialityError: string;
     };
+  };
+  picture: {
+    download: string;
+    addProfile: string;
+    professional: string;
+    load: string;
+    resolutionError: string;
+    sizeError: string;
+    typeError: string;
+    put: string;
+    dragAndDrop: string;
+    formatAndSize: string;
   };
 };
 
