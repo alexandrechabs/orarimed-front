@@ -26,17 +26,27 @@ import ImageUpload from "../ui/ImageUpload";
 const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
 // Fonction pour créer le schéma en fonction du mode (édition ou création)
-const createSecretarySchema = (isEditMode: boolean) => {
+const createSecretarySchema = (
+  isEditMode: boolean,
+  error: {
+    email: string;
+    firstname: string;
+    lastname: string;
+    phone: string;
+    language: string;
+    accept: string;
+  },
+) => {
   const baseSchema = {
-    email: z.string().email("Email invalide"),
-    firstname: z.string().min(2, "Le prénom est requis"),
-    lastname: z.string().min(2, "Le nom est requis"),
-    phoneNumber: z.string().min(10, "Numéro de téléphone invalide").optional(),
-    language: z.string().min(2, "La langue est requise"),
+    email: z.string().email(error.email),
+    firstname: z.string().min(2, error.firstname),
+    lastname: z.string().min(2, error.lastname),
+    phoneNumber: z.string().min(10, error.phone).optional(),
+    language: z.string().min(2, error.language),
     acceptTerms: isEditMode
       ? z.boolean().optional() // En mode édition, ce champ n'est pas requis
       : z.literal(true, {
-          errorMap: () => ({ message: "Vous devez accepter les conditions" }),
+          errorMap: () => ({ message: error.accept }),
         }), // En mode création, ce champ doit être true
   };
 
@@ -80,8 +90,8 @@ export function AddSecretaryForm({
   const [isUploading, setIsUploading] = useState(false);
 
   const isEditMode = !!user;
-  const doctorSchema = createSecretarySchema(isEditMode);
   const secretary = t.adminSettings.secretary;
+  const doctorSchema = createSecretarySchema(isEditMode, secretary.form.error);
 
   const {
     register,
@@ -363,7 +373,7 @@ export function AddSecretaryForm({
             }}
             disabled={isLoading}
           >
-            Annuler
+            {t.common.cancel}
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -401,7 +411,7 @@ export function AddSecretaryForm({
               onClick={() => setIsCropModalOpen(false)}
               disabled={isUploading}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               onClick={() => {
@@ -414,10 +424,10 @@ export function AddSecretaryForm({
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Enregistrement...
+                  {t.common.saving}
                 </div>
               ) : (
-                "Enregistrer"
+                t.common.save
               )}
             </Button>
           </div>

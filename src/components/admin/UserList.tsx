@@ -1008,10 +1008,10 @@ export default function UserList({ type }: { type: string }) {
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>
-              Liste des docteurs accessible pour la secrétaire
+              {t.adminSettings.secretary.addDoctor.title}
             </DialogTitle>
             <DialogDescription>
-              Ajoutez un accès entre docteur et la secrétaire{" "}
+              {t.adminSettings.secretary.addDoctor.description}
               {editingUser?.firstname}
             </DialogDescription>
           </DialogHeader>

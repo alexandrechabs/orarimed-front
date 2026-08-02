@@ -29,27 +29,41 @@ import ImageUpload from "../ui/ImageUpload";
 const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
 
 // Fonction pour créer le schéma en fonction du mode (édition ou création)
-const createDoctorSchema = (isEditMode: boolean) => {
+const createDoctorSchema = (
+  isEditMode: boolean,
+  error: {
+    email: string;
+    firstname: string;
+    lastname: string;
+    address: string;
+    city: string;
+    country: string;
+    phone: string;
+    speciality: string;
+    langue: string;
+    accept: string;
+  },
+) => {
   const baseSchema = {
-    email: z.string().email("Email invalide"),
-    firstname: z.string().min(2, "Le prénom est requis"),
-    lastname: z.string().min(2, "Le nom est requis"),
-    address: z.string().min(5, "L'adresse est requise"),
-    city: z.string().min(2, "La ville est requise"),
-    country: z.string().min(2, "Le pays est requis"),
+    email: z.string().email(error.email),
+    firstname: z.string().min(2, error.firstname),
+    lastname: z.string().min(2, error.lastname),
+    address: z.string().min(5, error.address),
+    city: z.string().min(2, error.city),
+    country: z.string().min(2, error.country),
     coordinate: z.object({
       x: z.number(),
       y: z.number(),
     }),
-    phoneNumber: z.string().min(10, "Numéro de téléphone invalide"),
+    phoneNumber: z.string().min(10, error.phone),
     visible: z.boolean().default(false).optional(),
-    specialityId: z.number().min(1, "La spécialité est requise"),
+    specialityId: z.number().min(1, error.speciality),
     subSpecialityId: z.array(z.number()).optional(), // Nouveau champ
-    language: z.string().min(2, "La langue est requise"),
+    language: z.string().min(2, error.langue),
     acceptTerms: isEditMode
       ? z.boolean()
       : z.boolean().refine((val) => val === true, {
-          message: "Vous devez accepter les conditions d'utilisation",
+          message: error.accept,
         }),
     doctorIdentifier: z.string(),
   };
@@ -106,7 +120,8 @@ export function AddDoctorForm({
   const [isUploading, setIsUploading] = useState(false);
 
   const isEditMode = !!user;
-  const doctorSchema = createDoctorSchema(isEditMode);
+  const form = t.adminSettings.doctor.form;
+  const doctorSchema = createDoctorSchema(isEditMode, form.error);
 
   const {
     register,
@@ -319,7 +334,7 @@ export function AddDoctorForm({
         )}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Prénom</Label>
+            <Label>{form.firstname}</Label>
             <Input {...register("firstname")} />
             {errors.firstname && (
               <p className="text-sm text-destructive">
@@ -328,7 +343,7 @@ export function AddDoctorForm({
             )}
           </div>
           <div>
-            <Label>Nom</Label>
+            <Label>{form.lastname}</Label>
             <Input {...register("lastname")} />
             {errors.lastname && (
               <p className="text-sm text-destructive">
@@ -339,7 +354,7 @@ export function AddDoctorForm({
         </div>
 
         <div>
-          <Label>Email</Label>
+          <Label>{form.email}</Label>
           <Input type="email" {...register("email")} autoComplete="new-email" />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -347,7 +362,7 @@ export function AddDoctorForm({
         </div>
 
         <div>
-          <Label>Adresse</Label>
+          <Label>{form.address}</Label>
           <AddressAutocomplete
             type="address"
             value={watch("address")} // Use watch to get the current value
@@ -372,7 +387,7 @@ export function AddDoctorForm({
               });
             }}
             className="bg-background"
-            placeholder="Saisissez l'adresse de votre cabinet"
+            placeholder={form.addressPlaceholder}
           />
           {errors.address && (
             <p className="text-sm text-destructive">{errors.address.message}</p>
@@ -380,7 +395,7 @@ export function AddDoctorForm({
         </div>
 
         <div>
-          <Label>Téléphone</Label>
+          <Label>{form.phone}</Label>
           <PhoneInput
             international
             defaultCountry="AL"
@@ -388,7 +403,7 @@ export function AddDoctorForm({
             value={watch("phoneNumber")}
             onChange={(value) => setValue("phoneNumber", value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-background"
-            placeholder="+33 6 12 34 56 78"
+            placeholder={form.phonePlaceholder}
             autoComplete="new-phone"
           />
           {errors.phoneNumber && (
@@ -398,7 +413,7 @@ export function AddDoctorForm({
           )}
         </div>
         <div>
-          <Label>Spécialité</Label>
+          <Label>{form.speciality}</Label>
           <Select
             value={watch("specialityId")?.toString() || ""}
             onValueChange={(value) => {
@@ -408,7 +423,7 @@ export function AddDoctorForm({
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une spécialité" />
+              <SelectValue placeholder={form.selectSpeciality} />
             </SelectTrigger>
             <SelectContent>
               {specialities?.map((speciality) => (
@@ -431,7 +446,7 @@ export function AddDoctorForm({
           )}
         </div>
         <div className="space-y-2">
-          <Label>Sous-spécialités (optionnel)</Label>
+          <Label>{form.subSpeciality}</Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {specialities
               .find((s) => s.id === Number(watch("specialityId")))
@@ -473,7 +488,7 @@ export function AddDoctorForm({
           </div>
         </div>
         <div className="spaceff-y-2">
-          <Label>Langue</Label>
+          <Label>{form.language}</Label>
           <Select
             value={watch("language")?.toString() || ""}
             onValueChange={(value) => {
@@ -482,7 +497,7 @@ export function AddDoctorForm({
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une langue" />
+              <SelectValue placeholder={form.languePlaceholder} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem key="sq" value="sq">
@@ -503,7 +518,7 @@ export function AddDoctorForm({
           )}
         </div>
         <div>
-          <Label>Identifiant Docteur</Label>
+          <Label>{form.identity}</Label>
           <Input type="text" {...register("doctorIdentifier")} />
           {errors.doctorIdentifier && (
             <p className="text-sm text-destructive">
@@ -521,7 +536,7 @@ export function AddDoctorForm({
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
               <Label htmlFor="acceptTerms" className="text-sm font-medium">
-                J'accepte les conditions d'utilisation
+                {form.conditions}
               </Label>
             </div>
             {errors.acceptTerms && (
@@ -535,7 +550,7 @@ export function AddDoctorForm({
         {/* Interrupteur Actif/Inactif */}
         <div className="flex items-center space-x-2 mt-4">
           <Label htmlFor="visible" className="text-sm font-medium">
-            Compte visible
+            {form.visible}
           </Label>
           <Checkbox
             id="visible"
@@ -554,7 +569,7 @@ export function AddDoctorForm({
             }}
             disabled={isLoading}
           >
-            Annuler
+            {t.common.cancel}
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -592,7 +607,7 @@ export function AddDoctorForm({
               onClick={() => setIsCropModalOpen(false)}
               disabled={isUploading}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <Button
               onClick={() => {
@@ -605,10 +620,10 @@ export function AddDoctorForm({
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Enregistrement...
+                  {t.common.saving}
                 </div>
               ) : (
-                "Enregistrer"
+                t.common.save
               )}
             </Button>
           </div>

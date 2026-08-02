@@ -19,25 +19,13 @@ const createResetPasswordSchema = (t: any) =>
         .string()
         .min(6, t.resetPassword.codeError)
         .max(6, t.resetPassword.codeError),
-      password: z
-        .string()
-        .min(
-          8,
-          t.resetPassword.passwordMinLength ||
-            "Le mot de passe doit contenir au moins 8 caractères",
-        ),
+      password: z.string().min(8, t.resetPassword.passwordMinLength),
       confirmPassword: z
         .string()
-        .min(
-          1,
-          t.resetPassword.confirmPasswordRequired ||
-            "La confirmation du mot de passe est requise",
-        ),
+        .min(1, t.resetPassword.confirmPasswordRequired),
     })
     .refine((data) => data.password === data.confirmPassword, {
-      message:
-        t.resetPassword.passwordsNotMatch ||
-        "Les mots de passe ne correspondent pas",
+      message: t.resetPassword.passwordsNotMatch,
       path: ["confirmPassword"],
     });
 

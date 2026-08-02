@@ -1,3 +1,6 @@
+import { SubSpeciality } from "@/types/specialty";
+import { Speciality } from "public/data/specialities";
+
 export type TranslationKey = {
   nav: {
     home: string;
@@ -236,6 +239,25 @@ export type TranslationKey = {
     goBack: string;
     leftTitle: string;
     leftDescription: string;
+    form: {
+      emailProfessionnal: string;
+      accept1: string;
+      accept2: string;
+    };
+    formError: {
+      email: string;
+      password: string;
+      login: string;
+      firstname: string;
+      lastname: string;
+      passwordSize: string;
+      passwordSame: string;
+      accept: string;
+    };
+    registerAccount: {
+      createButton: string;
+      create: string;
+    };
   };
   forgotPassword: {
     title: string;
@@ -452,6 +474,7 @@ export type TranslationKey = {
     };
   };
   agenda: {
+    newEvent: string;
     newConsult: string;
     updateMissing: string;
     updateConsult: string;
@@ -489,6 +512,14 @@ export type TranslationKey = {
       repetitionWeekly: string;
       repeatUntil: string;
       chooseDate: string;
+      error: {
+        firstname: string;
+        lastname: string;
+        email;
+        name: string;
+        end: string;
+        repeatEnd: string;
+      };
     };
   };
   dashboard: {
@@ -704,6 +735,35 @@ export type TranslationKey = {
       deactivateSuccess: string;
       statusError: string;
       imageError: string;
+      form: {
+        firstname: string;
+        lastname: string;
+        email: string;
+        address: string;
+        addressPlaceholder: string;
+        phone: string;
+        phonePlaceholder: string;
+        speciality: string;
+        selectSpeciality: string;
+        subSpeciality: string;
+        language: string;
+        languePlaceholder: string;
+        identity: string;
+        conditions: string;
+        visible: string;
+        error: {
+          email: string;
+          firstname: string;
+          lastname: string;
+          address: string;
+          city: string;
+          country: string;
+          phone: string;
+          speciality: string;
+          langue: string;
+          accept: string;
+        };
+      };
       table: {
         name: string;
         speciality: string;
@@ -797,14 +857,41 @@ export type TranslationKey = {
         language: string;
         languePlaceholder: string;
         conditions: string;
+        error: {
+          email: string;
+          firstname: string;
+          lastname: string;
+          phone: string;
+          language: string;
+          accept: string;
+        };
+      };
+      addDoctor: {
+        title: string;
+        description: string;
+        limit: string;
+        limitDescription: string;
+        addSuccess: string;
+        addError: string;
+        search: string;
+        alreadySelected: string;
+        selected: string;
+        add: string;
       };
     };
     speciality: {
       specialityError: string;
+      icon: string;
+      selectIcon: string;
+      color: string;
+      name: string;
+      subSpeciality: string;
     };
   };
   picture: {
     download: string;
+    downloadImage: string;
+    updateImage: string;
     addProfile: string;
     professional: string;
     load: string;
@@ -814,6 +901,25 @@ export type TranslationKey = {
     put: string;
     dragAndDrop: string;
     formatAndSize: string;
+  };
+  article: {
+    category: {
+      title: string;
+      description: string;
+      new: string;
+      placeHolder: string;
+      existing: string;
+      actions: string;
+      none: string;
+      update: string;
+      missingTranslation: string;
+      created: string;
+      createError: string;
+      updated: string;
+      updateError: string;
+      deleted: string;
+      deleteError: string;
+    };
   };
 };
 

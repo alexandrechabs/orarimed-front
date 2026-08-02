@@ -23,6 +23,7 @@ import { Article, ArticleCategory } from "@/types/article";
 import { useToast } from "@/components/ui/use-toast";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useImage } from "@/hooks/use-image";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 interface AddArticleFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,6 +40,7 @@ export default function AddArticleForm({
   categories,
 }: AddArticleFormProps) {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateImage, setIsUpdatingImage] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState(1);
@@ -239,7 +241,7 @@ export default function AddArticleForm({
                         setIsUpdatingImage(!updateImage);
                       }}
                     >
-                      {updateImage ? "annuler" : "Mettre à jour l'image"}
+                      {updateImage ? t.common.cancel : t.picture.updateImage}
                     </Button>
                   )}
                 </label>
@@ -259,7 +261,7 @@ export default function AddArticleForm({
                   <ImageUpload
                     value={featuredImagePreview || undefined}
                     onChange={handleFeaturedImageChange}
-                    label="Téléchargez l'image vedette"
+                    label=""
                     aspect={null}
                     maxWidth={2000}
                     maxHeight={2000}
@@ -344,10 +346,10 @@ export default function AddArticleForm({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
-                  ? "En cours..."
+                  ? t.common.saving
                   : editingArticle
-                    ? "Mettre à jour"
-                    : "Créer"}
+                    ? t.common.update
+                    : t.common.create}
               </Button>
             </DialogFooter>
           </form>

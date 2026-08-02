@@ -23,6 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Trash2, Pencil } from "lucide-react";
 import { ArticleCategory } from "@/types/article";
 import { categoryService } from "@/services/user/category.service";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const LOCALES = [
   { id: 1, label: "Shqip" },
@@ -40,6 +41,7 @@ export default function ArticleCategoryManager({
   onCategoriesUpdated,
 }: ArticleCategoryManagerProps) {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [translations, setTranslations] = useState<Record<number, string>>({
     1: "",
@@ -60,7 +62,7 @@ export default function ArticleCategoryManager({
     2: "",
     3: "",
   });
-
+  const category = t.article.category;
   const handleInputChange = (localeId: number, value: string) => {
     setTranslations((current) => ({ ...current, [localeId]: value }));
   };
@@ -72,8 +74,8 @@ export default function ArticleCategoryManager({
 
     if (missingTranslation) {
       toast({
-        title: "Erreur",
-        description: "Veuillez renseigner tous les libellés de catégorie",
+        title: t.common.error,
+        description: category.missingTranslation,
         variant: "destructive",
       });
       return;
@@ -90,14 +92,15 @@ export default function ArticleCategoryManager({
       const result = await categoryService.createCategory(payload);
       onCategoriesUpdated([...categories, result]);
       setTranslations({ 1: "", 2: "", 3: "" });
-      toast({ title: "Succès", description: "Catégorie créée" });
+      toast({
+        title: t.common.success,
+        description: category.created,
+      });
     } catch (error) {
       toast({
-        title: "Erreur",
+        title: t.common.error,
         description:
-          error instanceof Error
-            ? error.message
-            : "Impossible de créer la catégorie",
+          error instanceof Error ? error.message : category.createError,
         variant: "destructive",
       });
     } finally {
@@ -125,8 +128,8 @@ export default function ArticleCategoryManager({
 
     if (missingTranslation) {
       toast({
-        title: "Erreur",
-        description: "Veuillez renseigner tous les libellés de catégorie",
+        title: t.common.error,
+        description: category.missingTranslation,
         variant: "destructive",
       });
       return;
@@ -152,14 +155,12 @@ export default function ArticleCategoryManager({
       onCategoriesUpdated(updatedCategories);
       setEditingCategoryId(null);
       setEditTranslations({ 1: "", 2: "", 3: "" });
-      toast({ title: "Succès", description: "Catégorie mise à jour" });
+      toast({ title: t.common.success, description: category.updated });
     } catch (error) {
       toast({
-        title: "Erreur",
+        title: t.common.error,
         description:
-          error instanceof Error
-            ? error.message
-            : "Impossible de mettre à jour la catégorie",
+          error instanceof Error ? error.message : category.updateError,
         variant: "destructive",
       });
     } finally {
@@ -179,14 +180,12 @@ export default function ArticleCategoryManager({
       onCategoriesUpdated(
         categories.filter((category) => category.id !== categoryId),
       );
-      toast({ title: "Succès", description: "Catégorie supprimée" });
+      toast({ title: t.common.success, description: category.deleted });
     } catch (error) {
       toast({
-        title: "Erreur",
+        title: t.common.error,
         description:
-          error instanceof Error
-            ? error.message
-            : "Impossible de supprimer la catégorie",
+          error instanceof Error ? error.message : category.deleteError,
         variant: "destructive",
       });
     } finally {
@@ -197,20 +196,18 @@ export default function ArticleCategoryManager({
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
-        Gérer les catégories
+        {category.title}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Gérer les catégories</DialogTitle>
-            <DialogDescription>
-              Créez et supprimez les catégories d’article en plusieurs langues.
-            </DialogDescription>
+            <DialogTitle>{category.title}</DialogTitle>
+            <DialogDescription>{category.description}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
             <div className="space-y-3 border-b pb-4">
-              <h3 className="font-semibold">Nouvelle catégorie</h3>
+              <h3 className="font-semibold">{category.new}</h3>
               <div className="grid gap-3 sm:grid-cols-3">
                 {LOCALES.map((locale) => (
                   <div key={locale.id}>
@@ -222,7 +219,7 @@ export default function ArticleCategoryManager({
                       onChange={(event) =>
                         handleInputChange(locale.id, event.target.value)
                       }
-                      placeholder={`Libellé en ${locale.label}`}
+                      placeholder={`${category.placeHolder} ${locale.label}`}
                     />
                   </div>
                 ))}
@@ -232,12 +229,12 @@ export default function ArticleCategoryManager({
                 disabled={isSaving}
                 type="button"
               >
-                {isSaving ? "Création..." : "Créer la catégorie"}
+                {isSaving ? t.common.saving : t.common.save}
               </Button>
             </div>
 
             <div className="space-y-3">
-              <h3 className="font-semibold">Catégories existantes</h3>
+              <h3 className="font-semibold">{category.existing}</h3>
               <div className="border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
@@ -246,14 +243,16 @@ export default function ArticleCategoryManager({
                       <TableHead>Shqip</TableHead>
                       <TableHead>Français</TableHead>
                       <TableHead>English</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-right">
+                        {category.actions}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {categories.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-6">
-                          Aucune catégorie disponible
+                          {category.none}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -302,7 +301,7 @@ export default function ArticleCategoryManager({
 
             {editingCategoryId && (
               <div className="space-y-3 border-t pt-4 bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-semibold">Modifier la catégorie</h3>
+                <h3 className="font-semibold">{category.update}</h3>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {LOCALES.map((locale) => (
                     <div key={locale.id}>
@@ -314,7 +313,7 @@ export default function ArticleCategoryManager({
                         onChange={(event) =>
                           handleEditInputChange(locale.id, event.target.value)
                         }
-                        placeholder={`Libellé en ${locale.label}`}
+                        placeholder={`${category.placeHolder} ${locale.label}`}
                       />
                     </div>
                   ))}
@@ -325,7 +324,7 @@ export default function ArticleCategoryManager({
                     disabled={isSaving}
                     type="button"
                   >
-                    {isSaving ? "Mise à jour..." : "Mettre à jour"}
+                    {isSaving ? t.common.saving : t.common.update}
                   </Button>
                   <Button
                     variant="outline"
@@ -333,7 +332,7 @@ export default function ArticleCategoryManager({
                     disabled={isSaving}
                     type="button"
                   >
-                    Annuler
+                    {t.common.cancel}
                   </Button>
                 </div>
               </div>
@@ -342,7 +341,7 @@ export default function ArticleCategoryManager({
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
-              Fermer
+              {t.common.close}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import * as LucideIcons from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const LUCIDE_ICONS = [
   "Stethoscope",
@@ -68,6 +69,7 @@ export default function SpecialitiesManager({
   initialData = [],
   onSave,
 }: Props) {
+  const { t } = useLanguage();
   const [specialities, setSpecialities] = useState<Speciality[]>(initialData);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [activeLocale, setActiveLocale] = useState<Locale>("en");
@@ -208,7 +210,7 @@ export default function SpecialitiesManager({
         <h2 className="text-xl font-semibold"></h2>
         <Button onClick={addSpeciality}>
           <Plus className="mr-2 h-4 w-4" />
-          Ajouter
+          {t.common.add}
         </Button>
       </div>
 
@@ -305,7 +307,7 @@ export default function SpecialitiesManager({
               <CardContent className="space-y-4">
                 <div className="flex">
                   <div className="space-y-2 mr-8 md:mr-16">
-                    <Label>Icône</Label>
+                    <Label>{t.adminSettings.speciality.icon}</Label>
                     <Select
                       value={spec.icon || "Stethoscope"}
                       onValueChange={(value) => {
@@ -315,7 +317,9 @@ export default function SpecialitiesManager({
                       }}
                     >
                       <SelectTrigger className="w-[70px]">
-                        <SelectValue placeholder="Sélectionnez une icône" />
+                        <SelectValue
+                          placeholder={t.adminSettings.speciality.selectIcon}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <div className="grid grid-cols-4 gap-2 p-2 w-[240px]">
@@ -334,7 +338,7 @@ export default function SpecialitiesManager({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Couleur</Label>
+                    <Label>{t.adminSettings.speciality.color}</Label>
                     <Select
                       value={spec.color || COLOR_PALETTE[0]}
                       onValueChange={(value) => {
@@ -368,7 +372,10 @@ export default function SpecialitiesManager({
                 </div>
                 {/* NAME */}
                 <div>
-                  <Label>Nom ({activeLocale.toUpperCase()})</Label>
+                  <Label>
+                    {t.adminSettings.speciality.name} (
+                    {activeLocale.toUpperCase()})
+                  </Label>
                   <Input
                     value={currentTranslation?.name || ""}
                     onChange={(e) =>
@@ -393,14 +400,14 @@ export default function SpecialitiesManager({
                 {/* SUB SPECIALITIES */}
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label>Sous-spécialités</Label>
+                    <Label>{t.adminSettings.speciality.subSpeciality}</Label>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => addSubSpeciality(index)}
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Ajouter
+                      {t.common.add}
                     </Button>
                   </div>
 
@@ -421,7 +428,7 @@ export default function SpecialitiesManager({
                               e.target.value,
                             )
                           }
-                          placeholder="Nom"
+                          placeholder={t.adminSettings.speciality.name}
                         />
                         <Input
                           value={sub.slug}
@@ -453,7 +460,7 @@ export default function SpecialitiesManager({
       {/* SAVE */}
       {onSave && specialities.length > 0 && (
         <div className="flex justify-end">
-          <Button onClick={() => onSave(specialities)}>Enregistrer</Button>
+          <Button onClick={() => onSave(specialities)}>{t.common.save}</Button>
         </div>
       )}
     </div>

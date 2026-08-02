@@ -1,20 +1,23 @@
 // src/components/auth/ForgotPasswordForm.tsx
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useState } from 'react';
-import { useAuth } from '@/services/auth/useAuth';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useState } from "react";
+import { useAuth } from "@/services/auth/useAuth";
 
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Invalid email'),
-});
+const forgotPasswordSchema = (formError: { email: string }) =>
+  z.object({
+    email: z.string().email(formError.email),
+  });
 
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordFormValues = z.infer<
+  ReturnType<typeof forgotPasswordSchema>
+>;
 
 export function ForgotPasswordForm() {
   const { t } = useLanguage();
@@ -24,9 +27,9 @@ export function ForgotPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ForgotPasswordFormValues>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(forgotPasswordSchema(t.auth.formError)),
     defaultValues: {
-      email: '',
+      email: "",
     },
   });
 
@@ -42,12 +45,12 @@ export function ForgotPasswordForm() {
       });
 
       // Rediriger vers la page de réinitialisation avec l'email en paramètre
-      navigate('/reset-password', { state: { email: values.email } });
+      navigate("/reset-password", { state: { email: values.email } });
     } catch (error) {
       toast({
         title: t.common.error,
         description: t.forgotPassword.errorDescription,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -61,12 +64,10 @@ export function ForgotPasswordForm() {
           id="email"
           type="email"
           placeholder={t.auth.email}
-          {...form.register('email')}
+          {...form.register("email")}
         />
         {form.formState.errors.email && (
-          <p className="text-sm text-red-500">
-            {t.forgotPassword.error}
-          </p>
+          <p className="text-sm text-red-500">{t.forgotPassword.error}</p>
         )}
       </div>
 

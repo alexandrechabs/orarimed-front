@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Search, X, Plus, User, Shield } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useUser } from '@/services/user/useUser';
-import { useToast } from '@/hooks/use-toast';
-import { UserRole } from '@/types/roles';
+import { useState, useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Search, X, Plus, User, Shield } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useUser } from "@/services/user/useUser";
+import { useToast } from "@/hooks/use-toast";
+import { UserRole } from "@/types/roles";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -48,9 +48,10 @@ export function DoctorSecretarySearch({
   const { getUsersAdmin, addDoctorsToSecretary, getSecretaryDoctors } =
     useUser();
   const { toast } = useToast();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
+  const addDoctor = t.adminSettings.secretary.addDoctor;
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<DoctorSearchResult[]>([]);
   const [selectedDoctors, setSelectedDoctors] = useState<DoctorWithRights[]>(
     [],
@@ -74,9 +75,9 @@ export function DoctorSecretarySearch({
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -91,7 +92,7 @@ export function DoctorSecretarySearch({
       const doctors = await getUsersAdmin(UserRole.DOCTOR, query);
       setSuggestions(doctors);
     } catch (error) {
-      console.error('Error fetching doctor suggestions:', error);
+      console.error("Error fetching doctor suggestions:", error);
       setSuggestions([]);
     }
   };
@@ -108,15 +109,18 @@ export function DoctorSecretarySearch({
     if (!selectedDoctors.find((d) => d.id === doctor.id)) {
       if (selectedDoctors.length >= maxSelection) {
         toast({
-          title: 'Limite atteinte',
-          description: `Vous ne pouvez sélectionner que ${maxSelection} docteurs au maximum`,
-          variant: 'destructive',
+          title: addDoctor.limit,
+          description: addDoctor.limitDescription.replace(
+            "{max}",
+            maxSelection.toString(),
+          ),
+          variant: "destructive",
         });
         return;
       }
       setSelectedDoctors([...selectedDoctors, doctor]);
     }
-    setSearchQuery('');
+    setSearchQuery("");
     setSuggestions([]);
     setIsOpen(false);
   };
@@ -134,10 +138,12 @@ export function DoctorSecretarySearch({
 
       await addDoctorsToSecretary(secretaryId, doctorsWithRights);
 
-      let description = `${selectedDoctors.length} docteur(s) ajouté(s) à la secrétaire "${secretaryName}" avec succès`;
+      let description = addDoctor.addSuccess
+        .replace("{nbDoctors}", selectedDoctors.length.toString())
+        .replace("{secretaryName}", secretaryName);
 
       toast({
-        title: 'Succès',
+        title: t.common.success,
         description,
       });
 
@@ -145,11 +151,9 @@ export function DoctorSecretarySearch({
       onSuccess?.();
     } catch (error) {
       toast({
-        title: 'Erreur',
-        description:
-          error.message ||
-          "Une erreur est survenue lors de l'ajout des docteurs",
-        variant: 'destructive',
+        title: t.common.error,
+        description: error.message || addDoctor.addSuccess,
+        variant: "destructive",
       });
     } finally {
       setIsAdding(false);
@@ -185,7 +189,7 @@ export function DoctorSecretarySearch({
             value={searchQuery}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            placeholder="Rechercher un docteur par nom ou spécialité..."
+            placeholder={addDoctor.search}
             className="pl-10"
           />
         </div>
@@ -201,7 +205,7 @@ export function DoctorSecretarySearch({
                 <div
                   key={doctor.id}
                   className={`px-4 py-3 text-sm cursor-pointer flex items-center gap-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
-                    isSelected ? 'bg-gray-100 opacity-60' : ''
+                    isSelected ? "bg-gray-100 opacity-60" : ""
                   }`}
                   onClick={() => !isSelected && handleSelectDoctor(doctor)}
                 >
@@ -213,7 +217,7 @@ export function DoctorSecretarySearch({
                         className="h-full w-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = '/default-avatar.png';
+                          target.src = "/default-avatar.png";
                         }}
                       />
                     ) : (
@@ -227,7 +231,7 @@ export function DoctorSecretarySearch({
                       {getDoctorName(doctor)}
                       {isSelected && (
                         <Badge variant="secondary" className="ml-2 text-xs">
-                          Déjà sélectionné
+                          {addDoctor.alreadySelected}
                         </Badge>
                       )}
                     </div>
@@ -246,7 +250,7 @@ export function DoctorSecretarySearch({
       {selectedDoctors.length > 0 && (
         <div className="space-y-3">
           <div className="text-sm font-medium text-gray-700">
-            Docteurs sélectionnés ({selectedDoctors.length}/{maxSelection}):
+            {addDoctor.selected} ({selectedDoctors.length}/{maxSelection}):
           </div>
           <div className="space-y-2">
             {selectedDoctors.map((doctor) => (
@@ -263,7 +267,7 @@ export function DoctorSecretarySearch({
                         className="h-full w-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = '/default-avatar.png';
+                          target.src = "/default-avatar.png";
                         }}
                       />
                     ) : (
@@ -300,11 +304,14 @@ export function DoctorSecretarySearch({
         className="w-full"
       >
         {isAdding ? (
-          <>Ajout en cours...</>
+          <>{t.common.saving}</>
         ) : (
           <>
             <Plus className="h-4 w-4 mr-2" />
-            Ajouter {selectedDoctors.length} docteur(s) au centre
+            {addDoctor.add.replace(
+              "{nbDoctors}",
+              selectedDoctors.length.toString(),
+            )}
           </>
         )}
       </Button>

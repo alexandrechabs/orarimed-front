@@ -1,50 +1,50 @@
-import { useRef, useState } from 'react';
-import { addMinutes, format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useRef, useState } from "react";
+import { addMinutes, format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller, useWatch } from "react-hook-form";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import type { CountryCode } from 'libphonenumber-js';
-import PhoneInput from 'react-phone-number-input';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { CountryCode } from "libphonenumber-js";
+import PhoneInput from "react-phone-number-input";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar as CalendarIcon, Settings } from 'lucide-react';
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar as CalendarIcon, Settings } from "lucide-react";
 
-import { useAuth } from '@/services/auth/useAuth';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '@/services/user/useUser';
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { CalendarEvent } from '@/types/CalendarEvent';
-import RdvParams from './RdvParams';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
-import { DoctorProfile } from '@/types/doctor';
-import { User } from '@/types/user';
-import { useDateLocale, useLanguage } from '@/lib/i18n/LanguageContext';
+import { useAuth } from "@/services/auth/useAuth";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@/services/user/useUser";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { CalendarEvent } from "@/types/CalendarEvent";
+import RdvParams from "./RdvParams";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
+import { DoctorProfile } from "@/types/doctor";
+import { User } from "@/types/user";
+import { useDateLocale, useLanguage } from "@/lib/i18n/LanguageContext";
 
 export function usePatientSearch() {
   const { searchClient } = useUser();
@@ -73,57 +73,58 @@ export function usePatientSearch() {
    ZOD SCHEMA (métier)
 ----------------------------------------- */
 
-const formSchema = z
-  .object({
-    type: z.enum(['appointment', 'absence']),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    startDate: z.date(),
-    endDate: z.date().optional(),
-    isAllDay: z.boolean(),
-    repeatType: z.enum(['none', 'daily', 'dailyWeek', 'weekly']),
-    repeatEndDate: z.date().optional(),
-    patient: z
-      .object({
-        firstname: z.string().min(1, 'Prénom obligatoire'),
-        lastname: z.string().min(1, 'Nom obligatoire'),
-        email: z.string().email('Email invalide').optional(),
-        phoneNumber: z.string().optional(),
-        id: z.number().optional(),
-      })
-      .optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.type === 'absence') return true;
+const formSchema = (error: any) => {
+  return z
+    .object({
+      type: z.enum(["appointment", "absence"]),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      startDate: z.date(),
+      endDate: z.date().optional(),
+      isAllDay: z.boolean(),
+      repeatType: z.enum(["none", "daily", "dailyWeek", "weekly"]),
+      repeatEndDate: z.date().optional(),
+      patient: z
+        .object({
+          firstname: z.string().min(1, error.firstname),
+          lastname: z.string().min(1, error.lastname),
+          email: z.string().email(error.email).optional(),
+          phoneNumber: z.string().optional(),
+          id: z.number().optional(),
+        })
+        .optional(),
+    })
+    .refine(
+      (data) => {
+        if (data.type === "absence") return true;
 
-      // Si c'est un rendez-vous, on vérifie que le patient est valide
-      return (
-        data.patient &&
-        typeof data.patient === 'object' &&
-        data.patient.firstname &&
-        data.patient.lastname
-      );
-    },
-    {
-      path: ['patient'],
-      message:
-        'Un patient avec un nom et un prénom est obligatoire pour une consultation',
-    },
-  )
-  .refine((data) => !data.endDate || data.endDate > data.startDate, {
-    path: ['endDate'],
-    message: 'La fin doit être après le début',
-  })
-  .refine(
-    (data) => data.repeatType === 'none' || data.repeatEndDate !== undefined,
-    {
-      path: ['repeatEndDate'],
-      message: 'Une date de fin est requise pour une répétition',
-    },
-  );
+        // Si c'est un rendez-vous, on vérifie que le patient est valide
+        return (
+          data.patient &&
+          typeof data.patient === "object" &&
+          data.patient.firstname &&
+          data.patient.lastname
+        );
+      },
+      {
+        path: ["patient"],
+        message: error.name,
+      },
+    )
+    .refine((data) => !data.endDate || data.endDate > data.startDate, {
+      path: ["endDate"],
+      message: error.end,
+    })
+    .refine(
+      (data) => data.repeatType === "none" || data.repeatEndDate !== undefined,
+      {
+        path: ["repeatEndDate"],
+        message: error.repeatEnd,
+      },
+    );
+};
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof formSchema>>;
 
 interface Props {
   open: boolean;
@@ -152,27 +153,27 @@ export default function CreateAppointmentModal({
   const { user } = useAuth();
   const { getReasons, getReasonsClient } = useUser();
   const { t } = useLanguage();
-  const allowedCountries: CountryCode[] = ['AL', 'FR', 'GB'];
+  const allowedCountries: CountryCode[] = ["AL", "FR", "GB"];
   const { results, search, clear } = usePatientSearch();
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t.agenda.form.error)),
     defaultValues: {
-      type: 'appointment',
-      title: 'Consultation',
-      description: '',
+      type: "appointment",
+      title: t.agenda.form.consultation,
+      description: "",
       startDate: new Date(),
       endDate: addMinutes(new Date(), 15),
       isAllDay: false,
-      repeatType: 'none',
+      repeatType: "none",
       repeatEndDate: undefined,
       patient: {
-        firstname: '',
-        lastname: '',
-        email: '',
-        phoneNumber: '',
+        firstname: "",
+        lastname: "",
+        email: "",
+        phoneNumber: "",
       },
     },
   });
@@ -188,12 +189,12 @@ export default function CreateAppointmentModal({
     formState: { errors },
   } = form;
 
-  const type = watch('type');
+  const type = watch("type");
 
-  const startDate = useWatch({ control, name: 'startDate' });
-  const title = useWatch({ control, name: 'title' });
+  const startDate = useWatch({ control, name: "startDate" });
+  const title = useWatch({ control, name: "title" });
 
-  const didInit = useRef<false | 'initialized' | 'ready'>(false);
+  const didInit = useRef<false | "initialized" | "ready">(false);
 
   useEffect(() => {
     getReasons(user.id).then((reasons) => {
@@ -223,29 +224,29 @@ export default function CreateAppointmentModal({
       ? new Date(eventToEdit.end)
       : addMinutes(start, 30);
 
-    const type = (eventToEdit as any)?.extendedProps?.type || 'appointment';
+    const type = (eventToEdit as any)?.extendedProps?.type || "appointment";
     const defaultTitle =
-      type === 'absence'
-        ? appointmentTitles.filter((i) => i.type === 'absence')[0]?.name
-        : appointmentTitles.filter((i) => i.type === 'appointment')[0]?.name;
+      type === "absence"
+        ? appointmentTitles.filter((i) => i.type === "absence")[0]?.name
+        : appointmentTitles.filter((i) => i.type === "appointment")[0]?.name;
 
     form.reset({
       type,
       title: eventToEdit?.title || defaultTitle,
-      description: eventToEdit?.description || '',
+      description: eventToEdit?.description || "",
       startDate: start,
       endDate: end,
       isAllDay: eventToEdit?.allDay || false,
-      repeatType: 'none',
+      repeatType: "none",
       repeatEndDate: undefined,
       patient:
-        type === 'appointment'
+        type === "appointment"
           ? {
               id: eventToEdit?.patient?.id,
-              firstname: eventToEdit?.patient?.firstname || '',
-              lastname: eventToEdit?.patient?.lastname || '',
-              email: eventToEdit?.patient?.email || '',
-              phoneNumber: eventToEdit?.patient?.phoneNumber || '',
+              firstname: eventToEdit?.patient?.firstname || "",
+              lastname: eventToEdit?.patient?.lastname || "",
+              email: eventToEdit?.patient?.email || "",
+              phoneNumber: eventToEdit?.patient?.phoneNumber || "",
             }
           : null,
     });
@@ -269,13 +270,13 @@ export default function CreateAppointmentModal({
     if (!startDate) return;
 
     if (!didInit.current) {
-      didInit.current = 'initialized';
+      didInit.current = "initialized";
       return;
     }
 
     // Si on est en mode édition et que c'est le premier rendu après l'ouverture
-    if (eventToEdit && didInit.current === 'initialized') {
-      didInit.current = 'ready';
+    if (eventToEdit && didInit.current === "initialized") {
+      didInit.current = "ready";
       return;
     }
 
@@ -285,7 +286,7 @@ export default function CreateAppointmentModal({
       time = selected.time;
     }
 
-    setValue('endDate', addMinutes(startDate, time), {
+    setValue("endDate", addMinutes(startDate, time), {
       shouldValidate: true,
       shouldDirty: true,
     });
@@ -311,7 +312,7 @@ export default function CreateAppointmentModal({
   ): CalendarEvent {
     let base: CalendarEvent = {
       id: eventToEdit?.id,
-      title: data.title || 'Nouvel événement',
+      title: data.title || t.agenda.newEvent,
       type: data.type,
       description: data.description,
       allDay: data.isAllDay,
@@ -319,7 +320,7 @@ export default function CreateAppointmentModal({
       color: appointmentTitles.find((i) => i.name === data.title)?.color,
     };
 
-    if (data.type === 'appointment' && data.patient) {
+    if (data.type === "appointment" && data.patient) {
       base.patient = {
         id: data.patient.id,
         firstname: data.patient.firstname,
@@ -329,7 +330,7 @@ export default function CreateAppointmentModal({
       };
     }
 
-    if (data.repeatType === 'none') {
+    if (data.repeatType === "none") {
       return {
         ...base,
         start: data.startDate.toISOString(),
@@ -339,20 +340,20 @@ export default function CreateAppointmentModal({
 
     // Pour les événements récurrents
     const daysOfWeek =
-      data.repeatType === 'daily'
+      data.repeatType === "daily"
         ? [0, 1, 2, 3, 4, 5, 6]
-        : data.repeatType === 'dailyWeek'
+        : data.repeatType === "dailyWeek"
           ? [1, 2, 3, 4, 5]
           : [data.startDate.getDay()];
 
     return {
       ...base,
-      startRecur: data.startDate.toISOString().split('T')[0],
-      endRecur: data.repeatEndDate?.toISOString().split('T')[0],
-      startTime: data.isAllDay ? undefined : format(data.startDate, 'HH:mm'),
+      startRecur: data.startDate.toISOString().split("T")[0],
+      endRecur: data.repeatEndDate?.toISOString().split("T")[0],
+      startTime: data.isAllDay ? undefined : format(data.startDate, "HH:mm"),
       endTime: data.isAllDay
         ? undefined
-        : format(data.endDate || data.startDate, 'HH:mm'),
+        : format(data.endDate || data.startDate, "HH:mm"),
       daysOfWeek,
     };
   }
@@ -361,14 +362,14 @@ export default function CreateAppointmentModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className={`${eventToEdit ? 'h-100%' : 'max-h-[95vh]'} w-full ${eventToEdit ? 'max-w-none' : 'md:w-[600px] max-w-3xl'}`}
+          className={`${eventToEdit ? "h-100%" : "max-h-[95vh]"} w-full ${eventToEdit ? "max-w-none" : "md:w-[600px] max-w-3xl"}`}
         >
           <ScrollArea className="max-h-[90vh] pr-2">
             <DialogHeader>
               <DialogTitle className="m-4 text-center">
                 {eventToEdit
                   ? `${
-                      eventToEdit?.type === 'absence'
+                      eventToEdit?.type === "absence"
                         ? t.agenda.updateMissing
                         : t.agenda.updateConsult
                     }`
@@ -390,7 +391,7 @@ export default function CreateAppointmentModal({
             )}
             <form
               onSubmit={handleSubmit(onSubmit, (errors) => {
-                console.error('Erreurs de validation :', errors);
+                console.error("Erreurs de validation :", errors);
               })}
               className="space-y-4 m-1"
             >
@@ -411,30 +412,30 @@ export default function CreateAppointmentModal({
                               value={field.value}
                               onValueChange={(value) => {
                                 const newType = value as
-                                  | 'appointment'
-                                  | 'absence';
+                                  | "appointment"
+                                  | "absence";
                                 field.onChange(newType);
 
                                 // Mettre à jour le titre en fonction du type d'événement
                                 const newTitle = appointmentTitles.find(
                                   (t) => t.type === newType,
                                 )?.name;
-                                form.setValue('title', newTitle);
+                                form.setValue("title", newTitle);
 
                                 // Si on change pour une absence, on réinitialise le patient
-                                if (newType === 'absence') {
-                                  form.setValue('patient', undefined, {
+                                if (newType === "absence") {
+                                  form.setValue("patient", undefined, {
                                     shouldValidate: true,
                                   });
                                 } else {
                                   // Si on change pour un rendez-vous, on initialise un patient vide
                                   form.setValue(
-                                    'patient',
+                                    "patient",
                                     {
-                                      firstname: '',
-                                      lastname: '',
-                                      email: '',
-                                      phoneNumber: '',
+                                      firstname: "",
+                                      lastname: "",
+                                      email: "",
+                                      phoneNumber: "",
                                     },
                                     { shouldValidate: true },
                                   );
@@ -469,7 +470,7 @@ export default function CreateAppointmentModal({
                           className="h-4 w-4"
                           onClick={() =>
                             navigate(
-                              '/doctor-settings?tab=consultation-reasons',
+                              "/doctor-settings?tab=consultation-reasons",
                             )
                           }
                           title={t.agenda.form.addReason}
@@ -529,11 +530,11 @@ export default function CreateAppointmentModal({
                     {/* DESCRIPTION */}
                     <div className="mt-2">
                       <Label>{t.agenda.form.description}</Label>
-                      <Textarea className="mt-2" {...register('description')} />
+                      <Textarea className="mt-2" {...register("description")} />
                     </div>
 
                     {/* PATIENT */}
-                    {type === 'appointment' && (
+                    {type === "appointment" && (
                       <div className="mt-2 mb-4 space-y-4 relative">
                         <Label>{t.agenda.form.patient}</Label>
 
@@ -547,7 +548,7 @@ export default function CreateAppointmentModal({
                                 render={({ field }) => (
                                   <Input
                                     {...field}
-                                    value={field.value ?? ''}
+                                    value={field.value ?? ""}
                                     placeholder={
                                       t.agenda.form.lastNamePlaceHolder
                                     }
@@ -569,7 +570,7 @@ export default function CreateAppointmentModal({
                                       className="w-full px-3 py-2 text-left hover:bg-muted"
                                       onClick={() => {
                                         setValue(
-                                          'patient',
+                                          "patient",
                                           {
                                             id: p.id,
                                             firstname: p.firstname,
@@ -598,8 +599,8 @@ export default function CreateAppointmentModal({
                             {/* PRÉNOM */}
                             <Input
                               placeholder={t.agenda.form.firstNamePlaceHolder}
-                              value={watch('patient.firstname') ?? ''}
-                              {...register('patient.firstname')}
+                              value={watch("patient.firstname") ?? ""}
+                              {...register("patient.firstname")}
                             />
                           </div>
                         </div>
@@ -609,8 +610,8 @@ export default function CreateAppointmentModal({
                           <div className="w-full md:w-1/2">
                             <Input
                               placeholder={t.agenda.form.emailPlaceHolder}
-                              value={watch('patient.email') ?? ''}
-                              {...register('patient.email')}
+                              value={watch("patient.email") ?? ""}
+                              {...register("patient.email")}
                             />
                           </div>
                           <div className="w-full md:w-1/2 mt-4 md:mt-0">
@@ -619,9 +620,9 @@ export default function CreateAppointmentModal({
                               name="phoneNumber"
                               countries={allowedCountries}
                               defaultCountry="AL"
-                              value={watch('patient.phoneNumber') ?? ''}
+                              value={watch("patient.phoneNumber") ?? ""}
                               onChange={(value) =>
-                                setValue('patient.phoneNumber', value || '')
+                                setValue("patient.phoneNumber", value || "")
                               }
                               placeholder={t.agenda.form.phoneNumberPlaceHolder}
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -668,7 +669,9 @@ export default function CreateAppointmentModal({
                                   className="w-full justify-start"
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {format(field.value, 'PPP', { locale: dateLocale })}
+                                  {format(field.value, "PPP", {
+                                    locale: dateLocale,
+                                  })}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="p-0">
@@ -695,7 +698,7 @@ export default function CreateAppointmentModal({
                       </div>
 
                       {/* Heure de début */}
-                      {!watch('isAllDay') && (
+                      {!watch("isAllDay") && (
                         <div>
                           <Label>{t.agenda.form.startHour}</Label>
                           <Controller
@@ -704,9 +707,9 @@ export default function CreateAppointmentModal({
                             render={({ field }) => (
                               <Input
                                 type="time"
-                                value={format(field.value, 'HH:mm')}
+                                value={format(field.value, "HH:mm")}
                                 onChange={(e) => {
-                                  const [h, m] = e.target.value.split(':');
+                                  const [h, m] = e.target.value.split(":");
                                   const newDate = new Date(field.value);
                                   newDate.setHours(+h, +m);
                                   field.onChange(newDate);
@@ -734,8 +737,10 @@ export default function CreateAppointmentModal({
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
                                   {field.value
-                                    ? format(field.value, 'PPP', { locale: dateLocale })
-                                    : 'Choisir une date'}
+                                    ? format(field.value, "PPP", {
+                                        locale: dateLocale,
+                                      })
+                                    : "Choisir une date"}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="p-0">
@@ -767,7 +772,7 @@ export default function CreateAppointmentModal({
                       </div>
 
                       {/* Heure de fin */}
-                      {!watch('isAllDay') && (
+                      {!watch("isAllDay") && (
                         <div>
                           <Label>{t.agenda.form.endHour}</Label>
                           <Controller
@@ -778,12 +783,12 @@ export default function CreateAppointmentModal({
                                 type="time"
                                 value={
                                   field.value
-                                    ? format(field.value, 'HH:mm')
-                                    : ''
+                                    ? format(field.value, "HH:mm")
+                                    : ""
                                 }
                                 onChange={(e) => {
                                   if (!field.value) return;
-                                  const [h, m] = e.target.value.split(':');
+                                  const [h, m] = e.target.value.split(":");
                                   const newDate = new Date(field.value);
                                   newDate.setHours(+h, +m);
                                   field.onChange(newDate);
@@ -829,7 +834,7 @@ export default function CreateAppointmentModal({
                       />
                     </div>
 
-                    {watch('repeatType') !== 'none' && (
+                    {watch("repeatType") !== "none" && (
                       <div>
                         <Label>{t.agenda.form.repeatUntil}</Label>
                         <Controller
@@ -844,7 +849,7 @@ export default function CreateAppointmentModal({
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
                                   {field.value
-                                    ? format(field.value, 'PPP', { locale: fr })
+                                    ? format(field.value, "PPP", { locale: fr })
                                     : t.agenda.form.chooseDate}
                                 </Button>
                               </PopoverTrigger>

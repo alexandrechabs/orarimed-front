@@ -9,10 +9,11 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useAuth } from "@/services/auth/useAuth";
 
-const loginSchema = z.object({
-  email: z.string().email("Email invalide"),
-  password: z.string().min(1, "Le mot de passe est requis"),
-});
+const loginSchema = (formError: { email: string; password: string }) =>
+  z.object({
+    email: z.string().email(formError.email),
+    password: z.string().min(1, formError.password),
+  });
 
 export function LoginForm() {
   const { t } = useLanguage();
@@ -22,7 +23,7 @@ export function LoginForm() {
   const location = useLocation();
 
   const form = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema(t.auth.formError)),
     defaultValues: {
       email: "",
       password: "",
@@ -42,8 +43,8 @@ export function LoginForm() {
       navigate(from, { state: additionalState, replace: true });
     } catch (error) {
       toast({
-        title: "Erreur de connexion",
-        description: error.message || "Identifiants invalides",
+        title: t.common.error,
+        description: error.message || t.auth.formError.login,
         variant: "destructive",
       });
     }

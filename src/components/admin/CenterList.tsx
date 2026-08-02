@@ -503,7 +503,7 @@ export default function CenterList() {
           />
           <div className="flex justify-end space-x-2 mt-4">
             <Button variant="outline" onClick={() => setIsAddDoctorOpen(false)}>
-              Annuler
+              {t.common.cancel}
             </Button>
           </div>
         </DialogContent>
