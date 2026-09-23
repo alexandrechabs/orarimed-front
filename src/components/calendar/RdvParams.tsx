@@ -1,16 +1,17 @@
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Armchair, Stethoscope, Ban, CalendarOff, Check } from 'lucide-react';
-import { CalendarEvent } from '@/types/CalendarEvent';
-import { useUser } from '@/services/user/useUser';
-import { toast } from '@/components/ui/use-toast';
-import { Separator } from '../ui/separator';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
-import { useState } from 'react';
-import { Card } from '../ui/card';
-import { format, parseISO } from 'date-fns';
-import * as LucideIcons from 'lucide-react';
-import { useLanguage, useDateLocale } from '@/lib/i18n/LanguageContext';
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Armchair, Stethoscope, Ban, CalendarOff, Check } from "lucide-react";
+import { CalendarEvent } from "@/types/CalendarEvent";
+import { useUser } from "@/services/user/useUser";
+import { toast } from "@/components/ui/use-toast";
+import { Separator } from "../ui/separator";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
+import { useState } from "react";
+import { Card } from "../ui/card";
+import { format, parseISO } from "date-fns";
+import * as LucideIcons from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useLanguage, useDateLocale } from "@/lib/i18n/LanguageContext";
 
 interface Props {
   eventToEdit: CalendarEvent;
@@ -33,12 +34,12 @@ export default function RdvParams({ eventToEdit }: Props) {
     eventToEdit.status = status;
     await updateEvent(eventToEdit);
     toast({
-      title: 'Statut du rendez-vous modifié',
-      description: 'Le statut du rendez-vous a été modifié avec succès',
+      title: "Statut du rendez-vous modifié",
+      description: "Le statut du rendez-vous a été modifié avec succès",
     });
   };
   const formatDate = (isoDate: string) => {
-    return format(parseISO(isoDate), 'PPPPp', {
+    return format(parseISO(isoDate), "PPPPp", {
       locale: dateLocale,
     });
   };
@@ -51,6 +52,25 @@ export default function RdvParams({ eventToEdit }: Props) {
     setNotificationsEvents(await getRdvNotificationsDoctor(eventToEdit.id));
   };
 
+  const returnColor = (status: string) => {
+    let color = "#000000";
+    if (status === "sent" || status === "delivered") {
+      color = "#22c55e"; // vert
+    } else if (
+      status === "failed" ||
+      status === "blocked" ||
+      status === "invalid_email" ||
+      status === "spam"
+    ) {
+      color = "#ef4444"; // rouge
+    } else if (status === "pending") {
+      color = "#facc15"; // jaune
+    } else if (status === "opened" || status === "unique_opened") {
+      color = "#3b82f6"; // bleu
+    }
+    return color;
+  };
+
   return (
     <>
       {eventToEdit && (
@@ -58,8 +78,8 @@ export default function RdvParams({ eventToEdit }: Props) {
           <Label className="mb-2">{t.agenda.eventStatus}</Label>
           <Button
             type="button"
-            onClick={() => changeStatus('waiting')}
-            variant={eventToEdit.status === 'waiting' ? 'default' : 'outline'}
+            onClick={() => changeStatus("waiting")}
+            variant={eventToEdit.status === "waiting" ? "default" : "outline"}
             className="my-2 p-2 w-full justify-start text-xs"
           >
             <Armchair />
@@ -67,9 +87,9 @@ export default function RdvParams({ eventToEdit }: Props) {
           </Button>
           <Button
             type="button"
-            onClick={() => changeStatus('consultation')}
+            onClick={() => changeStatus("consultation")}
             variant={
-              eventToEdit.status === 'consultation' ? 'default' : 'outline'
+              eventToEdit.status === "consultation" ? "default" : "outline"
             }
             className="my-1 p-2 w-full justify-start text-xs"
           >
@@ -78,8 +98,8 @@ export default function RdvParams({ eventToEdit }: Props) {
           </Button>
           <Button
             type="button"
-            onClick={() => changeStatus('finished')}
-            variant={eventToEdit.status === 'finished' ? 'finished' : 'outline'}
+            onClick={() => changeStatus("finished")}
+            variant={eventToEdit.status === "finished" ? "finished" : "outline"}
             className="my-1 p-2 w-full justify-start text-xs"
           >
             <Check />
@@ -87,9 +107,9 @@ export default function RdvParams({ eventToEdit }: Props) {
           </Button>
           <Button
             type="button"
-            onClick={() => changeStatus('abortExcused')}
+            onClick={() => changeStatus("abortExcused")}
             variant={
-              eventToEdit.status === 'abortExcused' ? 'destructive' : 'outline'
+              eventToEdit.status === "abortExcused" ? "destructive" : "outline"
             }
             className="my-1 p-2 w-full justify-start text-xs"
           >
@@ -98,8 +118,8 @@ export default function RdvParams({ eventToEdit }: Props) {
           </Button>
           <Button
             type="button"
-            onClick={() => changeStatus('abort')}
-            variant={eventToEdit.status === 'abort' ? 'destructive' : 'outline'}
+            onClick={() => changeStatus("abort")}
+            variant={eventToEdit.status === "abort" ? "destructive" : "outline"}
             className="my-1 p-2 w-full justify-start text-xs"
           >
             <Ban />
@@ -148,16 +168,16 @@ export default function RdvParams({ eventToEdit }: Props) {
               )
               .map((event) => {
                 let Icon;
-                if (event.status === 'waiting') {
-                  Icon = LucideIcons['Armchair'];
-                } else if (event.status === 'consultation') {
-                  Icon = LucideIcons['Stethoscope'];
-                } else if (event.status === 'finished') {
-                  Icon = LucideIcons['Check'];
-                } else if (event.status === 'abortExcused') {
-                  Icon = LucideIcons['CalendarOff'];
-                } else if (event.status === 'abort') {
-                  Icon = LucideIcons['Ban'];
+                if (event.status === "waiting") {
+                  Icon = LucideIcons["Armchair"];
+                } else if (event.status === "consultation") {
+                  Icon = LucideIcons["Stethoscope"];
+                } else if (event.status === "finished") {
+                  Icon = LucideIcons["Check"];
+                } else if (event.status === "abortExcused") {
+                  Icon = LucideIcons["CalendarOff"];
+                } else if (event.status === "abort") {
+                  Icon = LucideIcons["Ban"];
                 }
                 return (
                   <Card
@@ -169,7 +189,7 @@ export default function RdvParams({ eventToEdit }: Props) {
                       <p className="text-sm">{event.title}</p>
                       <p className="text-xs">{formatDate(event.start)}</p>
                       <p className="text-xs flex">
-                        {t.agenda.status} :{' '}
+                        {t.agenda.status} :{" "}
                         {Icon && <Icon className="h-4 w-4 shrink-0" />}
                         {t.event.status[event.status]}
                       </p>
@@ -196,6 +216,7 @@ export default function RdvParams({ eventToEdit }: Props) {
                   new Date(b.createdAt).getTime(),
               )
               .map((notification) => {
+                let color = returnColor(notification.status);
                 return (
                   <Card className={`m-2 p-2`} key={notification.id}>
                     <div>
@@ -205,6 +226,12 @@ export default function RdvParams({ eventToEdit }: Props) {
                       <p className="text-xs">
                         {formatDate(notification.createdAt)}
                       </p>
+                      <Badge
+                        variant="secondary"
+                        style={{ backgroundColor: `${color}30` }}
+                      >
+                        {t.event.notificationStatus[notification.status]}
+                      </Badge>
                     </div>
                   </Card>
                 );

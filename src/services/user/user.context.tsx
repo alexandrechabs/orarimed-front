@@ -45,6 +45,7 @@ type UserContextType = {
     duration?: number,
     numberOfDays?: number,
   ) => Promise<any[]>;
+  getEvent: (id: string) => Promise<any>;
   getEvents: (dateRange?: DateRange, userId?: string) => Promise<EventInput[]>;
   createEvent: (event: EventInput) => Promise<EventInput>;
   updateEvent: (event: EventInput) => Promise<EventInput>;
@@ -185,6 +186,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const data = await userService.getPatient(id);
     return data;
   }
+
+  const getEvent = useCallback(async (id: string): Promise<any> => {
+    setLoading(true);
+    try {
+      const data: any = await userService.getEvent(id);
+      return data;
+    } catch (error) {
+      console.error("Error fetching event:", error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const getEvents = useCallback(
     async (dateRange?: DateRange, userId?: string): Promise<EventInput[]> => {
@@ -506,6 +520,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         openingHour,
         searchPatient,
         getPatient,
+        getEvent,
         getEvents,
         createEvent,
         updateEvent,

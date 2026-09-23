@@ -9,6 +9,7 @@ import {
   UserX,
   Activity,
 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import { useUser } from "@/services/user/useUser";
 import {
   format,
@@ -124,6 +125,8 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
       .filter(
         (event) =>
           event.status !== "finished" &&
+          event.status !== "abort" &&
+          event.status !== "abortExcused" &&
           new Date(event.start as string) > new Date(),
       )
       .sort(
@@ -251,10 +254,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
       </Card>
 
       {/* Carte: Prochain rendez-vous */}
-      <Card
-        className="hover:shadow-lg transition-shadow col-span-2"
-        onClick={() => navigate("/calendar")}
-      >
+      <Card className="hover:shadow-lg transition-shadow col-span-2">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
             {t.stats.nextAppointments}
@@ -263,45 +263,63 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
         </CardHeader>
         <CardContent>
           {stats.nextAppointments.length > 0 ? (
-            stats.nextAppointments.map((event) => (
-              <div
-                key={event.id}
-                className="flex items-center justify-between bg-gray-100 rounded-lg p-2 mb-2 last:mb-0 cursor-pointer shadow-sm hover:shadow-lg transition-shadow"
-                style={{
-                  borderLeft: `8px solid ${event.color}`,
-                  backgroundColor: `${event.color}20`,
-                }}
-              >
-                <div>
-                  <div className="text-base font-semibold">
-                    {event.patient?.firstname} {event.patient?.lastname}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {event.title}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {format(
-                      new Date(event.start as string),
-                      "EEEE d MMMM yyyy",
-                      {
-                        locale: dateLocale,
-                      },
-                    )}
+            stats.nextAppointments.map((event) => {
+              let Icon;
+              if (event.status === "waiting") {
+                Icon = LucideIcons["Armchair"];
+              } else if (event.status === "consultation") {
+                Icon = LucideIcons["Stethoscope"];
+              } else if (event.status === "finished") {
+                Icon = LucideIcons["Check"];
+              } else if (event.status === "abortExcused") {
+                Icon = LucideIcons["CalendarOff"];
+              } else if (event.status === "abort") {
+                Icon = LucideIcons["Ban"];
+              }
+              return (
+                <div
+                  key={event.id}
+                  onClick={() => navigate("/calendar?id=" + event.id)}
+                  className="flex items-center justify-between bg-gray-100 rounded-lg p-2 mb-2 last:mb-0 cursor-pointer shadow-sm hover:shadow-lg transition-shadow"
+                  style={{
+                    borderLeft: `8px solid ${event.color}`,
+                    backgroundColor: `${event.color}20`,
+                  }}
+                >
+                  <div>
+                    <div className="text-base font-semibold">
+                      {event.patient?.firstname} {event.patient?.lastname}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {event.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {format(
+                        new Date(event.start as string),
+                        "EEEE d MMMM yyyy",
+                        {
+                          locale: dateLocale,
+                        },
+                      )}
 
-                    <span className="ml-4">
-                      {formatTime(event.start as string)} -{" "}
-                      {formatTime(event.end as string)}
-                    </span>
+                      <span className="ml-4">
+                        {formatTime(event.start as string)} -{" "}
+                        {formatTime(event.end as string)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                    <Badge
+                      variant="secondary"
+                      style={{ backgroundColor: `${event.color}30` }}
+                    >
+                      {formatTime(event.start as string)}
+                    </Badge>
                   </div>
                 </div>
-                <Badge
-                  variant="secondary"
-                  style={{ backgroundColor: `${event.color}30` }}
-                >
-                  {formatTime(event.start as string)}
-                </Badge>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="text-center text-muted-foreground">
               <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />

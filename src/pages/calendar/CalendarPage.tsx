@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { useSearchParams } from "react-router-dom";
 
 const CalendarPage = () => {
   const { user } = useAuth();
@@ -41,12 +42,16 @@ const CalendarPage = () => {
     events,
     createEvent,
     getEvents,
+    getEvent,
     updateEvent,
     openingHour,
     getOpeningHours,
     getSecretaryDoctors,
   } = useUser();
   const { t, language } = useLanguage();
+
+  const [params, setSearchParams] = useSearchParams();
+  const eventId = params.get("id");
   const dateLocale = useDateLocale();
   const { toast } = useToast();
   const [selectedDoctor, setSelectedDoctor] = useState<
@@ -71,6 +76,18 @@ const CalendarPage = () => {
     formattedDate: string;
     formattedTime: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (eventId) {
+      (async () => {
+        const event = await getEvent(eventId);
+        if (event) {
+          setEditingEvent(event);
+          setIsModalOpen(true);
+        }
+      })();
+    }
+  }, [eventId, getEvent]);
 
   useEffect(() => {
     setSelectedDoctor(user);
@@ -144,8 +161,6 @@ const CalendarPage = () => {
   }, [isVisible]);
 
   const getOpeningHour = async (doctorId?: string) => {
-    console.log(selectedDoctor);
-
     getOpeningHours(doctorId || selectedDoctor?.id || user?.id).then(
       (hours) => {
         // récupère le min de hours.openTime et le max de hours.closeTime
@@ -372,9 +387,7 @@ const CalendarPage = () => {
             formatTime(event.start) + " - " + event.title
           ) : (
             <>
-              <span
-                className={`flex items-center gap-2 ${abort ? "line-through" : ""}`}
-              >
+              <span className={`flex gap-2 ${abort ? "line-through" : ""}`}>
                 {Icon && <Icon className="h-4 w-4 shrink-0" />}
                 {formatTime(event.start)} -{" "}
                 {isVisible ? event.extendedProps?.patient?.firstname : "******"}{" "}
@@ -646,6 +659,13 @@ const CalendarPage = () => {
         onOpenChange={(open) => {
           if (!open) {
             setEditingEvent(null);
+            setSearchParams(
+              (currentParams) => {
+                currentParams.delete("id");
+                return currentParams;
+              },
+              { replace: true },
+            );
           }
           setIsModalOpen(open);
         }}

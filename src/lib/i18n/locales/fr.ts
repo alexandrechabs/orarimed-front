@@ -575,6 +575,17 @@ const fr: TranslationKey = {
       abort: "Annulé non excusé",
       abortExcused: "Annulé excusé",
     },
+    notificationStatus: {
+      pending: "En attente",
+      blocked: "Bloqué",
+      invalid_email: "Email invalide",
+      sent: "Envoyé",
+      opened: "Ouvert",
+      unique_opened: "Ouvert",
+      spam: "Spam",
+      delivered: "Délivré",
+      failed: "Échoué",
+    },
     type: {
       mail_appointment_reminder: "Mail de rappel de rendez-vous",
       mail_appointment_cancellation: "Mail d'annulation de rendez-vous",
@@ -716,6 +727,8 @@ const fr: TranslationKey = {
     saveReason: "Les motifs de consultation ont été enregistrés avec succès.",
     reasonInformation:
       "Vous pouvez désactiver un motif de consulation de la prise de rendez-vous en ligne, il ne sera visible que pour créer vos rendez-vous depuis votre agenda.",
+    activate: "Activer",
+    deactivate: "Désactiver",
   },
   cabinetParams: {
     title: "Paramètres du Cabinet",

@@ -244,7 +244,10 @@ export default function ConsultationReasons({
             {reasons.map((reason) => (
               <div
                 key={reason.id || reason.tempId}
-                className="grid grid-cols-3 lg:grid-cols-7 gap-6 p-2 border rounded-lg"
+                className={
+                  "grid grid-cols-3 lg:grid-cols-7 gap-6 p-2 border rounded-lg " +
+                  (reason.active ? "" : "bg-gray-200")
+                }
               >
                 {reason.isEditing ? (
                   <>
@@ -348,7 +351,14 @@ export default function ConsultationReasons({
                   </>
                 ) : (
                   <>
-                    <div className="col-span-3 my-auto">{reason.name}</div>
+                    <div
+                      className={
+                        "col-span-3 my-auto " +
+                        (reason.active ? "" : "text-muted-foreground")
+                      }
+                    >
+                      {reason.name}
+                    </div>
                     <div className="col-span-1 text-sm my-auto text-muted-foreground">
                       {reason.duration} {t.doctorParams.minutes}
                     </div>
@@ -383,8 +393,8 @@ export default function ConsultationReasons({
                         }
                         title={
                           reason.active === false
-                            ? t.common.activate
-                            : t.common.deactivate
+                            ? t.doctorParams.activate
+                            : t.doctorParams.deactivate
                         }
                         className="mx-1"
                       >
@@ -399,11 +409,7 @@ export default function ConsultationReasons({
                         variant="destructive"
                         size="icon"
                         onClick={() => deleteReason(reason)}
-                        title={
-                          reason.active === false
-                            ? t.common.activate
-                            : t.common.deactivate
-                        }
+                        title={t.common.activate}
                       >
                         <Trash className="h-4 w-4" />
                       </Button>

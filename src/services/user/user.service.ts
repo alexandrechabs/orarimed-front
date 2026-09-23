@@ -49,6 +49,25 @@ export const userService = {
     return res.json() as Promise<any>;
   },
 
+  async getEvent(id: string) {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const res = await fetch(`${API_URL}/events/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error("Get event failed");
+    return res.json() as Promise<any>;
+  },
+
   async getEvents(dateRange?: DateRange, userId?: string) {
     const token = localStorage.getItem("auth_token");
 

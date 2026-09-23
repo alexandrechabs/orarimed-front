@@ -569,6 +569,17 @@ const en: TranslationKey = {
       abort: "Abort not excused",
       abortExcused: "Abort excused",
     },
+    notificationStatus: {
+      pending: "Pending",
+      blocked: "Blocked",
+      invalid_email: "Invalid Email",
+      sent: "Sent",
+      opened: "Opened",
+      unique_opened: "Opened",
+      spam: "Spam",
+      delivered: "Delivered",
+      failed: "Failed",
+    },
     type: {
       mail_appointment_reminder: "Mail appointment reminder",
       mail_appointment_cancellation: "Mail appointment cancellation",
@@ -709,6 +720,8 @@ const en: TranslationKey = {
     saveReason: "Consultation reasons saved successfully",
     reasonInformation:
       "You can disable a consultation reason from online appointment booking, it will only be visible to create your appointments from your calendar.",
+    activate: "Activate",
+    deactivate: "Deactivate",
   },
   cabinetParams: {
     title: "Cabinet Settings",

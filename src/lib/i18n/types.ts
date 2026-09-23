@@ -464,6 +464,17 @@ export type TranslationKey = {
       abort: string;
       abortExcused: string;
     };
+    notificationStatus: {
+      pending: string;
+      blocked: string;
+      invalid_email: string;
+      sent: string;
+      opened: string;
+      unique_opened: string;
+      spam: string;
+      delivered: string;
+      failed: string;
+    };
     type: {
       mail_appointment_reminder: string;
       mail_appointment_cancellation: string;
@@ -596,6 +607,8 @@ export type TranslationKey = {
     saveOpeningHour: string;
     saveReason: string;
     reasonInformation: string;
+    activate: string;
+    deactivate: string;
   };
   cabinetParams: {
     title: string;

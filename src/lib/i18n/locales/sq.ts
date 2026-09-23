@@ -571,6 +571,17 @@ const sq: TranslationKey = {
       abort: "Anuluar pa arsye",
       abortExcused: "Anuluar i vrapuar",
     },
+    notificationStatus: {
+      pending: "Në pritje",
+      blocked: "I bllokuar",
+      invalid_email: "Email i pavlefshëm",
+      sent: "I dërguar",
+      opened: "I hapur",
+      unique_opened: "I hapur",
+      spam: "Spam",
+      delivered: "I dërguar",
+      failed: "I dështuar",
+    },
     type: {
       mail_appointment_reminder: "Email kujtese për takimin",
       mail_appointment_cancellation: "Email për anulimin e takimit",
@@ -712,6 +723,8 @@ const sq: TranslationKey = {
     saveReason: "Arsyet e takimit u ruajtën me sukses",
     reasonInformation:
       "Arsyet e takimit janë të rëndësishme për të informuar pacientët tuaj për llojet e shërbimeve që ofroni dhe për të menaxhuar më mirë oraret tuaja.",
+    activate: "Aktivizo",
+    deactivate: "Çaktivizo",
   },
   cabinetParams: {
     title: "Parametrat e Kabinetit",
