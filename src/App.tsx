@@ -33,7 +33,10 @@ import { EmailConfirmationPage } from "./pages/auth/EmailConfirmationPage";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
 import { ProfessionalOnboardingPage } from "./pages/onboarding/ProfessionalOnboardingPage";
-import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
+import AdminOfficeSettingsPage from "./pages/admin/AdminOfficeSettingsPage";
+import AdminDoctorSettingsPage from "./pages/admin/AdminDoctorSettingsPage";
+import AdminSecretarySettingsPage from "./pages/admin/AdminSecretarySettingsPage";
+import AdminSpecialitiesSettingsPage from "./pages/admin/AdminSpecialitiesSettingsPage";
 import AdminArticlesPage from "./pages/admin/ArticlePage";
 import DoctorPage from "./pages/DoctorPage";
 import SearchPage from "./pages/SearchPage";
@@ -337,10 +340,34 @@ const App = () => (
                 }
               />
               <Route
-                path="/admin-settings"
+                path="/admin-offices"
                 element={
                   <ProtectedRouteByRole allowedRoles={[4]}>
-                    <AdminSettingsPage />
+                    <AdminOfficeSettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-doctors"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[4]}>
+                    <AdminDoctorSettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-secretaries"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[4]}>
+                    <AdminSecretarySettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-specialities"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[4]}>
+                    <AdminSpecialitiesSettingsPage />
                   </ProtectedRouteByRole>
                 }
               />

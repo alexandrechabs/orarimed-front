@@ -9,6 +9,10 @@ import {
   X,
   Settings,
   Newspaper,
+  Building2,
+  Stethoscope,
+  UsersRound,
+  Tags,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoIcon from "@/assets/logo-icon.png";
@@ -79,9 +83,27 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       role: [2],
     },
     {
-      name: t.nav.connected.admin,
-      href: "/admin-settings",
-      icon: Settings,
+      name: t.adminSettings.menu.office,
+      href: "/admin-offices",
+      icon: Building2,
+      role: [4],
+    },
+    {
+      name: t.adminSettings.menu.doctor,
+      href: "/admin-doctors",
+      icon: Stethoscope,
+      role: [4],
+    },
+    {
+      name: t.adminSettings.menu.secretary,
+      href: "/admin-secretaries",
+      icon: UsersRound,
+      role: [4],
+    },
+    {
+      name: t.adminSettings.menu.specialities,
+      href: "/admin-specialities",
+      icon: Tags,
       role: [4],
     },
     {

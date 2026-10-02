@@ -266,9 +266,7 @@ export default function CenterList() {
                         />
                       </div>
                       <div className="grid">
-                        <span className="truncate text-sm m-auto">
-                          {center.name}
-                        </span>
+                        <span className="text-sm m-auto">{center.name}</span>
                       </div>
                     </div>
                   </TableCell>
