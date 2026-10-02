@@ -132,6 +132,7 @@ export default function AddArticleForm({
   };
 
   const handleFormSubmit = async (data: Article) => {
+    console.log("Submitting form with data:", data);
     try {
       setIsSubmitting(true);
       const payload: Article = {
@@ -163,29 +164,40 @@ export default function AddArticleForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-screen overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {editingArticle ? "Éditer l'article" : "Créer un nouvel article"}
+            {editingArticle
+              ? t.article.form.titleUpdate
+              : t.article.form.titleCreate}
           </DialogTitle>
-          <DialogDescription>
-            Remplissez les détails de l'article
-          </DialogDescription>
         </DialogHeader>
 
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(handleFormSubmit)}
+            className="space-y-4 mt-4"
+          >
             {/* Infos générales */}
             <div className="space-y-3 border-b pb-4">
-              <h3 className="font-semibold">Informations générales</h3>
+              <h3 className="font-semibold">
+                {t.article.form.generalInformation}
+              </h3>
 
               <div>
-                <label className="text-sm font-medium">Auteur</label>
-                <Input {...register("author")} placeholder="Nom de l'auteur" />
+                <label className="text-sm font-medium">
+                  {t.article.form.author}
+                </label>
+                <Input
+                  {...register("author")}
+                  placeholder={t.article.form.authorPlaceholder}
+                />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Catégorie</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.category}
+                </label>
                 <Select
                   value={watch("categoryId")?.toString() || undefined}
                   onValueChange={(value: any) => setValue("categoryId", value)}
@@ -215,7 +227,9 @@ export default function AddArticleForm({
               </div>
 
               <div>
-                <label className="text-sm font-medium">Statut</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.status}
+                </label>
                 <Select
                   value={watch("status") || "draft"}
                   onValueChange={(value: any) => setValue("status", value)}
@@ -224,16 +238,22 @@ export default function AddArticleForm({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Brouillon</SelectItem>
-                    <SelectItem value="published">Publié</SelectItem>
-                    <SelectItem value="archived">Archivé</SelectItem>
+                    <SelectItem value="draft">
+                      {t.article.form.statusDraft}
+                    </SelectItem>
+                    <SelectItem value="published">
+                      {t.article.form.statusPublished}
+                    </SelectItem>
+                    <SelectItem value="archived">
+                      {t.article.form.statusArchived}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
                 <label className="text-sm font-medium justify-between flex items-center mb-2">
-                  Image vedette
+                  {t.article.form.picture}
                   {editingArticle && editingArticle.featuredImage && (
                     <Button
                       onClick={(e) => {
@@ -272,13 +292,17 @@ export default function AddArticleForm({
 
             {/* Langues */}
             <div className="space-y-3 border-b pb-4">
-              <h3 className="font-semibold">Contenu</h3>
+              <h3 className="font-semibold">{t.article.form.content}</h3>
 
               <div>
-                <label className="text-sm font-medium">Langue</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.language}
+                </label>
                 <Select
                   value={(watch("localeId") || selectedLocale).toString()}
                   onValueChange={(value) => {
+                    console.log(value);
+
                     const n = parseInt(value);
                     setSelectedLocale(n);
                     setValue("localeId", n);
@@ -296,53 +320,63 @@ export default function AddArticleForm({
               </div>
 
               <div>
-                <label className="text-sm font-medium">Titre *</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.titleForm}
+                </label>
                 <Input
                   {...register("title")}
-                  placeholder="Titre de l'article"
+                  placeholder={t.article.form.titleFormPlaceholder}
                   required
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Slug *</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.Slug}
+                </label>
                 <Input
                   {...register("slug")}
-                  placeholder="titre-de-larticle"
+                  placeholder={t.article.form.SlugPlaceholder}
                   required
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Extrait</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.extract}
+                </label>
                 <Input
                   {...register("excerpt")}
-                  placeholder="Court résumé de l'article"
+                  placeholder={t.article.form.extractPlaceholder}
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Contenu *</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.description}
+                </label>
                 <textarea
                   {...register("content")}
-                  placeholder="Contenu de l'article"
+                  placeholder={t.article.form.descriptionPlaceholder}
                   className="w-full h-32 p-2 border rounded-md text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Description SEO</label>
+                <label className="text-sm font-medium">
+                  {t.article.form.descriptionSEO}
+                </label>
                 <Input
                   {...register("seoDescription")}
-                  placeholder="Description pour les moteurs de recherche"
+                  placeholder={t.article.form.descriptionSEOPlaceholder}
                 />
               </div>
             </div>
 
             <DialogFooter>
               <Button variant="outline" onClick={onClose} type="button">
-                Annuler
+                {t.common.cancel}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting

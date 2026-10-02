@@ -33,9 +33,11 @@ import { categoryService } from "@/services/user/category.service";
 import AddArticleForm from "@/components/admin/AddArticleForm";
 import ArticleCategoryManager from "@/components/admin/ArticleCategoryManager";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function ArticlePage() {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -172,7 +174,7 @@ export default function ArticlePage() {
             }}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Créer un article
+            {t.article.addButton}
           </Button>
           {categories && (
             <ArticleCategoryManager
@@ -188,12 +190,14 @@ export default function ArticlePage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Titre</TableHead>
-              <TableHead>Catégorie</TableHead>
-              <TableHead>Auteur</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Créé le</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t.article.table.title}</TableHead>
+              <TableHead>{t.article.table.category}</TableHead>
+              <TableHead>{t.article.table.author}</TableHead>
+              <TableHead>{t.article.table.status}</TableHead>
+              <TableHead>{t.article.table.createdAt}</TableHead>
+              <TableHead className="text-right">
+                {t.article.table.actions}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -211,7 +215,7 @@ export default function ArticlePage() {
                   colSpan={6}
                   className="text-center py-8 text-muted-foreground"
                 >
-                  Aucun article pour le moment
+                  {t.article.table.noArticles}
                 </TableCell>
               </TableRow>
             ) : (
@@ -236,7 +240,7 @@ export default function ArticlePage() {
                           onClick={() => handleEditClick(article)}
                         >
                           <Pencil className="w-4 h-4 mr-2" />
-                          Éditer
+                          {t.common.modify}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => {
@@ -246,7 +250,7 @@ export default function ArticlePage() {
                           className="text-red-600"
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
-                          Supprimer
+                          {t.common.delete}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -276,19 +280,17 @@ export default function ArticlePage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer l'article</AlertDialogTitle>
+            <AlertDialogTitle>{t.article.delete.title}</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer «{" "}
-              {articleToDelete && articleToDelete.title} » ? Cette action ne
-              peut pas être annulée.
+              {t.article.delete.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDeleteArticle}
             className="bg-red-600"
           >
-            Supprimer
+            {t.common.delete}
           </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>

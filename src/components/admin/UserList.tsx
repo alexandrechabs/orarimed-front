@@ -807,7 +807,7 @@ export default function UserList({ type }: { type: string }) {
                             onClick={() => handleEditDoctorList(user)}
                           >
                             <CalendarDays className="mr-2 h-4 w-4" />
-                            <span>{doctor.actions.seeProfile}</span>
+                            <span>{doctor.actions.addDoctor}</span>
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
@@ -1018,7 +1018,10 @@ export default function UserList({ type }: { type: string }) {
           <DoctorSecretarySearch
             secretaryId={editingUser?.id}
             secretaryName={editingUser?.firstname}
-            onSuccess={() => setIsAddDoctorToSecretaryOpen(false)}
+            onSuccess={() => {
+              setIsAddDoctorToSecretaryOpen(false);
+              loadUsers();
+            }}
             maxSelection={50}
           />
           <div className="flex justify-end space-x-2 mt-4">

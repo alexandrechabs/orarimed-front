@@ -74,6 +74,7 @@ const Actualities = () => {
                     <h2 className="font-display text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                       {article.title}
                     </h2>
+                    -
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                       {article.excerpt}
                     </p>
@@ -88,7 +89,7 @@ const Actualities = () => {
                         to={`/actualities/${locale ? locale : language}/${article.slug}`}
                         className="flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all"
                       >
-                        Lexo më shumë
+                        {t.actualities.readMore}
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                     </div>

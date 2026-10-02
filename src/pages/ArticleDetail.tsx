@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { articleService } from "@/services/user/article.service";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Article } from "@/types/article";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ArticleDetail() {
   const { locale, slug } = useParams();
+  const { t } = useLanguage();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +51,9 @@ export default function ArticleDetail() {
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="pt-24 lg:pt-28">
-          <div className="container mx-auto px-4 lg:px-8">Chargement...</div>
+          <div className="container mx-auto px-4 lg:px-8">
+            {t.common.loading}
+          </div>
         </main>
         <Footer />
       </div>
@@ -60,7 +65,7 @@ export default function ArticleDetail() {
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="pt-24 lg:pt-28">
-          <div className="container mx-auto px-4 lg:px-8">Erreur: {error}</div>
+          <div className="container mx-auto px-4 lg:px-8"> {error}</div>
         </main>
         <Footer />
       </div>
@@ -73,6 +78,14 @@ export default function ArticleDetail() {
       <main className="pt-24 lg:pt-28">
         <section className="py-12 lg:py-20">
           <div className="container mx-auto px-4 lg:px-8 max-w-3xl">
+            <Link
+              to="/actualities/"
+              className="flex items-center gap-1 text-primary text-sm mb-4 font-medium hover:gap-2 transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t.actualities.back}
+            </Link>
+
             {article.featuredImage && (
               <img
                 src={`${API_URL}/articles/${article.id}/image/${article.featuredImage}`}
@@ -83,7 +96,11 @@ export default function ArticleDetail() {
 
             <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              {article?.author && <span>Par {article.author} · </span>}
+              {article?.author && (
+                <span>
+                  {t.actualities.by} {article.author} ·{" "}
+                </span>
+              )}
               {article.publishedAt &&
                 new Date(article.publishedAt).toLocaleDateString()}
             </p>

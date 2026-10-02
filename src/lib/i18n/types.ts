@@ -74,6 +74,9 @@ export type TranslationKey = {
     title: string;
     subtitle: string;
     disclaimer: string;
+    readMore: string;
+    back: string;
+    by: string;
   };
 
   professionalsPage: {
@@ -795,6 +798,7 @@ export type TranslationKey = {
         experiences: string;
         disable: string;
         enable: string;
+        addDoctor: string;
       };
       addDoctor: {
         title: string;
@@ -932,6 +936,56 @@ export type TranslationKey = {
       updateError: string;
       deleted: string;
       deleteError: string;
+    };
+    addButton: string;
+    form: {
+      titleCreate: string;
+      titleUpdate: string;
+      generalInformation: string;
+      author: string;
+      authorPlaceholder: string;
+      category: string;
+      noCategory: string;
+      status: string;
+      statusDraft: string;
+      statusPublished: string;
+      statusArchived: string;
+      picture: string;
+      content: string;
+      language: string;
+      titleForm: string;
+      titleFormPlaceholder: string;
+      Slug: string;
+      SlugPlaceholder: string;
+      extract: string;
+      extractPlaceholder: string;
+      description: string;
+      descriptionPlaceholder: string;
+      descriptionSEO: string;
+      descriptionSEOPlaceholder: string;
+    };
+    success: {
+      created: string;
+      updated: string;
+      deleted: string;
+    };
+    error: {
+      createError: string;
+      updateError: string;
+      deleteError: string;
+    };
+    table: {
+      title: string;
+      category: string;
+      author: string;
+      status: string;
+      createdAt: string;
+      actions: string;
+      noArticles: string;
+    };
+    delete: {
+      title: string;
+      description: string;
     };
   };
 };
