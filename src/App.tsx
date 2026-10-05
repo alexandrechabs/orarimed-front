@@ -37,6 +37,7 @@ import AdminOfficeSettingsPage from "./pages/admin/AdminOfficeSettingsPage";
 import AdminDoctorSettingsPage from "./pages/admin/AdminDoctorSettingsPage";
 import AdminSecretarySettingsPage from "./pages/admin/AdminSecretarySettingsPage";
 import AdminSpecialitiesSettingsPage from "./pages/admin/AdminSpecialitiesSettingsPage";
+import AdminStatisticsPage from "./pages/admin/AdminStatisticsPage";
 import AdminArticlesPage from "./pages/admin/ArticlePage";
 import DoctorPage from "./pages/DoctorPage";
 import SearchPage from "./pages/SearchPage";
@@ -336,6 +337,14 @@ const App = () => (
                 element={
                   <ProtectedRouteByRole allowedRoles={[2]}>
                     <CabinetSettingsPage />
+                  </ProtectedRouteByRole>
+                }
+              />
+              <Route
+                path="/admin-statistics"
+                element={
+                  <ProtectedRouteByRole allowedRoles={[4]}>
+                    <AdminStatisticsPage />
                   </ProtectedRouteByRole>
                 }
               />

@@ -13,6 +13,7 @@ import {
   Stethoscope,
   UsersRound,
   Tags,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoIcon from "@/assets/logo-icon.png";
@@ -81,6 +82,12 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       href: "/cabinet-settings",
       icon: Settings,
       role: [2],
+    },
+    {
+      name: t.adminSettings.statistics.menu,
+      href: "/admin-statistics",
+      icon: BarChart3,
+      role: [4],
     },
     {
       name: t.adminSettings.menu.office,

@@ -661,6 +661,23 @@ export type TranslationKey = {
   adminSettings: {
     title: string;
     description: string;
+    statistics: {
+      menu: string;
+      title: string;
+      description: string;
+      doctors: string;
+      patients: string;
+      secretaries: string;
+      offices: string;
+      appointmentsLastYear: string;
+      upcomingAppointments: string;
+      appointmentsByMonth: string;
+      noAppointments: string;
+      loadError: string;
+      appointments: string;
+      doctorsBySpeciality: string;
+      noDoctorSpecialities: string;
+    };
     specialities: string;
     system: string;
     generalSettings: string;
