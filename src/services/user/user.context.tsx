@@ -160,6 +160,7 @@ type UserContextType = {
     email: string;
     message: string;
   }) => Promise<any>;
+  getStatsDoctor: () => Promise<any>;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -512,6 +513,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return data;
   }
 
+  async function getStatsDoctor() {
+    const data = await userService.getStatsDoctor();
+    return data;
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -560,6 +566,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         getSecretaryDoctors,
         addDoctorsToSecretary,
         sendContactMessage,
+        getStatsDoctor,
       }}
     >
       {children}

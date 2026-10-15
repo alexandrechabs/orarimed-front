@@ -465,6 +465,24 @@ export const userService = {
     return response.json();
   },
 
+  async getStatsDoctor(): Promise<ConsultationReason[]> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_URL}/doctor/statistics`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.json();
+  },
+
   async saveReasons(userId: string, reasons: ConsultationReason[]) {
     const token = localStorage.getItem("auth_token");
 

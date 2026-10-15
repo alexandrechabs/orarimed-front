@@ -11,15 +11,7 @@ import {
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { useUser } from "@/services/user/useUser";
-import {
-  format,
-  startOfDay,
-  endOfDay,
-  startOfWeek,
-  endOfWeek,
-  isToday,
-  isWithinInterval,
-} from "date-fns";
+import { format, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useDateLocale, useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -27,37 +19,40 @@ interface DashboardStatsProps {
   selectedDoctor?: any;
 }
 
+interface AppointmentStatusCount {
+  status: string;
+  appointments: number;
+}
+
+interface DoctorStatsResponse {
+  todayAppointments: number;
+  todayAppointmentStatuses: AppointmentStatusCount[];
+  weekAppointmentStatuses: AppointmentStatusCount[];
+}
+
 const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
   const dateLocale = useDateLocale();
-  const { events } = useUser();
-  const { t, language } = useLanguage();
+  const { events, getStatsDoctor } = useUser();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [currentDate] = useState(new Date());
+  const [doctorStats, setDoctorStats] = useState<DoctorStatsResponse | null>(
+    null,
+  );
+
+  useEffect(() => {
+    getStatsDoctor()
+      .then((data) => setDoctorStats(data as DoctorStatsResponse))
+      .catch((error) =>
+        console.error("Failed to load doctor statistics:", error),
+      );
+  }, [getStatsDoctor]);
 
   const stats = useMemo(() => {
-    if (!events.length)
-      return {
-        today: { total: 0, completed: 0, present: 0, absent: 0 },
-        week: { total: 0, completed: 0, present: 0, absent: 0 },
-        waiting: 0,
-        nextAppointments: [],
-      };
-
     const todayStart = startOfDay(currentDate);
-    const todayEnd = endOfDay(currentDate);
     const tomorrowEnd = endOfDay(
       new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
     );
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
-
-    // Filtrer les événements pour aujourd'hui et cette semaine
-    const todayEvents = events.filter((event) => {
-      if (!event.start) return false;
-      const eventStart = new Date(event.start as string);
-      return isWithinInterval(eventStart, { start: todayStart, end: todayEnd });
-    });
-
     const twoDaysEvents = events.filter((event) => {
       if (!event.start) return false;
       const eventStart = new Date(event.start as string);
@@ -66,62 +61,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
         end: tomorrowEnd,
       });
     });
-
-    const weekEvents = events.filter((event) => {
-      if (!event.start) return false;
-      const eventStart = new Date(event.start as string);
-      return isWithinInterval(eventStart, { start: weekStart, end: weekEnd });
-    });
-
-    // Calculer les statistiques du jour
-    const todayStats = todayEvents.reduce(
-      (acc, event) => {
-        acc.total++;
-
-        // Statut de présence
-        if (event.status === "finished") {
-          acc.completed++;
-          acc.present++;
-        } else if (
-          event.status === "abort" ||
-          event.status === "abortExcused"
-        ) {
-          acc.absent++;
-        }
-
-        return acc;
-      },
-      { total: 0, completed: 0, present: 0, absent: 0 },
-    );
-
-    // Calculer les statistiques de la semaine
-    const weekStats = weekEvents.reduce(
-      (acc, event) => {
-        acc.total++;
-
-        if (event.status === "finished") {
-          acc.completed++;
-          acc.present++;
-        } else if (
-          event.status === "abort" ||
-          event.status === "abortExcused"
-        ) {
-          acc.absent++;
-        }
-
-        return acc;
-      },
-      { total: 0, completed: 0, present: 0, absent: 0 },
-    );
-
-    // Patients en attente
-    const waitingEvents = todayEvents.filter(
-      (event) =>
-        event.status === "waiting" && isToday(new Date(event.start as string)),
-    );
-
-    // Prochain rendez-vous
-    const futureAppointments = twoDaysEvents
+    const nextAppointments = twoDaysEvents
       .filter(
         (event) =>
           event.status !== "finished" &&
@@ -135,23 +75,53 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
           new Date(b.start as string).getTime(),
       );
 
+    const countStatus = (statuses: AppointmentStatusCount[], status: string) =>
+      statuses.find((item) => item.status === status)?.appointments ?? 0;
+    const todayStatuses = doctorStats?.todayAppointmentStatuses ?? [];
+    const weekStatuses = doctorStats?.weekAppointmentStatuses ?? [];
+    const todayTotal = doctorStats?.todayAppointments ?? 0;
+    const weekTotal = weekStatuses.reduce(
+      (total, item) => total + item.appointments,
+      0,
+    );
+    const todayFinished = countStatus(todayStatuses, "finished");
+    const weekFinished = countStatus(weekStatuses, "finished");
+    const todayAbsent =
+      countStatus(todayStatuses, "abort") +
+      countStatus(todayStatuses, "abortExcused");
+    const weekAbsent =
+      countStatus(weekStatuses, "abort") +
+      countStatus(weekStatuses, "abortExcused");
+
     return {
-      today: todayStats,
-      week: weekStats,
-      waiting: waitingEvents.length,
-      nextAppointments: futureAppointments || null,
+      today: {
+        total: todayTotal,
+        completed: todayFinished,
+        absent: todayAbsent,
+        attendanceRate:
+          todayTotal > 0 ? Math.round((todayFinished / todayTotal) * 100) : 0,
+      },
+      week: {
+        total: weekTotal,
+        completed: weekFinished,
+        absent: weekAbsent,
+        attendanceRate:
+          weekTotal > 0 ? 100 - Math.round((weekAbsent / weekTotal) * 100) : 0,
+      },
+      waiting: countStatus(todayStatuses, "waiting"),
+      nextAppointments,
     };
-  }, [events, currentDate]);
+  }, [doctorStats, events, currentDate]);
 
-  const attendanceRate =
+  const attendanceRate = stats.today.attendanceRate;
+  const cancelledRate =
     stats.today.total > 0
-      ? Math.round((stats.today.present / stats.today.total) * 100)
+      ? Math.min(
+          100 - attendanceRate,
+          Math.round((stats.today.absent / stats.today.total) * 100),
+        )
       : 0;
-
-  const weekAttendanceRate =
-    stats.week.total > 0
-      ? 100 - Math.round((stats.week.absent / stats.week.total) * 100)
-      : 0;
+  const weekAttendanceRate = stats.week.attendanceRate;
 
   const formatTime = (date: string | Date) => {
     return format(new Date(date), "HH:mm", {
@@ -182,10 +152,24 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ selectedDoctor }) => {
               {attendanceRate}% {t.stats.attendance}
             </span>
           </div>
-          <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="mt-2 flex h-2 overflow-hidden rounded-full bg-gray-200"
+            role="img"
+            aria-label={`${attendanceRate}% présence, ${cancelledRate}% annulés`}
+          >
             <div
               className="h-full bg-green-500 transition-all duration-300"
               style={{ width: `${attendanceRate}%` }}
+              title={`Présence : ${attendanceRate}%`}
+            />
+            <div
+              className="h-full transition-all duration-300"
+              style={{ width: `${attendanceRate + cancelledRate}%` }}
+            />
+            <div
+              className="h-full bg-red-500 transition-all duration-300"
+              style={{ width: `${cancelledRate}%` }}
+              title={`Rendez-vous annulés : ${cancelledRate}%`}
             />
           </div>
         </CardContent>
